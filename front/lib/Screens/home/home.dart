@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../home/adscroller.dart';
 import '../home/testdrive.dart';
-import 'carservivepage.dart';
+import 'adpage.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -57,25 +57,34 @@ class HomePage extends StatelessWidget {
             children: [
               // Search Bar
               Container(
-                margin: const EdgeInsets.all(16.0),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(30),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
-                      spreadRadius: 2,
-                      blurRadius: 5,
-                      offset: const Offset(0, 3),
+                padding: const EdgeInsets.only(bottom: 10),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: TextField(
+                    decoration: InputDecoration(
+                      hintText: 'Search',
+                      hintStyle: const TextStyle(fontSize: 16),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        borderSide: const BorderSide(
+                          width: 0,
+                          style: BorderStyle.none,
+                        ),
+                      ),
+                      filled: true,
+                      fillColor: Colors.grey[100],
+                      contentPadding: const EdgeInsets.only(
+                        left: 30,
+                      ),
+                      suffixIcon: const Padding(
+                        padding: EdgeInsets.only(right: 24.0, left: 16.0),
+                        child: Icon(
+                          Icons.search,
+                          color: Colors.black,
+                          size: 24,
+                        ),
+                      ),
                     ),
-                  ],
-                ),
-                child: const TextField(
-                  decoration: InputDecoration(
-                    hintText: "Search for products ..",
-                    prefixIcon: Icon(Icons.search, color: Colors.grey),
-                    border: InputBorder.none,
-                    contentPadding: EdgeInsets.symmetric(vertical: 15.0),
                   ),
                 ),
               ),
@@ -148,7 +157,7 @@ class HomePage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     const Text(
-                      "Test Drive",
+                      "Rent Car",
                       style: TextStyle(
                         fontSize: 20.0,
                         fontWeight: FontWeight.bold,
@@ -206,97 +215,117 @@ class HomePage extends StatelessWidget {
                   _buildAllProductsBox(context),
                 ],
               ),
-
-              // car Section Title
+              const SizedBox(height: 20), // Ad Box
+              // Ad Box
               Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 16.0, vertical: 20.0),
-                child: Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.end, // Aligns items to the left
-                  children: [
-                    // Section Title
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const AdDetailsPage(
+                          imagePath: 'assets/images/sa.JPG',
+                          adTitle: 'Fuel Delivery',
+                          adDescription:
+                              'Fuel delivered 24/7; same price as the petrol station.',
+                        ),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    height: 200, // Adjust height to make it larger
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          spreadRadius: 2,
+                          blurRadius: 5,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: Stack(
+                      children: [
+                        // Background Image
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: Image.asset(
+                            'assets/images/sa.JPG', // Replace with your image path
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            height: double.infinity,
+                          ),
+                        ),
 
-                    const Text(
-                      "Car Service",
-                      style: TextStyle(
-                        fontSize: 20.0,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
+                        // Overlay Gradient
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            gradient: LinearGradient(
+                              colors: [
+                                Colors.black.withOpacity(0.5),
+                                Colors.transparent,
+                              ],
+                              begin: Alignment.bottomCenter,
+                              end: Alignment.topCenter,
+                            ),
+                          ),
+                        ),
+
+                        // Ad Content
+                        Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            textDirection: TextDirection
+                                .rtl, // Default, ensures alignment respects LTR
+
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              // Top Content (e.g., Delivery Type)
+
+                              // Main Content
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment
+                                    .end, // Align items to the right
+                                textDirection: TextDirection.ltr,
+                                children: [
+                                  const SizedBox(height: 52),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 10, vertical: 5),
+                                    decoration: BoxDecoration(
+                                      color: const Color.fromARGB(
+                                          255, 227, 225, 241),
+                                      borderRadius: BorderRadius.circular(15),
+                                    ),
+                                    child: const Text(
+                                      "15% off your first order!",
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 16.0), // Space between title and box
-                    // Service Box
-                    Container(
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color.fromARGB(255, 32, 11, 153)
-                                .withOpacity(0.5),
-                            spreadRadius: 2,
-                            blurRadius: 5,
-                            offset: const Offset(0, 3),
-                          ),
-                        ],
-                      ),
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        children: [
-                          const Text(
-                            "Car Service",
-                            style: TextStyle(
-                              fontSize: 18.0,
-                              fontWeight: FontWeight.bold,
-                              color: Color.fromARGB(255, 49, 15, 145),
-                            ),
-                          ),
-                          const SizedBox(height: 10.0),
-                          InkWell(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        const carservivepage()),
-                              );
-                            },
-                            child: Container(
-                              // Your widget content like a card or image
-                              padding: const EdgeInsets.all(16.0),
-                              child: const Text('Go to Car Service Page'),
-                            ),
-                          ),
-                          const Text(
-                            "Request the service at your doorstep",
-                            style: TextStyle(
-                              fontSize: 14.0,
-                              fontWeight: FontWeight.normal,
-                              color: Colors.black54,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 16.0),
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
-                            child: Image.asset(
-                              'assets/images/ss5.jpg',
-                              height: 150,
-                              width: double.infinity,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ),
             ],
           ),
         ),
+
+        //message icon
         floatingActionButton: Align(
           alignment: Alignment.bottomLeft,
           child: Padding(
@@ -338,47 +367,6 @@ class HomePage extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildMainSectionBox(String title, String imagePath) {
-    return Container(
-      margin: const EdgeInsets.all(8.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
-            spreadRadius: 2,
-            blurRadius: 5,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: Image.asset(
-              imagePath,
-              height: 60,
-              width: 60,
-              fit: BoxFit.cover,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 14.0,
-              fontWeight: FontWeight.bold,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
       ),
     );
   }
@@ -446,47 +434,71 @@ class AllProductsPage extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _buildMainSectionBox(String title, String imagePath) {
-    return Container(
-      margin: const EdgeInsets.all(8.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
-            spreadRadius: 2,
-            blurRadius: 5,
-            offset: const Offset(0, 3),
+Widget _buildMainSectionBox(String title, String imagePath) {
+  return Container(
+    margin: const EdgeInsets.all(8.0),
+    decoration: BoxDecoration(
+      color: Colors.white, // Background color
+      borderRadius: BorderRadius.circular(10.0),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.grey.withOpacity(0.3),
+          spreadRadius: 2,
+          blurRadius: 5,
+          offset: const Offset(2, 2), // Shadow position
+        ),
+      ],
+    ),
+    padding: const EdgeInsets.all(4.0),
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        // Header Box
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(5.0),
           ),
-        ],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(10),
+          child: Text(
+            title,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 12.0,
+              fontWeight: FontWeight.bold,
+              color: Color.fromARGB(255, 7, 5, 5),
+            ),
+          ),
+        ),
+        const SizedBox(height: 10.0),
+        // 3D Image with box shadow for depth
+        Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10.0),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.5),
+                spreadRadius: 2,
+                blurRadius: 10,
+                offset: const Offset(4, 4), // Adds 3D-like depth
+              ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(8.0),
             child: Image.asset(
               imagePath,
-              height: 60,
-              width: 60,
+              height: 50.0,
+              width: 50.0,
               fit: BoxFit.cover,
             ),
           ),
-          const SizedBox(height: 8),
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 14.0,
-              fontWeight: FontWeight.bold,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
 }
 
 Widget _buildServiceBox(

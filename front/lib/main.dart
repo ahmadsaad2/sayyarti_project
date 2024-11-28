@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'package:sayyarti/Screens/Welcome/welcome_screen.dart';
 import 'package:sayyarti/constants.dart';
 
