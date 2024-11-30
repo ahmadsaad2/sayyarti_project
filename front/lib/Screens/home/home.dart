@@ -1,10 +1,50 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:flutter/material.dart';
 import '../home/adscroller.dart';
 import '../home/testdrive.dart';
 import 'adpage.dart';
+import 'account/profile.dart';
+import 'account/addresspage.dart';
+import 'appcontact/contactus.dart';
+import 'appcontact/terms.dart';
+import 'account/deleteaccount.dart';
+import 'account/mycar.dart';
+import '../Welcome/welcome_screen.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
+
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  int _selectedIndex = 0;
+
+  // Function to handle BottomNavigationBar item taps
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    // Handle the navigation to different pages
+    if (index == 1) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const OrdersPage()),
+      );
+    } else if (index == 2) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const BasketPage()),
+      );
+    } else if (index == 3) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const MorePage()),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -336,18 +376,21 @@ class HomePage extends StatelessWidget {
             child: ClipOval(
               child: Image.asset(
                 'assets/images/cha.png', // Path to your image
-                width: 50.0, // Size of the image
-                height: 50.0, // Size of the image
-                fit: BoxFit.cover, // Ensures the image covers its bounds
+                width: 50.0,
+                height: 50.0,
+                fit: BoxFit.cover,
               ),
             ),
           ),
         ),
+
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         bottomNavigationBar: BottomNavigationBar(
           type: BottomNavigationBarType.fixed,
           selectedItemColor: Colors.blue,
           unselectedItemColor: const Color.fromARGB(255, 49, 87, 194),
+          currentIndex: _selectedIndex,
+          onTap: _onItemTapped,
           items: const [
             BottomNavigationBarItem(
               icon: ImageIcon(AssetImage('assets/images/home.png')),
@@ -678,8 +721,8 @@ class TyresPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: const Text('Car Wash')),
-        body: const Center(child: Text("Car Wash Page")));
+        appBar: AppBar(title: const Text('Tyres Service')),
+        body: const Center(child: Text("Tyres Service Page")));
   }
 }
 
@@ -689,8 +732,8 @@ class MinorServicePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: const Text('Car Wash')),
-        body: const Center(child: Text("Car Wash Page")));
+        appBar: AppBar(title: const Text('Minor Service')),
+        body: const Center(child: Text("Minor Service Page")));
   }
 }
 
@@ -700,8 +743,8 @@ class OilChangePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: const Text('Car Wash')),
-        body: const Center(child: Text("Car Wash Page")));
+        appBar: AppBar(title: const Text('Oil Change')),
+        body: const Center(child: Text("Oil Change Page")));
   }
 }
 
@@ -711,8 +754,8 @@ class BatteryPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: const Text('Car Wash')),
-        body: const Center(child: Text("Car Wash Page")));
+        appBar: AppBar(title: const Text('Battery Service')),
+        body: const Center(child: Text("Battery Service Page")));
   }
 }
 
@@ -722,7 +765,182 @@ class InspectionPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: const Text('Car Wash')),
-        body: const Center(child: Text("Car Wash Page")));
+        appBar: AppBar(title: const Text('Inspection Service')),
+        body: const Center(child: Text("Inspection Service Page")));
+  }
+}
+
+class MorePage extends StatefulWidget {
+  const MorePage({Key? key}) : super(key: key);
+
+  @override
+  _MorePageState createState() => _MorePageState();
+}
+
+class _MorePageState extends State<MorePage> {
+  @override
+  Widget build(BuildContext context) {
+    String userName = 'User Name';
+    int point = 0;
+    String firstLetter = userName.isNotEmpty
+        ? userName[0].toUpperCase()
+        : ''; // Get the first letter
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('More '),
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            // Profile Section
+            Container(
+              padding: const EdgeInsets.all(16.0),
+              color: const Color.fromARGB(255, 15, 72, 158),
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    radius: 30,
+                    backgroundColor: const Color.fromARGB(255, 29, 59, 197),
+                    child: Text(
+                      firstLetter, // Display the first letter as profile picture
+                      style: const TextStyle(fontSize: 24, color: Colors.white),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        userName,
+                        style: const TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                      Text('$point Point'),
+                      const SizedBox(height: 8),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            // My Account Section
+            ListTile(
+              leading: const Icon(Icons.account_circle),
+              title: const Text('My Profile'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => MyProfilePage()),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.home),
+              title: const Text('Address'),
+              trailing: const Icon(Icons.arrow_forward_ios),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const AddressPage()),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.car_rental),
+              title: const Text('My Cars'),
+              trailing: const Icon(Icons.arrow_forward_ios),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => MyCarsPage()),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.logout),
+              title: const Text('LogOut'),
+              trailing: const Icon(Icons.arrow_forward_ios),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const WelcomeScreen()),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.delete),
+              title: const Text(
+                'Delete Account',
+                style: TextStyle(color: Colors.red),
+              ),
+              trailing: const Icon(Icons.arrow_forward_ios),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => DeleteAccountPage()),
+                );
+              },
+            ),
+            // Settings Section
+
+            ListTile(
+              title: const Text('Language'),
+              trailing: const Text('English'),
+              onTap: () {}, // Implement onTap logic here
+            ),
+            // Contact Us Section
+
+            ListTile(
+              leading: const Icon(Icons.contact_mail),
+              title: const Text('Contact us'),
+              trailing: const Icon(Icons.arrow_forward_ios),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const ContactUsPage()),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.terminal_sharp),
+              title: const Text('Terms and conditions'),
+              trailing: const Icon(Icons.arrow_forward_ios),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const TermsPage()),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class OrdersPage extends StatelessWidget {
+  const OrdersPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Orders')),
+      body: const Center(child: Text("This is the Orders Page")),
+    );
+  }
+}
+
+class BasketPage extends StatelessWidget {
+  const BasketPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Basket')),
+      body: const Center(child: Text("This is the Basket Page")),
+    );
   }
 }
