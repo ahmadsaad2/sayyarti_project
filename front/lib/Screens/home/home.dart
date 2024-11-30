@@ -830,7 +830,8 @@ class _MorePageState extends State<MorePage> {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => MyProfilePage()),
+                  MaterialPageRoute(
+                      builder: (context) => const MyProfilePage()),
                 );
               },
             ),

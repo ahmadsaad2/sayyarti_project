@@ -15,11 +15,11 @@ class AddressPage extends StatelessWidget {
         child: Column(
           children: [
             // Display Address (If any)
-            ListTile(
-              title: const Text('User Address'),
-              subtitle: const Text('1234 Main St, Springfield, IL 62701'),
-              leading: const Icon(Icons.home), // Home icon
-              trailing: const Text('Default'),
+            const ListTile(
+              title: Text('User Address'),
+              subtitle: Text('1234 Main St, Springfield, IL 62701'),
+              leading: Icon(Icons.home), // Home icon
+              trailing: Text('Default'),
             ),
             const SizedBox(height: 20),
 

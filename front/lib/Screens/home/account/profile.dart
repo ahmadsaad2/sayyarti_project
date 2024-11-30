@@ -4,6 +4,7 @@ class MyProfilePage extends StatefulWidget {
   const MyProfilePage({Key? key}) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _MyProfilePageState createState() => _MyProfilePageState();
 }
 
@@ -82,10 +83,10 @@ class _MyProfilePageState extends State<MyProfilePage> {
               child: ElevatedButton(
                 onPressed: () {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: const Text('Profile updated successfully!'),
+                    const SnackBar(
+                      content: Text('Profile updated successfully!'),
                       backgroundColor: Colors.green,
-                      duration: const Duration(seconds: 2),
+                      duration: Duration(seconds: 2),
                     ),
                   );
                   print("Username: ${_usernameController.text}");

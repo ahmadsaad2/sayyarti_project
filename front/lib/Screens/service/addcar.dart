@@ -61,10 +61,10 @@ class _AddCarPageState extends State<AddCarPage> {
                 onPressed: () {
                   // Handle save action and show success message
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: const Text('Car added successfully!'),
+                    const SnackBar(
+                      content: Text('Car added successfully!'),
                       backgroundColor: Colors.green,
-                      duration: const Duration(seconds: 2),
+                      duration: Duration(seconds: 2),
                     ),
                   );
                   // Optionally, print the saved car data
