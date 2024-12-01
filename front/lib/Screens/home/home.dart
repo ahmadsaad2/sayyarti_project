@@ -11,6 +11,7 @@ import 'appcontact/terms.dart';
 import 'account/deleteaccount.dart';
 import 'account/mycar.dart';
 import '../Welcome/welcome_screen.dart';
+import 'basket.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -36,7 +37,7 @@ class _HomePageState extends State<HomePage> {
     } else if (index == 2) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const BasketPage()),
+        MaterialPageRoute(builder: (context) => BasketPage()),
       );
     } else if (index == 3) {
       Navigator.push(
@@ -934,14 +935,14 @@ class OrdersPage extends StatelessWidget {
   }
 }
 
-class BasketPage extends StatelessWidget {
-  const BasketPage({super.key});
+// class BasketPage extends StatelessWidget {
+//   const BasketPage({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Basket')),
-      body: const Center(child: Text("This is the Basket Page")),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(title: const Text('Basket')),
+//       body: const Center(child: Text("This is the Basket Page")),
+//     );
+//   }
+// }

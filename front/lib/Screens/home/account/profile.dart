@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 
 class MyProfilePage extends StatefulWidget {
   const MyProfilePage({Key? key}) : super(key: key);
@@ -14,6 +15,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  var logger = Logger();
 
   @override
   void initState() {
@@ -89,10 +91,11 @@ class _MyProfilePageState extends State<MyProfilePage> {
                       duration: Duration(seconds: 2),
                     ),
                   );
-                  print("Username: ${_usernameController.text}");
-                  print("Phone: ${_phoneController.text}");
-                  print("Email: ${_emailController.text}");
-                  print("Password: ${_passwordController.text}");
+                  // Assuming you have _usernameController, _phoneController, etc.
+                  logger.i("Username: ${_usernameController.text}");
+                  logger.i("Phone: ${_phoneController.text}");
+                  logger.i("Email: ${_emailController.text}");
+                  logger.i("Password: ${_passwordController.text}");
                 },
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white,

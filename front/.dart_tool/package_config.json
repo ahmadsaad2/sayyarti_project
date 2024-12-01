@@ -104,6 +104,12 @@
       "languageVersion": "3.3"
     },
     {
+      "name": "font_awesome_flutter",
+      "rootUri": "file:///C:/Users/ahmad/AppData/Local/Pub/Cache/hosted/pub.dev/font_awesome_flutter-10.8.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.0"
+    },
+    {
       "name": "http",
       "rootUri": "file:///C:/Users/ahmad/AppData/Local/Pub/Cache/hosted/pub.dev/http-0.13.6",
       "packageUri": "lib/",
@@ -150,6 +156,12 @@
       "rootUri": "file:///C:/Users/ahmad/AppData/Local/Pub/Cache/hosted/pub.dev/lints-2.1.1",
       "packageUri": "lib/",
       "languageVersion": "3.0"
+    },
+    {
+      "name": "logger",
+      "rootUri": "file:///C:/Users/ahmad/AppData/Local/Pub/Cache/hosted/pub.dev/logger-1.4.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
     },
     {
       "name": "matcher",
@@ -284,7 +296,7 @@
       "languageVersion": "3.1"
     }
   ],
-  "generated": "2024-11-30T19:05:34.259310Z",
+  "generated": "2024-12-01T17:47:34.230613Z",
   "generator": "pub",
   "generatorVersion": "3.5.4",
   "flutterRoot": "file:///C:/src/flutter",
