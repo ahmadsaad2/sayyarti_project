@@ -1,4 +1,7 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 
 class AddAddressPage extends StatefulWidget {
   const AddAddressPage({Key? key}) : super(key: key);
@@ -12,6 +15,7 @@ class _AddAddressPageState extends State<AddAddressPage> {
   final TextEditingController _cityController = TextEditingController();
   final TextEditingController _stateController = TextEditingController();
   final TextEditingController _zipCodeController = TextEditingController();
+  var logger = Logger();
 
   @override
   void dispose() {
@@ -75,10 +79,10 @@ class _AddAddressPageState extends State<AddAddressPage> {
                     ),
                   );
                   // Optionally print the entered data
-                  print("Street: ${_streetController.text}");
-                  print("City: ${_cityController.text}");
-                  print("State: ${_stateController.text}");
-                  print("Zip Code: ${_zipCodeController.text}");
+                  logger.i("Street: ${_streetController.text}");
+                  logger.i("City: ${_cityController.text}");
+                  logger.i("State: ${_stateController.text}");
+                  logger.i("Zip Code: ${_zipCodeController.text}");
                 },
                 style: ElevatedButton.styleFrom(
                     // primary: Colors.blue, // Button color

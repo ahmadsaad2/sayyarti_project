@@ -11,7 +11,7 @@ import 'appcontact/terms.dart';
 import 'account/deleteaccount.dart';
 import 'account/mycar.dart';
 import '../Welcome/welcome_screen.dart';
-import 'basket.dart';
+import '../../Screens/service/productpage.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -35,10 +35,10 @@ class _HomePageState extends State<HomePage> {
         MaterialPageRoute(builder: (context) => const OrdersPage()),
       );
     } else if (index == 2) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => BasketPage()),
-      );
+      // Navigator.push(
+      //   context,
+      //   MaterialPageRoute(builder: (context) => ProductPage()),
+      // );
     } else if (index == 3) {
       Navigator.push(
         context,
@@ -242,20 +242,26 @@ class _HomePageState extends State<HomePage> {
               ),
 
               // Main Sections Grid
+              // Main Sections Grid
               GridView.count(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 crossAxisCount: 3,
                 children: [
-                  _buildMainSectionBox('Spare Parts', 'assets/images/part.jpg'),
-                  _buildMainSectionBox("Battery", 'assets/images/battry.jpg'),
-                  _buildMainSectionBox("Wheels", 'assets/images/wheel.jpg'),
-                  _buildMainSectionBox("Accessories", 'assets/images/accs.jpg'),
                   _buildMainSectionBox(
-                      "Regular Maintenance", 'assets/images/oil.jpg'),
+                      context, 'Spare Parts', 'assets/images/part.jpg'),
+                  _buildMainSectionBox(
+                      context, "Battery", 'assets/images/battry.jpg'),
+                  _buildMainSectionBox(
+                      context, "Wheels", 'assets/images/wheel.jpg'),
+                  _buildMainSectionBox(
+                      context, "Accessories", 'assets/images/accs.jpg'),
+                  _buildMainSectionBox(
+                      context, "Regular Maintenance", 'assets/images/oil.jpg'),
                   _buildAllProductsBox(context),
                 ],
               ),
+
               const SizedBox(height: 20), // Ad Box
               // Ad Box
               Padding(
@@ -469,78 +475,93 @@ class AllProductsPage extends StatelessWidget {
       body: GridView.count(
         crossAxisCount: 3,
         children: [
-          _buildMainSectionBox('Spare Parts', 'assets/images/part.jpg'),
-          _buildMainSectionBox("Battery", 'assets/images/battry.jpg'),
-          _buildMainSectionBox("Wheels", 'assets/images/wheel.jpg'),
-          _buildMainSectionBox("Accessories", 'assets/images/accs.jpg'),
-          _buildMainSectionBox("Regular Maintenance", 'assets/images/oil.jpg'),
+          _buildMainSectionBox(
+              context, 'Spare Parts', 'assets/images/part.jpg'),
+          _buildMainSectionBox(context, "Battery", 'assets/images/battry.jpg'),
+          _buildMainSectionBox(context, "Wheels", 'assets/images/wheel.jpg'),
+          _buildMainSectionBox(
+              context, "Accessories", 'assets/images/accs.jpg'),
+          _buildMainSectionBox(
+              context, "Regular Maintenance", 'assets/images/oil.jpg'),
         ],
       ),
     );
   }
 }
 
-Widget _buildMainSectionBox(String title, String imagePath) {
-  return Container(
-    margin: const EdgeInsets.all(8.0),
-    decoration: BoxDecoration(
-      color: Colors.white, // Background color
-      borderRadius: BorderRadius.circular(10.0),
-      boxShadow: [
-        BoxShadow(
-          color: Colors.grey.withOpacity(0.3),
-          spreadRadius: 2,
-          blurRadius: 5,
-          offset: const Offset(2, 2), // Shadow position
+Widget _buildMainSectionBox(
+    BuildContext context, String title, String imagePath) {
+  return GestureDetector(
+    onTap: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+              ProductPage(categoryName: title), // Pass category name
         ),
-      ],
-    ),
-    padding: const EdgeInsets.all(4.0),
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        // Header Box
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(5.0),
+      );
+    },
+    child: Container(
+      margin: const EdgeInsets.all(8.0),
+      decoration: BoxDecoration(
+        color: Colors.white, // Background color
+        borderRadius: BorderRadius.circular(10.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.3),
+            spreadRadius: 2,
+            blurRadius: 5,
+            offset: const Offset(2, 2), // Shadow position
           ),
-          child: Text(
-            title,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 12.0,
-              fontWeight: FontWeight.bold,
-              color: Color.fromARGB(255, 7, 5, 5),
+        ],
+      ),
+      padding: const EdgeInsets.all(4.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // Header Box
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(5.0),
             ),
-          ),
-        ),
-        const SizedBox(height: 10.0),
-        // 3D Image with box shadow for depth
-        Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10.0),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.5),
-                spreadRadius: 2,
-                blurRadius: 10,
-                offset: const Offset(4, 4), // Adds 3D-like depth
+            child: Text(
+              title,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 12.0,
+                fontWeight: FontWeight.bold,
+                color: Color.fromARGB(255, 7, 5, 5),
               ),
-            ],
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(8.0),
-            child: Image.asset(
-              imagePath,
-              height: 50.0,
-              width: 50.0,
-              fit: BoxFit.cover,
             ),
           ),
-        ),
-      ],
+          const SizedBox(height: 10.0),
+          // 3D Image with box shadow for depth
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10.0),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.5),
+                  spreadRadius: 2,
+                  blurRadius: 10,
+                  offset: const Offset(4, 4), // Adds 3D-like depth
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(8.0),
+              child: Image.asset(
+                imagePath,
+                height: 50.0,
+                width: 50.0,
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+        ],
+      ),
     ),
   );
 }

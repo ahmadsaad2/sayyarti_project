@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 
 class AddCarPage extends StatefulWidget {
   const AddCarPage({Key? key}) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _AddCarPageState createState() => _AddCarPageState();
 }
 
@@ -12,7 +14,7 @@ class _AddCarPageState extends State<AddCarPage> {
   final TextEditingController _carNameController = TextEditingController();
   final TextEditingController _carModelController = TextEditingController();
   final TextEditingController _carYearController = TextEditingController();
-
+  var logger = Logger();
   @override
   void dispose() {
     // Dispose the controllers when no longer needed
@@ -68,9 +70,9 @@ class _AddCarPageState extends State<AddCarPage> {
                     ),
                   );
                   // Optionally, print the saved car data
-                  print("Car Name: ${_carNameController.text}");
-                  print("Car Model: ${_carModelController.text}");
-                  print("Car Year: ${_carYearController.text}");
+                  logger.i("Car Name: ${_carNameController.text}");
+                  logger.i("Car Model: ${_carModelController.text}");
+                  logger.i("Car Year: ${_carYearController.text}");
                 },
                 style: ElevatedButton.styleFrom(),
                 child: const Text('Save'),
