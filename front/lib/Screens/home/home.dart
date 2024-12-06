@@ -12,6 +12,7 @@ import 'account/deleteaccount.dart';
 import 'account/mycar.dart';
 import '../Welcome/welcome_screen.dart';
 import '../../Screens/service/productpage.dart';
+import '../home/workshop/workshop.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -168,20 +169,20 @@ class _HomePageState extends State<HomePage> {
                 mainAxisSpacing: 10,
                 crossAxisSpacing: 10,
                 children: [
+                  _buildServiceBox(context, "Workshop",
+                      "assets/images/workshop.png", FuelPage()),
+                  _buildServiceBox(context, "Spare Parts",
+                      "assets/images/part.jpg", const FuelPage()),
                   _buildServiceBox(context, "Fuel", "assets/images/fuel.png",
                       const FuelPage()),
                   _buildServiceBox(context, "Car Wash",
                       "assets/images/wash.png", const CarWashPage()),
-                  _buildServiceBox(context, "Battery",
-                      "assets/images/battary.png", const BatteryPage()),
                   _buildServiceBox(context, "Tyres", "assets/images/tryy.png",
                       const TyresPage()),
                   _buildServiceBox(context, "Minor Service",
                       "assets/images/oil.png", const MinorServicePage()),
-                  _buildServiceBox(context, "Electbattar",
-                      "assets/images/elect.png", const InspectionPage()),
-                  _buildServiceBox(context, "Oil Change",
-                      "assets/images/oil.png", const OilChangePage()),
+                  _buildServiceBox(context, "trucks ",
+                      "assets/images/truck.png", const InspectionPage()),
                   GestureDetector(
                     onTap: () => _showEmergencyServices(context),
                     child: _buildServiceBoxWithImage(
@@ -405,7 +406,7 @@ class _HomePageState extends State<HomePage> {
             ),
             BottomNavigationBarItem(
               icon: ImageIcon(AssetImage('assets/images/order.png')),
-              label: "Orders",
+              label: "Offers",
             ),
             BottomNavigationBarItem(
               icon: ImageIcon(AssetImage('assets/images/add-to-cart.png')),
@@ -683,10 +684,16 @@ void _showEmergencyServices(BuildContext context) {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildEmergencyOption("Jump Start", "assets/images/jmp.png"),
-                _buildEmergencyOption("Tyre Change", "assets/images/rep.png"),
-                _buildEmergencyOption(
-                    "Tyre Pressure", "assets/images/tryy.png"),
+                _buildEmergencyOption(context, "Jump Start",
+                    "assets/images/jmp.png", JumpStartPage()),
+                _buildEmergencyOption(context, "Tyre Change",
+                    "assets/images/rep.png", TyreChangePage()),
+                _buildEmergencyOption(context, "Towing Service",
+                    "assets/images/tawing.png", TyrePressurePage()),
+                _buildEmergencyOption(context, "Fuel Delivery",
+                    "assets/images/fuel.png", TyrePressurePage()),
+                _buildEmergencyOption(context, "Car Wash",
+                    "assets/images/wash.png", TyrePressurePage()),
               ],
             ),
           ],
@@ -696,21 +703,30 @@ void _showEmergencyServices(BuildContext context) {
   );
 }
 
-// Function to create an emergency service option
-Widget _buildEmergencyOption(String title, String imagePath) {
-  return Column(
-    children: [
-      Image.asset(imagePath, height: 40.0, width: 40.0, fit: BoxFit.cover),
-      const SizedBox(height: 8.0),
-      Text(
-        title,
-        textAlign: TextAlign.center,
-        style: const TextStyle(
-          fontSize: 14.0,
-          fontWeight: FontWeight.w500,
+Widget _buildEmergencyOption(
+    BuildContext context, String title, String imagePath, Widget page) {
+  return GestureDetector(
+    onTap: () {
+      // Navigate to the corresponding emergency page
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => page),
+      );
+    },
+    child: Column(
+      children: [
+        Image.asset(imagePath, height: 40.0, width: 40.0, fit: BoxFit.cover),
+        const SizedBox(height: 6.0),
+        Text(
+          title,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            fontSize: 12.0,
+            fontWeight: FontWeight.w500,
+          ),
         ),
-      ),
-    ],
+      ],
+    ),
   );
 }
 
@@ -967,3 +983,32 @@ class OrdersPage extends StatelessWidget {
 //     );
 //   }
 // }
+class JumpStartPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Jump Start')),
+      body: const Center(child: Text('Details about Jump Start Service')),
+    );
+  }
+}
+
+class TyreChangePage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Tyre Change')),
+      body: const Center(child: Text('Details about Tyre Change Service')),
+    );
+  }
+}
+
+class TyrePressurePage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Tyre Pressure')),
+      body: const Center(child: Text('Details about Tyre Pressure Service')),
+    );
+  }
+}
