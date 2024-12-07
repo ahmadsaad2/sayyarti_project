@@ -169,8 +169,8 @@ class _HomePageState extends State<HomePage> {
                 mainAxisSpacing: 10,
                 crossAxisSpacing: 10,
                 children: [
-                  _buildServiceBox(context, "Workshop",
-                      "assets/images/workshop.png", FuelPage()),
+                  _buildworkshopbox(
+                      context, "Workshop", "assets/images/workshop.png"),
                   _buildServiceBox(context, "Spare Parts",
                       "assets/images/part.jpg", const FuelPage()),
                   _buildServiceBox(context, "Fuel", "assets/images/fuel.png",
@@ -567,79 +567,6 @@ Widget _buildMainSectionBox(
   );
 }
 
-Widget _buildServiceBox(
-    BuildContext context, String title, String imagePath, Widget nextPage) {
-  return GestureDetector(
-    onTap: () {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => nextPage),
-      );
-    },
-    child: Container(
-      decoration: BoxDecoration(
-        color: Colors.white, // Background color
-        borderRadius: BorderRadius.circular(10.0),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.3),
-            spreadRadius: 2,
-            blurRadius: 5,
-            offset: const Offset(2, 2), // Shadow position
-          ),
-        ],
-      ),
-      padding: const EdgeInsets.all(4.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          // Header Box
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(5.0),
-            ),
-            child: Text(
-              title,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 12.0,
-                fontWeight: FontWeight.bold,
-                color: Color.fromARGB(255, 7, 5, 5),
-              ),
-            ),
-          ),
-          const SizedBox(height: 10.0),
-          // 3D Image
-          Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8.0),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.5),
-                  spreadRadius: 2,
-                  blurRadius: 10,
-                  offset: const Offset(4, 4), // Adds 3D-like depth
-                ),
-              ],
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(8.0),
-              child: Image.asset(
-                imagePath,
-                height: 50.0,
-                width: 50.0,
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-        ],
-      ),
-    ),
-  );
-}
-
 // Function to create a service box for Emergency
 Widget _buildServiceBoxWithImage(String title, String imagePath) {
   return Column(
@@ -692,8 +619,6 @@ void _showEmergencyServices(BuildContext context) {
                     "assets/images/tawing.png", TyrePressurePage()),
                 _buildEmergencyOption(context, "Fuel Delivery",
                     "assets/images/fuel.png", TyrePressurePage()),
-                _buildEmergencyOption(context, "Car Wash",
-                    "assets/images/wash.png", TyrePressurePage()),
               ],
             ),
           ],
@@ -1011,4 +936,235 @@ class TyrePressurePage extends StatelessWidget {
       body: const Center(child: Text('Details about Tyre Pressure Service')),
     );
   }
+}
+
+Widget _buildServiceOption(String title, String imagePath) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(
+        horizontal: 15.0), // Add padding between items
+    child: Column(
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: Image.asset(
+            imagePath,
+            height: 60.0,
+            width: 60.0,
+            fit: BoxFit.cover,
+          ),
+        ),
+        const SizedBox(height: 8.0),
+        Text(
+          title,
+          style: const TextStyle(fontSize: 14.0),
+        ),
+      ],
+    ),
+  );
+}
+
+// Service Box Widget for the workshop
+Widget _buildworkshopbox(BuildContext context, String title, String imagePath) {
+  return GestureDetector(
+    onTap: () {
+      _showServiceSelectionDialog(
+          context, title); // Show service selection dialog
+    },
+    child: Container(
+      decoration: BoxDecoration(
+        color: Colors.white, // Background color
+        borderRadius: BorderRadius.circular(10.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.3),
+            spreadRadius: 2,
+            blurRadius: 5,
+            offset: const Offset(2, 2), // Shadow position
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.all(4.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // Header Box
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(5.0),
+            ),
+            child: Text(
+              title,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 12.0,
+                fontWeight: FontWeight.bold,
+                color: Color.fromARGB(255, 7, 5, 5),
+              ),
+            ),
+          ),
+          const SizedBox(height: 10.0),
+          // 3D Image
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8.0),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.5),
+                  spreadRadius: 2,
+                  blurRadius: 10,
+                  offset: const Offset(4, 4), // Adds 3D-like depth
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(8.0),
+              child: Image.asset(
+                imagePath,
+                height: 50.0,
+                width: 50.0,
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+void _showServiceSelectionDialog(
+    BuildContext context, String workshopType) async {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Select Service'),
+        content: SingleChildScrollView(
+          child: Row(
+            mainAxisAlignment:
+                MainAxisAlignment.spaceBetween, // Distribute evenly
+            children: [
+              GestureDetector(
+                onTap: () {
+                  // Navigate to the WorkshopPage with the 'Denting' type
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          WorkshopPage(workshopType: 'Denting'),
+                    ),
+                  );
+                },
+                child:
+                    _buildServiceOption('Denting', 'assets/images/denting.jpg'),
+              ),
+              GestureDetector(
+                onTap: () {
+                  // Navigate to the WorkshopPage with the 'Electrical' type
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          WorkshopPage(workshopType: 'Electrical'),
+                    ),
+                  );
+                },
+                child: _buildServiceOption(
+                    'Electrical', 'assets/images/electrical.jpg'),
+              ),
+              GestureDetector(
+                onTap: () {
+                  // Navigate to the WorkshopPage with the 'Mechanics' type
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          WorkshopPage(workshopType: 'Mechanics'),
+                    ),
+                  );
+                },
+                child:
+                    _buildServiceOption('Mechanics', 'assets/images/mech.png'),
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
+
+Widget _buildServiceBox(
+    BuildContext context, String title, String imagePath, Widget nextPage) {
+  return GestureDetector(
+    onTap: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => nextPage),
+      );
+    },
+    child: Container(
+      decoration: BoxDecoration(
+        color: Colors.white, // Background color
+        borderRadius: BorderRadius.circular(10.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.3),
+            spreadRadius: 2,
+            blurRadius: 5,
+            offset: const Offset(2, 2), // Shadow position
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.all(4.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // Header Box
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(5.0),
+            ),
+            child: Text(
+              title,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 12.0,
+                fontWeight: FontWeight.bold,
+                color: Color.fromARGB(255, 7, 5, 5),
+              ),
+            ),
+          ),
+          const SizedBox(height: 10.0),
+          // 3D Image
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8.0),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.5),
+                  spreadRadius: 2,
+                  blurRadius: 10,
+                  offset: const Offset(4, 4), // Adds 3D-like depth
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(8.0),
+              child: Image.asset(
+                imagePath,
+                height: 50.0,
+                width: 50.0,
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
 }

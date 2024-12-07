@@ -1,232 +1,305 @@
-// import 'package:flutter/material.dart';
-// import 'workshopdetails.dart';
+import 'package:flutter/material.dart';
 
-// class WorkshopPage extends StatefulWidget {
-//   final String categoryName; // Add categoryName to constructor
+class WorkshopPage extends StatefulWidget {
+  final String workshopType; // Parameter to filter workshops by type
 
-//   const WorkshopPage({Key? key, required this.categoryName}) : super(key: key);
+  const WorkshopPage({Key? key, required this.workshopType}) : super(key: key);
 
-//   @override
-//   _WorkshopPageState createState() => _WorkshopPageState();
-// }
+  @override
+  _WorkshopPageState createState() => _WorkshopPageState();
+}
 
-// class _WorkshopPageState extends State<WorkshopPage> {
-//   int _selectedIndex = 0;
+class _WorkshopPageState extends State<WorkshopPage> {
+  String _selectedSort = 'Rating';
+  double _selectedRating = 0;
+  String _selectedCity = 'All';
+  String _searchQuery = '';
 
-//   static const List<String> _categories = <String>[
-//     'Electrical',
-//     'Denting',
-//     'Mechanics',
-//     'Polishing',
-//   ];
+  // Define workshops for different types
+  final List<Map<String, dynamic>> _allWorkshops = [
+    {
+      'name': 'Auto Care Center',
+      'image': 'assets/images/workshop1.jpg',
+      'rating': 4.5,
+      'location': 'New York',
+      'details': 'Expert in car repairs and maintenance.',
+      'type': 'Mechanics',
+    },
+    {
+      'name': 'Quick Fix Garage',
+      'image': 'assets/images/workshop2.jpg',
+      'rating': 4.0,
+      'location': 'Los Angeles',
+      'details': 'Fast and affordable service for all cars.',
+      'type': 'Electrical',
+    },
+    {
+      'name': 'Super Tires Workshop',
+      'image': 'assets/images/workshop3.jpg',
+      'rating': 4.7,
+      'location': 'San Francisco',
+      'details': 'Specializes in tire replacement and balancing.',
+      'type': 'Denting',
+    },
+    {
+      'name': 'Engine Masters',
+      'image': 'assets/images/workshop4.jpg',
+      'rating': 4.8,
+      'location': 'Chicago',
+      'details': 'Top-rated for engine diagnostics and repairs.',
+      'type': 'Mechanics',
+    },
+    {
+      'name': 'Elite Auto Experts',
+      'image': 'assets/images/workshop5.jpg',
+      'rating': 4.3,
+      'location': 'Miami',
+      'details': 'Comprehensive vehicle services for all brands.',
+      'type': 'Electrical',
+    },
+  ];
 
-//   static const List<String> _categoryImages = <String>[
-//     'assets/images/electrical.jpg',
-//     'assets/images/denting.jpg',
-//     'assets/images/mechanics.jpg',
-//     'assets/images/polishing.jpg',
-//   ];
+  // Apply filters like city and rating
+  void _applyFilters() async {
+    final Map<String, dynamic>? filters =
+        await showDialog<Map<String, dynamic>>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Apply Filters'),
+          content: Column(
+            children: [
+              DropdownButton<String>(
+                value: _selectedCity,
+                onChanged: (String? newValue) {
+                  setState(() {
+                    _selectedCity = newValue!;
+                  });
+                },
+                items: [
+                  'All',
+                  'New York',
+                  'Los Angeles',
+                  'San Francisco',
+                  'Chicago',
+                  'Miami'
+                ].map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+              ),
+              Slider(
+                value: _selectedRating,
+                min: 0,
+                max: 5,
+                divisions: 5,
+                label: _selectedRating.toString(),
+                onChanged: (double value) {
+                  setState(() {
+                    _selectedRating = value;
+                  });
+                },
+              ),
+              const Text('Rating Filter'),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Apply'),
+              onPressed: () {
+                Navigator.pop(context,
+                    {'city': _selectedCity, 'rating': _selectedRating});
+              },
+            ),
+          ],
+        );
+      },
+    );
 
-//   static const List<List<Map<String, dynamic>>> _workshops =
-//       <List<Map<String, dynamic>>>[
-//     [
-//       {
-//         'name': 'Auto Electricians',
-//         'description': 'Expert electrical repair services for all vehicles.',
-//         'location': '123 Main St',
-//         'image': 'assets/images/electrical.png',
-//       },
-//       {
-//         'name': 'Battery Fix',
-//         'description': 'Specialized in battery replacements and repairs.',
-//         'location': '456 Elm St',
-//         'image': 'assets/images/electrical.png',
-//       },
-//     ],
-//     [
-//       {
-//         'name': 'DentFix',
-//         'description': 'High-quality denting service for all vehicle types.',
-//         'location': '789 Oak St',
-//         'image': 'assets/images/denting.png',
-//       },
-//       {
-//         'name': 'FixMyCar',
-//         'description': 'Comprehensive denting repair services.',
-//         'location': '101 Pine St',
-//         'image': 'assets/images/denting.png',
-//       },
-//     ],
-//     [
-//       {
-//         'name': 'Mechanics Pro',
-//         'description': 'Expert mechanics providing all car repairs.',
-//         'location': '202 Birch St',
-//         'image': 'assets/images/mechanics.png',
-//       },
-//       {
-//         'name': 'CarFix Mechanics',
-//         'description': 'Full-service auto repair shop for various car models.',
-//         'location': '303 Cedar St',
-//         'image': 'assets/images/mechanics.png',
-//       },
-//     ],
-//     [
-//       {
-//         'name': 'Polish Masters',
-//         'description': 'Polishing and detailing services for vehicles.',
-//         'location': '404 Maple St',
-//         'image': 'assets/images/polishing.png',
-//       },
-//       {
-//         'name': 'Shiny Wheels',
-//         'description': 'Vehicle polishing for a perfect shine.',
-//         'location': '505 Willow St',
-//         'image': 'assets/images/polishing.png',
-//       },
-//     ],
-//   ];
+    if (filters != null) {
+      setState(() {
+        _selectedCity = filters['city'];
+        _selectedRating = filters['rating'];
+      });
+    }
+  }
 
-//   @override
-//   void initState() {
-//     super.initState();
-//     // Find the selected index for the category
-//     _selectedIndex = _categories.indexOf(widget.categoryName);
-//   }
+  @override
+  Widget build(BuildContext context) {
+    // Filter workshops based on selected criteria
+    var filteredWorkshops = _allWorkshops.where((workshop) {
+      bool matchesType = workshop['type'] == widget.workshopType;
+      bool matchesCity =
+          workshop['location'] == _selectedCity || _selectedCity == 'All';
+      bool matchesRating = workshop['rating'] >= _selectedRating;
+      bool matchesSearch =
+          workshop['name'].toLowerCase().contains(_searchQuery.toLowerCase());
+      return matchesType && matchesCity && matchesRating && matchesSearch;
+    }).toList();
 
-//   void _onItemTapped(int index) {
-//     setState(() {
-//       _selectedIndex = index;
-//     });
-//   }
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('${widget.workshopType} Workshops'),
+      ),
+      body: Column(
+        children: [
+          // Search bar
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              decoration: const InputDecoration(
+                labelText: 'Search Workshops',
+                prefixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(),
+              ),
+              onChanged: (query) {
+                setState(() {
+                  _searchQuery = query;
+                });
+              },
+            ),
+          ),
+          const Divider(),
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         leading: IconButton(
-//           icon: const Icon(Icons.arrow_back),
-//           onPressed: () {
-//             Navigator.pop(context); // Go back to the previous page
-//           },
-//         ),
-//         title: Text(widget.categoryName), // Use the category name here
-//       ),
-//       body: Column(
-//         children: [
-//           Padding(
-//             padding: const EdgeInsets.all(16.0),
-//             child: SingleChildScrollView(
-//               scrollDirection: Axis.horizontal,
-//               child: Row(
-//                 children: List.generate(_categories.length, (index) {
-//                   return GestureDetector(
-//                     onTap: () => _onItemTapped(index),
-//                     child: Column(
-//                       children: [
-//                         CircleAvatar(
-//                           radius: 40,
-//                           backgroundColor: _selectedIndex == index
-//                               ? const Color.fromARGB(255, 24, 17, 122)
-//                               : Colors.grey[300],
-//                           child: CircleAvatar(
-//                             radius: 35,
-//                             backgroundImage: AssetImage(_categoryImages[index]),
-//                           ),
-//                         ),
-//                         const SizedBox(height: 8),
-//                         Padding(
-//                           padding: const EdgeInsets.only(bottom: 16.0),
-//                           child: Text(
-//                             _categories[index],
-//                             style: TextStyle(
-//                               color: _selectedIndex == index
-//                                   ? const Color.fromARGB(255, 25, 27, 158)
-//                                   : Colors.grey[700],
-//                               fontWeight: FontWeight.bold,
-//                             ),
-//                           ),
-//                         ),
-//                       ],
-//                     ),
-//                   );
-//                 }),
-//               ),
-//             ),
-//           ),
-//           const Divider(),
-//           Expanded(
-//             child: GridView.builder(
-//               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-//                 crossAxisCount: MediaQuery.of(context).size.width > 600
-//                     ? 3
-//                     : 2, // Responsive layout
-//                 childAspectRatio: 0.7,
-//                 crossAxisSpacing: 16,
-//                 mainAxisSpacing: 16,
-//               ),
-//               itemCount: _workshops[_selectedIndex].length,
-//               itemBuilder: (context, index) {
-//                 var workshop = _workshops[_selectedIndex][index];
-//                 return GestureDetector(
-//                   onTap: () {
-//                     // Navigate to WorkshopDetailsPage and pass the workshop details
-//                     Navigator.push(
-//                       context,
-//                       MaterialPageRoute(
-//                         builder: (context) => WorkshopDetailsPage(
-//                           workshop: workshop, // Pass the selected workshop here
-//                         ),
-//                       ),
-//                     );
-//                   },
-//                   child: Card(
-//                     elevation: 5,
-//                     shape: RoundedRectangleBorder(
-//                       borderRadius: BorderRadius.circular(12),
-//                     ),
-//                     child: Column(
-//                       children: [
-//                         Expanded(
-//                           child: Image.asset(
-//                             workshop['image'],
-//                             fit: BoxFit.cover,
-//                             width: double.infinity,
-//                             height: 120,
-//                           ),
-//                         ),
-//                         Padding(
-//                           padding: const EdgeInsets.all(8.0),
-//                           child: Text(
-//                             workshop['name'],
-//                             style: const TextStyle(fontWeight: FontWeight.bold),
-//                           ),
-//                         ),
-//                         Padding(
-//                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
-//                           child: Text(
-//                             workshop['description'],
-//                             style: const TextStyle(color: Colors.grey),
-//                             maxLines: 2,
-//                             overflow: TextOverflow.ellipsis,
-//                           ),
-//                         ),
-//                         Padding(
-//                           padding: const EdgeInsets.all(8.0),
-//                           child: Text(
-//                             workshop['location'],
-//                             style: const TextStyle(fontWeight: FontWeight.bold),
-//                           ),
-//                         ),
-//                       ],
-//                     ),
-//                   ),
-//                 );
-//               },
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }
+          // Sort and Filter buttons under the search bar, horizontally aligned
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                // Sort button with text next to icon
+                Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.sort),
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: const Text('Sort By'),
+                              content: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  ListTile(
+                                    title: const Text('Rating'),
+                                    leading: Radio<String>(
+                                      value: 'Rating',
+                                      groupValue: _selectedSort,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          _selectedSort = value!;
+                                        });
+                                        Navigator.pop(context);
+                                      },
+                                    ),
+                                  ),
+                                  ListTile(
+                                    title: const Text('Location'),
+                                    leading: Radio<String>(
+                                      value: 'Location',
+                                      groupValue: _selectedSort,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          _selectedSort = value!;
+                                        });
+                                        Navigator.pop(context);
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
+                    const Text(
+                      'Sort',
+                      style: TextStyle(color: Colors.black, fontSize: 12),
+                    ),
+                  ],
+                ),
+                // Filter button with text next to icon
+                Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.filter_list),
+                      onPressed: _applyFilters,
+                    ),
+                    const Text(
+                      'Filter',
+                      style: TextStyle(color: Colors.black, fontSize: 12),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+
+          Expanded(
+            child: filteredWorkshops.isEmpty
+                ? const Center(child: Text('No workshops available'))
+                : GridView.builder(
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      childAspectRatio: 0.75,
+                      crossAxisSpacing: 16,
+                      mainAxisSpacing: 16,
+                    ),
+                    itemCount: filteredWorkshops.length,
+                    itemBuilder: (context, index) {
+                      var workshop = filteredWorkshops[index];
+                      return Card(
+                        elevation: 5,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Column(
+                          children: [
+                            Expanded(
+                              child: Image.asset(
+                                workshop['image'],
+                                fit: BoxFit.cover,
+                                width: double.infinity,
+                                height: 120,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                workshop['name'],
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8.0),
+                              child: Text(
+                                'Rating: ${workshop['rating']}',
+                                style: const TextStyle(color: Colors.grey),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                workshop['details'],
+                                style: const TextStyle(fontSize: 12),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+          ),
+        ],
+      ),
+    );
+  }
+}
