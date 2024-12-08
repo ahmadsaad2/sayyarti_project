@@ -32,7 +32,7 @@
 //   }
 // }
 import 'package:flutter/material.dart';
-import 'package:sayyarti/constants.dart'; // Ensure this contains kPrimaryColor
+import 'package:sayyarti/constants.dart';
 import 'package:sayyarti/Screens/resetpassword/resetpassword.dart';
 
 class ForgotPassword extends StatelessWidget {
