@@ -21,7 +21,7 @@ class _WorkshopPageState extends State<WorkshopPage> {
   final List<Map<String, dynamic>> _allWorkshops = [
     {
       'name': 'Auto Care Center',
-      'image': 'assets/images/workshop1.jpg',
+      'image': 'assets/images/5.jpg',
       'rating': 4.5,
       'location': 'Nablus',
       'details': 'Expert in car repairs and maintenance.',
@@ -29,7 +29,7 @@ class _WorkshopPageState extends State<WorkshopPage> {
     },
     {
       'name': 'Quick Fix Garage',
-      'image': 'assets/images/workshop2.jpg',
+      'image': 'assets/images/5.jpg',
       'rating': 4.0,
       'location': 'Nablus',
       'details': 'Fast and affordable service for all cars.',
@@ -37,7 +37,7 @@ class _WorkshopPageState extends State<WorkshopPage> {
     },
     {
       'name': 'Super Tires Workshop',
-      'image': 'assets/images/workshop3.jpg',
+      'image': 'assets/images/5.jpg',
       'rating': 4.7,
       'location': 'Nablus',
       'details': 'Specializes in tire replacement and balancing.',
@@ -45,7 +45,7 @@ class _WorkshopPageState extends State<WorkshopPage> {
     },
     {
       'name': 'Engine Masters',
-      'image': 'assets/images/workshop4.jpg',
+      'image': 'assets/images/5.jpg',
       'rating': 4.8,
       'location': 'Nablus',
       'details': 'Top-rated for engine diagnostics and repairs.',
@@ -53,7 +53,7 @@ class _WorkshopPageState extends State<WorkshopPage> {
     },
     {
       'name': 'Elite Auto Experts',
-      'image': 'assets/images/workshop5.jpg',
+      'image': 'assets/images/5.jpg',
       'rating': 4.3,
       'location': 'Nablus',
       'details': 'Comprehensive vehicle services for all brands.',
