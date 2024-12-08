@@ -1,63 +1,195 @@
 import 'package:flutter/material.dart';
-import 'workshopdetails.dart';
 
-class WorkshopPage extends StatefulWidget {
-  final String workshopType; // Parameter to filter workshops by type
+// Individual Service Detail Page
+class RoadServiceDetailsPage extends StatelessWidget {
+  final Map<String, dynamic> roadService;
 
-  const WorkshopPage({Key? key, required this.workshopType}) : super(key: key);
+  const RoadServiceDetailsPage({Key? key, required this.roadService})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(roadService['serviceName']),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Service Name and Description
+            Text(
+              roadService['serviceName'],
+              style: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              roadService['description'],
+              style: const TextStyle(fontSize: 16),
+            ),
+            const SizedBox(height: 20),
+
+            // List of People Offering the Service
+            const Text(
+              'People Offering This Service',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 10),
+            ListView.builder(
+              shrinkWrap: true,
+              itemCount: roadService['people'].length,
+              itemBuilder: (context, index) {
+                var person = roadService['people'][index];
+                return ListTile(
+                  title: Text(person['name']),
+                  subtitle: Text(person['contact']),
+                  leading: CircleAvatar(
+                    backgroundImage: AssetImage(person['image']),
+                  ),
+                  onTap: () {
+                    // Navigate to person details page or call
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: Text(person['name']),
+                          content: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Contact: ${person['contact']}'),
+                              Text('Location: ${person['location']}'),
+                            ],
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: const Text('Close'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class RoadServicePage extends StatefulWidget {
+  final String roadServiceType; // Parameter to filter road services by type
+
+  const RoadServicePage({Key? key, required this.roadServiceType})
+      : super(key: key);
 
   @override
   // ignore: library_private_types_in_public_api
-  _WorkshopPageState createState() => _WorkshopPageState();
+  _RoadServicePageState createState() => _RoadServicePageState();
 }
 
-class _WorkshopPageState extends State<WorkshopPage> {
+class _RoadServicePageState extends State<RoadServicePage> {
   String _selectedSort = 'Rating';
   double _selectedRating = 0;
   String _selectedCity = 'All';
   String _searchQuery = '';
 
-  // Define workshops for different types
-  final List<Map<String, dynamic>> _allWorkshops = [
+  // Define road services for different types
+  final List<Map<String, dynamic>> _allRoadServices = [
     {
-      'name': 'Auto Care Center',
-      'image': 'assets/images/workshop1.jpg',
+      'serviceName': 'Jump Start',
+      'image': 'assets/images/jump_start.jpg',
       'rating': 4.5,
       'location': 'Nablus',
-      'details': 'Expert in car repairs and maintenance.',
-      'type': 'Mechanics',
+      'description': 'Quick and efficient jump-start service.',
+      'type': 'Jump Start', // Changed type to match service name
+      'people': [
+        {
+          'name': 'John Doe',
+          'contact': '123-456-789',
+          'location': 'Nablus',
+          'image': 'assets/images/person1.jpg',
+        },
+        {
+          'name': 'Jane Smith',
+          'contact': '987-654-321',
+          'location': 'Ramallah',
+          'image': 'assets/images/person2.jpg',
+        }
+      ],
     },
     {
-      'name': 'Quick Fix Garage',
-      'image': 'assets/images/workshop2.jpg',
-      'rating': 4.0,
-      'location': 'Nablus',
-      'details': 'Fast and affordable service for all cars.',
-      'type': 'Electrical',
+      'serviceName': 'Tire Problems',
+      'image': 'assets/images/tire_change.jpg',
+      'rating': 4.2,
+      'location': 'Ramallah',
+      'description': 'Reliable tire change and repair services.',
+      'type': 'Tire Problems',
+      'people': [
+        {
+          'name': 'Mark Johnson',
+          'contact': '321-654-987',
+          'location': 'Ramallah',
+          'image': 'assets/images/person3.jpg',
+        },
+        {
+          'name': 'Lucy Brown',
+          'contact': '654-321-987',
+          'location': 'Jenin',
+          'image': 'assets/images/person4.jpg',
+        }
+      ],
     },
     {
-      'name': 'Super Tires Workshop',
-      'image': 'assets/images/workshop3.jpg',
+      'serviceName': 'Towing Service',
+      'image': 'assets/images/towing_service.jpg',
       'rating': 4.7,
       'location': 'Nablus',
-      'details': 'Specializes in tire replacement and balancing.',
-      'type': 'Denting',
+      'description': 'Fast and affordable towing services for all vehicles.',
+      'type': 'Towing Service',
+      'people': [
+        {
+          'name': 'Steve Williams',
+          'contact': '555-123-456',
+          'location': 'Nablus',
+          'image': 'assets/images/person5.jpg',
+        },
+        {
+          'name': 'Ella Martin',
+          'contact': '555-987-654',
+          'location': 'Hebron',
+          'image': 'assets/images/person6.jpg',
+        }
+      ],
     },
     {
-      'name': 'Engine Masters',
-      'image': 'assets/images/workshop4.jpg',
-      'rating': 4.8,
-      'location': 'Nablus',
-      'details': 'Top-rated for engine diagnostics and repairs.',
-      'type': 'Mechanics',
-    },
-    {
-      'name': 'Elite Auto Experts',
-      'image': 'assets/images/workshop5.jpg',
+      'serviceName': 'Fuel Delivery',
+      'image': 'assets/images/fuel_delivery.jpg',
       'rating': 4.3,
-      'location': 'Nablus',
-      'details': 'Comprehensive vehicle services for all brands.',
-      'type': 'Electrical',
+      'location': 'Hebron',
+      'description': 'Emergency fuel delivery service for stranded vehicles.',
+      'type': 'Fuel Delivery',
+      'people': [
+        {
+          'name': 'Alice Walker',
+          'contact': '777-123-987',
+          'location': 'Hebron',
+          'image': 'assets/images/person7.jpg',
+        },
+        {
+          'name': 'David Scott',
+          'contact': '777-987-654',
+          'location': 'Jenin',
+          'image': 'assets/images/person8.jpg',
+        }
+      ],
     },
   ];
 
@@ -83,7 +215,6 @@ class _WorkshopPageState extends State<WorkshopPage> {
                   'Ramallah',
                   'Hebron',
                   'Jenin',
-                  'Toubas'
                 ].map<DropdownMenuItem<String>>((String value) {
                   return DropdownMenuItem<String>(
                     value: value,
@@ -129,20 +260,21 @@ class _WorkshopPageState extends State<WorkshopPage> {
 
   @override
   Widget build(BuildContext context) {
-    // Filter workshops based on selected criteria
-    var filteredWorkshops = _allWorkshops.where((workshop) {
-      bool matchesType = workshop['type'] == widget.workshopType;
+    // Filter road services based on selected criteria
+    var filteredRoadServices = _allRoadServices.where((service) {
+      bool matchesType = service['type'] == widget.roadServiceType;
       bool matchesCity =
-          workshop['location'] == _selectedCity || _selectedCity == 'All';
-      bool matchesRating = workshop['rating'] >= _selectedRating;
-      bool matchesSearch =
-          workshop['name'].toLowerCase().contains(_searchQuery.toLowerCase());
+          service['location'] == _selectedCity || _selectedCity == 'All';
+      bool matchesRating = service['rating'] >= _selectedRating;
+      bool matchesSearch = service['serviceName']
+          .toLowerCase()
+          .contains(_searchQuery.toLowerCase());
       return matchesType && matchesCity && matchesRating && matchesSearch;
     }).toList();
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('${widget.workshopType} Workshops'),
+        title: Text('${widget.roadServiceType} Services'),
       ),
       body: Column(
         children: [
@@ -151,7 +283,7 @@ class _WorkshopPageState extends State<WorkshopPage> {
             padding: const EdgeInsets.all(8.0),
             child: TextField(
               decoration: const InputDecoration(
-                labelText: 'Search Workshops',
+                labelText: 'Search Services',
                 prefixIcon: Icon(Icons.search),
                 border: OutlineInputBorder(),
               ),
@@ -170,7 +302,6 @@ class _WorkshopPageState extends State<WorkshopPage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                // Sort button with text next to icon
                 Row(
                   children: [
                     IconButton(
@@ -241,20 +372,20 @@ class _WorkshopPageState extends State<WorkshopPage> {
           ),
 
           Expanded(
-            child: filteredWorkshops.isEmpty
-                ? const Center(child: Text('No workshops available'))
+            child: filteredRoadServices.isEmpty
+                ? const Center(child: Text('No services available'))
                 : ListView.builder(
-                    itemCount: filteredWorkshops.length,
+                    itemCount: filteredRoadServices.length,
                     itemBuilder: (context, index) {
-                      var workshop = filteredWorkshops[index];
+                      var service = filteredRoadServices[index];
                       return GestureDetector(
                         onTap: () {
-                          // Navigate to the workshop details page
+                          // Navigate to the service details page
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => WorkshopDetailsPage(
-                                workshop: workshop,
+                              builder: (context) => RoadServiceDetailsPage(
+                                roadService: service,
                               ),
                             ),
                           );
@@ -267,18 +398,16 @@ class _WorkshopPageState extends State<WorkshopPage> {
                               borderRadius: BorderRadius.circular(12)),
                           child: Row(
                             children: [
-                              // Image on the left side
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(12),
                                 child: Image.asset(
-                                  workshop['image'],
+                                  service['image'],
                                   fit: BoxFit.cover,
                                   width: 120,
                                   height: 120,
                                 ),
                               ),
                               const SizedBox(width: 12),
-                              // Details on the right side
                               Expanded(
                                 child: Padding(
                                   padding: const EdgeInsets.all(12.0),
@@ -286,9 +415,8 @@ class _WorkshopPageState extends State<WorkshopPage> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      // Title with bold text
                                       Text(
-                                        workshop['name'],
+                                        service['serviceName'],
                                         style: const TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.bold,
@@ -297,7 +425,6 @@ class _WorkshopPageState extends State<WorkshopPage> {
                                         overflow: TextOverflow.ellipsis,
                                       ),
                                       const SizedBox(height: 6),
-                                      // Rating
                                       Row(
                                         children: [
                                           const Icon(
@@ -307,23 +434,21 @@ class _WorkshopPageState extends State<WorkshopPage> {
                                           ),
                                           const SizedBox(width: 4),
                                           Text(
-                                            '${workshop['rating']}',
+                                            '${service['rating']}',
                                             style: const TextStyle(
                                                 color: Colors.grey),
                                           ),
                                         ],
                                       ),
                                       const SizedBox(height: 6),
-                                      // Location
                                       Text(
-                                        'Location: ${workshop['location']}',
+                                        'Location: ${service['location']}',
                                         style:
                                             const TextStyle(color: Colors.grey),
                                       ),
                                       const SizedBox(height: 6),
-                                      // Short description
                                       Text(
-                                        workshop['details'],
+                                        service['description'],
                                         style: const TextStyle(
                                           fontSize: 12,
                                           color: Colors.black54,

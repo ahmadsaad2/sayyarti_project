@@ -14,6 +14,8 @@ import '../Welcome/welcome_screen.dart';
 import '../../Screens/service/productpage.dart';
 import '../home/workshop/workshop.dart';
 
+import '../service/roadservice.dart';
+
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
@@ -171,18 +173,39 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   _buildworkshopbox(
                       context, "Workshop", "assets/images/workshop.png"),
-                  _buildServiceBox(context, "Spare Parts",
-                      "assets/images/part.jpg", const FuelPage()),
-                  _buildServiceBox(context, "Fuel", "assets/images/fuel.png",
-                      const FuelPage()),
-                  _buildServiceBox(context, "Car Wash",
-                      "assets/images/wash.png", const CarWashPage()),
-                  _buildServiceBox(context, "Tyres", "assets/images/tryy.png",
-                      const TyresPage()),
-                  _buildServiceBox(context, "Minor Service",
-                      "assets/images/oil.png", const MinorServicePage()),
-                  _buildServiceBox(context, "trucks ",
-                      "assets/images/truck.png", const InspectionPage()),
+                  _buildSparePartsBox(context, 'Spare Parts',
+                      'assets/images/part.jpg' // Replace with the image path for spare parts
+                      ),
+                  _buildServiceBox(
+                    context,
+                    "Fuel",
+                    "assets/images/fuel.png",
+                    const WorkshopPage(workshopType: 'Fuel'),
+                  ),
+                  _buildServiceBox(
+                    context,
+                    "Car Wash",
+                    "assets/images/wash.png",
+                    const WorkshopPage(workshopType: 'Car Wash'),
+                  ),
+                  _buildServiceBox(
+                    context,
+                    "Tyres",
+                    "assets/images/tryy.png",
+                    const WorkshopPage(workshopType: 'Tyres'),
+                  ),
+                  _buildServiceBox(
+                    context,
+                    "Minor Service",
+                    "assets/images/oil.png",
+                    const WorkshopPage(workshopType: 'Minor Service'),
+                  ),
+                  _buildServiceBox(
+                    context,
+                    "trucks ",
+                    "assets/images/truck.png",
+                    const WorkshopPage(workshopType: 'Trucks'),
+                  ),
                   GestureDetector(
                     onTap: () => _showEmergencyServices(context),
                     child: _buildServiceBoxWithImage(
@@ -611,14 +634,26 @@ void _showEmergencyServices(BuildContext context) {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildEmergencyOption(context, "Jump Start",
-                    "assets/images/jmp.png", JumpStartPage()),
-                _buildEmergencyOption(context, "Tyre Change",
-                    "assets/images/rep.png", TyreChangePage()),
-                _buildEmergencyOption(context, "Towing Service",
-                    "assets/images/tawing.png", TyrePressurePage()),
-                _buildEmergencyOption(context, "Fuel Delivery",
-                    "assets/images/fuel.png", TyrePressurePage()),
+                _buildEmergencyOption(
+                    context,
+                    "Jump Start",
+                    "assets/images/jmp.png",
+                    const RoadServicePage(roadServiceType: 'Jump Start')),
+                _buildEmergencyOption(
+                    context,
+                    "Tire Problems",
+                    "assets/images/rep.png",
+                    const RoadServicePage(roadServiceType: 'Tire Problems')),
+                _buildEmergencyOption(
+                    context,
+                    "Towing Service",
+                    "assets/images/tawing.png",
+                    const RoadServicePage(roadServiceType: 'Towing Service')),
+                _buildEmergencyOption(
+                    context,
+                    "Fuel Delivery",
+                    "assets/images/fuel.png",
+                    const RoadServicePage(roadServiceType: 'Fuel Delivery')),
               ],
             ),
           ],
@@ -909,6 +944,8 @@ class OrdersPage extends StatelessWidget {
 //   }
 // }
 class JumpStartPage extends StatelessWidget {
+  const JumpStartPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -919,6 +956,8 @@ class JumpStartPage extends StatelessWidget {
 }
 
 class TyreChangePage extends StatelessWidget {
+  const TyreChangePage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -929,6 +968,8 @@ class TyreChangePage extends StatelessWidget {
 }
 
 class TyrePressurePage extends StatelessWidget {
+  const TyrePressurePage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -1040,7 +1081,7 @@ void _showServiceSelectionDialog(
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: Text('Select Service'),
+        title: const Text('Select Service'),
         content: SingleChildScrollView(
           child: Row(
             mainAxisAlignment:
@@ -1053,7 +1094,7 @@ void _showServiceSelectionDialog(
                     context,
                     MaterialPageRoute(
                       builder: (context) =>
-                          WorkshopPage(workshopType: 'Denting'),
+                          const WorkshopPage(workshopType: 'Denting'),
                     ),
                   );
                 },
@@ -1067,7 +1108,7 @@ void _showServiceSelectionDialog(
                     context,
                     MaterialPageRoute(
                       builder: (context) =>
-                          WorkshopPage(workshopType: 'Electrical'),
+                          const WorkshopPage(workshopType: 'Electrical'),
                     ),
                   );
                 },
@@ -1081,7 +1122,7 @@ void _showServiceSelectionDialog(
                     context,
                     MaterialPageRoute(
                       builder: (context) =>
-                          WorkshopPage(workshopType: 'Mechanics'),
+                          const WorkshopPage(workshopType: 'Mechanics'),
                     ),
                   );
                 },
@@ -1166,5 +1207,127 @@ Widget _buildServiceBox(
         ],
       ),
     ),
+  );
+}
+
+// Spare Parts Box Widget
+Widget _buildSparePartsBox(
+    BuildContext context, String title, String imagePath) {
+  return GestureDetector(
+    onTap: () {
+      _showSparePartSelectionDialog(
+          context, title); // Show spare part selection dialog
+    },
+    child: Container(
+      decoration: BoxDecoration(
+        color: Colors.white, // Background color
+        borderRadius: BorderRadius.circular(10.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.3),
+            spreadRadius: 2,
+            blurRadius: 5,
+            offset: const Offset(2, 2), // Shadow position
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.all(4.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // Header Box
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(5.0),
+            ),
+            child: Text(
+              title,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 12.0,
+                fontWeight: FontWeight.bold,
+                color: Color.fromARGB(255, 7, 5, 5),
+              ),
+            ),
+          ),
+          const SizedBox(height: 10.0),
+          // 3D Image
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8.0),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.5),
+                  spreadRadius: 2,
+                  blurRadius: 10,
+                  offset: const Offset(4, 4), // Adds 3D-like depth
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(8.0),
+              child: Image.asset(
+                imagePath,
+                height: 50.0,
+                width: 50.0,
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+// Dialog for selecting Spare Part type
+void _showSparePartSelectionDialog(
+    BuildContext context, String sparePartType) async {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('Select Spare Part Type'),
+        titleTextStyle: const TextStyle(
+            fontSize: 20.0, fontWeight: FontWeight.bold, color: Colors.black),
+        content: SingleChildScrollView(
+          child: Row(
+            mainAxisAlignment:
+                MainAxisAlignment.spaceBetween, // Distribute evenly
+            children: [
+              GestureDetector(
+                onTap: () {
+                  // Navigate to the WorkshopPage with the 'Engine Parts' type
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          const WorkshopPage(workshopType: 'New Spare Parts'),
+                    ),
+                  );
+                },
+                child: _buildServiceOption(
+                    'New Spare Parts', 'assets/images/5.jpg'),
+              ),
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          const WorkshopPage(workshopType: 'Used Spare Parts'),
+                    ),
+                  );
+                },
+                child: _buildServiceOption(
+                    'New Spare Parts', 'assets/images/6.jpg'),
+              ),
+            ],
+          ),
+        ),
+      );
+    },
   );
 }
