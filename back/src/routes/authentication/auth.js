@@ -1,5 +1,6 @@
 import { Router } from 'express';
-import db from '../../../models/index.js';
+import models from '../../../models/index.js';
+import PasswordReset from '../../../models/password-reset.js';
 import bcrypt from 'bcrypt';
 import { where } from 'sequelize';
 import jwt from 'jsonwebtoken';
@@ -7,10 +8,8 @@ import dotenv from 'dotenv';
 import {validateUser,validateResetPassword,validateEmail} from './validation/auth_validation.js';
 
 dotenv.config();
-
-
+const {users,passwordReset} = models;
 const router = Router();
-const { users, PasswordReset } = db;
 
 /**
  * @desc Register new user
@@ -27,7 +26,7 @@ router.post('/register', async (req, res) => {
             where: { email: req.body.email }
         });
         if (user) {
-            return res.status(400).json({ message: 'Email already exists' });
+            return res.status(400).json({ message: 'Email already exists, try signing in' });
         }
 
         //hash password
@@ -53,7 +52,8 @@ router.post('/register', async (req, res) => {
  * @method GET
  * @access public
  */
-router.get('/signin', async (req, res) => {
+router.post('/signin', async (req, res) => {
+    console.log('here :)');
     const { error } = validateUser(req.body);
     if (error) return res.status(400).json({ message: error.details[0].message });
     try {
@@ -125,7 +125,7 @@ router.post('/reset', async (req, res) => {
  * @desc reset password
  * @route /api/auth/resetpass
  * @method POST
- * @access private
+ * @access private (accessed only using OTP)
  */
 router.post('/resetpass', async (req, res) => {
     const { error } = validateResetPassword(req.body);
@@ -157,3 +157,5 @@ router.post('/resetpass', async (req, res) => {
         res.status(500).json({ message: 'server error' });
     }
 })
+
+export default router;

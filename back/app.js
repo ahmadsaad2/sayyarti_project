@@ -1,8 +1,9 @@
 import express from 'express';
-import {sequelize,dbConnect} from './database/connection.js';
+import dbConnect from './database/connection.js';
+import { sequelize } from './models/index.js';
 import dotenv from 'dotenv';
 import initModels from './models/init-models.js';
-import { Sequelize } from 'sequelize';
+import authentication from './src/routes/authentication/auth.js';
 
 
 dotenv.config();
@@ -14,7 +15,6 @@ dotenv.config();
 //connection to database and sync the tables
 dbConnect();
 
-const models = initModels(sequelize);  
 
 sequelize.sync({ alter: false }) // Use { force: true } if you want to recreate tables
     .then(() => {
@@ -30,9 +30,8 @@ sequelize.sync({ alter: false }) // Use { force: true } if you want to recreate 
 const app = express();
 
 app.use(express.json());
-
 // Routes
-// TODO when imported after done with the sequelizer
+app.use('/auth', authentication);
 
 
 const PORT = process.env.PORT || 5000;
