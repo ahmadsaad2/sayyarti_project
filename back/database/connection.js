@@ -1,10 +1,7 @@
-import {Sequelize} from 'sequelize';
+import { sequelize } from '../models/index.js';
 
-const sequelize = new Sequelize("sayyarati", 'root', '', {
-    host: '127.0.0.1',
-    dialect: "mysql",
-    logging: false, // enable when needed for debuging :p
-});
+
+
 
 const dbConnect =  async () => {
     try {
@@ -18,4 +15,4 @@ const dbConnect =  async () => {
 
 
 // export default dbConnect;
-export { sequelize, dbConnect };
+export default dbConnect ;

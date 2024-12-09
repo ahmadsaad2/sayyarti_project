@@ -1,27 +1,28 @@
 import Joi from 'joi';
 
-function validateUser(obj) {
+export function validateUser(obj) {
     const schema = Joi.object({
+        name: Joi.string().min(3).max(255),
         email: Joi.string().email().required(),
         password: Joi.string().min(8).required()
     });
 
     return schema.validate(obj);
 }
-function validateResetPassword(obj){
+export function validateResetPassword(obj) {
     const schema = Joi.object({
         email: Joi.string().email().required(),
         password: Joi.string().min(8).required(),
         otp: Joi.string().regex(/^\d{6}$/).required()
     });
 }
-function validateEmail(obj){
+export function validateEmail(obj) {
     const schema = Joi.object({
         email: Joi.string().email().required()
     });
 }
-module.exports ={
-    validateResetPassword,
-    validateUser,
-    validateEmail
-}
+// module.exports ={
+//     validateResetPassword,
+//     validateUser,
+//     validateEmail
+// }
