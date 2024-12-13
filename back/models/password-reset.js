@@ -1,7 +1,7 @@
 import Sequelize from 'sequelize';
 
 export default function (sequelize, DataTypes) {
-  return sequelize.define('PasswordReset', {
+  return sequelize.define('passwordReset', {
     id: {
       autoIncrement: true,
       type: DataTypes.INTEGER,
@@ -16,7 +16,7 @@ export default function (sequelize, DataTypes) {
       },
     },
     otp: {
-      type: DataTypes.STRING(6), // Assuming OTP is a 6-character string
+      type: DataTypes.STRING(6),
       allowNull: false,
     },
     createdAt: {

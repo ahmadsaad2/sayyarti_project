@@ -1,15 +1,51 @@
 import { Router } from 'express';
 import models from '../../../models/index.js';
-import PasswordReset from '../../../models/password-reset.js';
+
 import bcrypt from 'bcrypt';
 import { where } from 'sequelize';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
-import {validateUser,validateResetPassword,validateEmail} from './validation/auth_validation.js';
+import { validateUser, validateResetPassword, validateEmail } from './validation/auth_validation.js';
+import nodemailer from 'nodemailer';
 
 dotenv.config();
-const {users,passwordReset} = models;
+const { users, passwordreset } = models;
 const router = Router();
+
+//nodemailer set up 
+const transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASSWORD,
+    }
+});
+function body(code) {
+    return `
+  <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+    <div style="width: 100%; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px; background-color: #f9f9f9;">
+      <div style="text-align: center; margin-bottom: 20px;">
+        <h1 style="color: #007bff;">Password Reset Request</h1>
+      </div>
+      <p>Dear User,</p>
+      <p>We received a request to reset your password. Please use the following 6-digit code to reset your password:</p>
+      <div style="font-size: 24px; font-weight: bold; text-align: center; margin: 20px 0; padding: 10px; background-color: #007bff; color: #fff; border-radius: 5px;">
+        ${code}
+      </div>
+      <p>If you did not request this, you can safely ignore this email. The code will expire in 10 minutes.</p>
+      <p>Thank you,</p>
+      <p><strong>SAYYARTI Support Team</strong></p>
+      <div style="text-align: center; margin-top: 20px; font-size: 12px; color: #888;">
+        <p>If you have any questions, please contact our support team.</p>
+      </div>
+    </div>
+  </body>
+  `;
+}
+
+
 
 /**
  * @desc Register new user
@@ -49,7 +85,7 @@ router.post('/register', async (req, res) => {
 /**
  * @desc sign in
  * @route /api/auth/signin
- * @method GET
+ * @method POST
  * @access public
  */
 router.post('/signin', async (req, res) => {
@@ -99,19 +135,31 @@ router.post('/reset', async (req, res) => {
         if (!user) {
             return res.status(400).json({ message: 'email is not registered' });
         }
-        const reset= await passwordReset.findOne({ where:{email: req.body.email}});
-        if (reset){
+        const reset = await passwordreset.findOne({ where: { email: req.body.email } });
+        if (reset) {
             await reset.destroy();
         }
         const otp = Math.floor((99972 + 28) + Math.random() * 900000).toString();//generate a random 6 digit number as an otp 
-        const newOTP = await PasswordReset.create({
+        await passwordreset.create({
             email: req.body.email,
             otp: otp
         });
-        //use node mailer to send the otp to the user
+        const mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: req.body.email,
+            subject: 'Password Reset Sayyarti',
+            html: body(otp),
+        };
+
+        // transporter.sendMail(mailOptions, (err, info) => {
+        //     if (err) {
+        //         return res.status(500).json({message:'Something went wrong, please try again later'});
+        //     }
+
+        // });
+        await transporter.sendMail(mailOptions);
         return res.status(200).json({
             message: 'Reset password email has been sent ',
-            token: token
         });
 
     } catch (error) {
@@ -131,9 +179,9 @@ router.post('/resetpass', async (req, res) => {
     const { error } = validateResetPassword(req.body);
     if (error) return res.status(400).json({ message: error.details[0].message });
     try {
-        const reset = await passwordReset.findOne({ where: { email: req.body.email } });
+        const reset = await passwordreset.findOne({ where: { email: req.body.email } });
         if (!reset) {
-            return res.status(400).json({ message: 'No otp found please try again' });
+            return res.status(400).json({ message: 'No recovery claim found please try again' });
         }
         const expirationTime = 10 * 60 * 1000;//10 minutes in milliseconds
         const currentTime = new Date();
@@ -141,16 +189,18 @@ router.post('/resetpass', async (req, res) => {
         if (timeDifference > expirationTime) {
             return res.status(400).json({ message: 'otp has expired' });
         }
+        if (reset.otp != req.body.otp) {
+            return res.status(400).json({ message: 'Invalid otp' });
+        }
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(req.body.password, salt);
         const [update] = await users.update({ password: hashedPassword }, { where: { email: req.body.email } });
         if (!update) {
             await reset.destroy();
             return res.status(404).json({ message: 'User not found please register' });
-        }else{
-            await reset.destroy();
-            return res.status(200).json({ message:'password updated successfully'});
         }
+        await reset.destroy();
+        return res.status(200).json({ message: 'password updated successfully' });
 
     } catch (error) {
         console.log(error);

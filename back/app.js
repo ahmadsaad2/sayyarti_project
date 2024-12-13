@@ -3,20 +3,20 @@ import dbConnect from './database/connection.js';
 import { sequelize } from './models/index.js';
 import dotenv from 'dotenv';
 import initModels from './models/init-models.js';
-import authentication from './src/routes/authentication/auth.js';
 
 
 dotenv.config();
 
 
 //import routes
-//TODO
+import authentication from './src/routes/authentication/auth.js';
+
 
 //connection to database and sync the tables
 dbConnect();
 
 
-sequelize.sync({ alter: false }) // Use { force: true } if you want to recreate tables
+sequelize.sync({ alter: true }) // Use { force: true } if you want to recreate tables
     .then(() => {
         console.log('All tables have been synchronized successfully.');
     })

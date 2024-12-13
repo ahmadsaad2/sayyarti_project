@@ -15,11 +15,13 @@ export function validateResetPassword(obj) {
         password: Joi.string().min(8).required(),
         otp: Joi.string().regex(/^\d{6}$/).required()
     });
+    return schema.validate(obj);
 }
 export function validateEmail(obj) {
     const schema = Joi.object({
         email: Joi.string().email().required()
     });
+    return schema.validate(obj);
 }
 // module.exports ={
 //     validateResetPassword,
