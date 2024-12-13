@@ -188,6 +188,7 @@ class _EnterNewPassState extends State<EnterNewPass> {
                     if (value.length < 8) {
                       return 'Password must be at least 8 characters';
                     }
+                    _password = value;
                     return null;
                   },
                   onSaved: (newValue) {

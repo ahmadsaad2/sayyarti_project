@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sayyarti/Screens/resetpassword/enter_new_pass.dart';
 import '../../constants.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -39,7 +40,11 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
         _loading = false;
       });
       if (res.statusCode == 200) {
-        // TODO: navigate to the reset password screen
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (ctx) => EnterNewPass(email: _enteredEmail),
+          ),
+        );
       }
 
       if (res.statusCode >= 400) {
@@ -66,8 +71,6 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
           },
         );
       }
-
-      
     }
   }
 
