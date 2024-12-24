@@ -53,12 +53,67 @@ class _AddCompanyScreenState extends State<AddCompanyScreen> {
         }),
       );
       if (res.statusCode == 201) {
+        await showDialog(
+          context: context,
+          builder: (context) {
+            return Dialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              elevation: 10,
+              backgroundColor: Colors.white,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Icon(
+                      Icons.check_circle,
+                      color: Colors.greenAccent.shade400,
+                      size: 50,
+                    ),
+                    const SizedBox(height: 15),
+                    const Text(
+                      'Company added successfully',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          color: kPrimaryColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 22),
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: kPrimaryColor,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 10,
+                        ),
+                      ),
+                      child: const Text(
+                        'OK',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('company added successfuly'),
-            ),
-          );
           Navigator.of(context).pop();
         }
       }

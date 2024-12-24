@@ -10,11 +10,19 @@ class AdminHome extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: const Color.fromARGB(255, 49, 87, 194),
-          title: const Text('Admin Dashboard'),
+          title: const Text(
+            'Admin Dashboard',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          ),
           centerTitle: true,
         ),
         drawer: const AdminDrawer(),
-        body: const Center(child:  Text('statistic data and other features related to the admin')),
+        body: const Center(
+            child:
+                Text('statistic data and other features related to the admin')),
       ),
     );
   }
