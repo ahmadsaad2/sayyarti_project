@@ -9,7 +9,8 @@ export default function(sequelize, DataTypes) {
     },
     name: {
       type: DataTypes.STRING(255),
-      allowNull: false
+      allowNull: false,
+      unique: true,
     },
     address: {
       type: DataTypes.TEXT,
