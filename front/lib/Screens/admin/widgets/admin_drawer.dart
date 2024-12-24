@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sayyarti/Screens/admin/screens/add_company.dart';
+import 'package:sayyarti/Screens/admin/screens/create_company_admin.dart';
 
 class AdminDrawer extends StatelessWidget{
   const AdminDrawer({super.key});
@@ -66,7 +67,32 @@ class AdminDrawer extends StatelessWidget{
                   ],
                 ),
                 onTap: () {
+                  Navigator.of(context).pop();
                   Navigator.of(context).push(MaterialPageRoute(builder: (ctx) =>const AddCompanyScreen()));
+                },
+              ),
+              ListTile(
+                title: const Row(
+                  children: [
+                    Icon(
+                      Icons.verified_user,
+                      color: Colors.black,
+                    ),
+                    SizedBox(
+                      width: 16,
+                    ),
+                    Text(
+                      'Create company admin',
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20),
+                    ),
+                  ],
+                ),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).push(MaterialPageRoute(builder: (ctx) =>const CreateCompanyAdminScreen()));
                 },
               )
             ],
