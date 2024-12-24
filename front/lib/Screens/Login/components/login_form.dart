@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sayyarti/Screens/admin/screens/admin_home.dart';
 import '../../home/home.dart';
 import '../../../components/already_have_an_account_acheck.dart';
 import '../../../components/forgot_passwod.dart'; // Import the ForgotPassword widget
@@ -6,6 +7,7 @@ import '../../../constants.dart';
 import '../../Signup/signup_screen.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({
@@ -42,10 +44,21 @@ class _LoginFormState extends State<LoginForm> {
         _isLogging = false;
       });
       if (res.statusCode == 200) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const HomePage()),
-        );
+        final data = jsonDecode(res.body);
+        final prefs = await SharedPreferences.getInstance();
+        prefs.setString('token', data['token']);
+        prefs.setString('role', data['role']);
+        if (data['role'] == 'user') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const HomePage()),
+          );
+        } else if (data['role'] == 'admin') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const AdminHome()),
+          );
+        }
       }
       if (res.statusCode >= 400) {
         if (!context.mounted) {
@@ -148,12 +161,7 @@ class _LoginFormState extends State<LoginForm> {
                   ),
           ),
           const SizedBox(height: 10),
-          const ForgotPassword(
-              // press: () {
-              //   // Add the action you want to perform when "Forgot Password?" is tapped
-              //   // For example, navigate to a password reset screen
-              // },
-              ),
+          const ForgotPassword(),
           const SizedBox(height: defaultPadding),
           AlreadyHaveAnAccountCheck(
             press: () {

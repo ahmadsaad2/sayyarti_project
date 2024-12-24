@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 
-function verifyToken(req, res, next) {
+export function verifyToken(req, res, next) {
     const token = req.headers.token;
     if (token) {
         try {
@@ -16,7 +16,7 @@ function verifyToken(req, res, next) {
 }
 
 //verify token & authorize the user
-function verifyTokenAndAuthorization(req, res, next) {
+export function verifyTokenAndAuthorization(req, res, next) {
     verifyToken(req, res, () => {
         if (req.user.id === req.params.id || req.user.role == 'admin') {
             next();
@@ -27,7 +27,7 @@ function verifyTokenAndAuthorization(req, res, next) {
 }
 
 //verify token & admin
-function verifyTokenAndAdmin(req, res, next) {
+export function verifyTokenAndAdmin(req, res, next) {
     verifyToken(req, res, () => {
         if (req.user.role === 'admin') {
             next();
@@ -37,8 +37,8 @@ function verifyTokenAndAdmin(req, res, next) {
     });
 }
 
-module.exports = {
-    verifyToken,
-    verifyTokenAndAuthorization,
-    verifyTokenAndAdmin,
-}
+// module.exports = {
+//     verifyToken,
+//     verifyTokenAndAuthorization,
+//     verifyTokenAndAdmin,
+// }

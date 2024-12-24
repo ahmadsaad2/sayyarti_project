@@ -1,0 +1,78 @@
+import 'package:flutter/material.dart';
+import 'package:sayyarti/Screens/admin/screens/add_company.dart';
+
+class AdminDrawer extends StatelessWidget{
+  const AdminDrawer({super.key});
+  
+  @override
+  Widget build(BuildContext context) {
+    return Drawer(
+        child: SafeArea(
+          child: Column(
+            children: [
+              SizedBox(
+                height: 100,
+                width: double.infinity,
+                child: DrawerHeader(
+                  padding: const EdgeInsets.all(18),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        const Color.fromARGB(255, 49, 87, 194),
+                        const Color.fromARGB(255, 49, 87, 194).withOpacity(0.8),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
+                  child: const Row(
+                    children: [
+                      Icon(
+                        Icons.assignment_ind_outlined,
+                        size: 45,
+                        color: Colors.black,
+                      ),
+                      SizedBox(
+                        width: 16,
+                      ),
+                      Text(
+                        'Admin actions',
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              ListTile(
+                title: const Row(
+                  children: [
+                    Icon(
+                      Icons.domain_add,
+                      color: Colors.black,
+                    ),
+                    SizedBox(
+                      width: 16,
+                    ),
+                    Text(
+                      'Add new company',
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20),
+                    ),
+                  ],
+                ),
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(builder: (ctx) =>const AddCompanyScreen()));
+                },
+              )
+            ],
+          ),
+        ),
+      );
+  }
+
+}

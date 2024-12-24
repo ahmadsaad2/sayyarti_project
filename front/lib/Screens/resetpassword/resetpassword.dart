@@ -156,7 +156,11 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                   ),
                 ),
                 child: _loading
-                    ? const CircularProgressIndicator()
+                    ? const SizedBox(
+                        height: 16,
+                        width: 16,
+                        child: CircularProgressIndicator(),
+                      )
                     : const Text(
                         "Reset Password",
                       ),
