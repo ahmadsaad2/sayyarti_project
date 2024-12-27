@@ -1,181 +1,316 @@
 import 'package:flutter/material.dart';
+import 'porfile.dart';
+import 'employee.dart';
+import 'servicegrage.dart';
+import '../booking/bookingpage.dart';
+import 'offers.dart';
+import 'review.dart';
+import 'faqpage.dart';
+import '../class/offermanager.dart';
 
 class ServiceCenterHomePage extends StatelessWidget {
-  // Dummy data
   final String garageName = 'Auto Care Center';
   final String location = 'Nablus';
   final String contact = '123-456-7890';
   final String details = 'Expert in car repairs and maintenance.';
   final String imagePath = 'assets/images/5.jpg'; // Placeholder image path
-  final int employeeCount = 20;
   final double totalRevenue = 15000.0;
   final double cashFlow = 5000.0;
 
-  const ServiceCenterHomePage({super.key});
+  final List<Map<String, String>> bookings = [
+    {
+      "Customer": "John Doe",
+      "Mobile": "1234567890",
+      "Service": "Car Wash",
+      "Time": "10:00 AM",
+      "Payment": "Paid",
+      "Status": "Confirmed"
+    },
+    {
+      "Customer": "Jane Smith",
+      "Mobile": "0987654321",
+      "Service": "Polishing",
+      "Time": "12:00 PM",
+      "Payment": "Pending",
+      "Status": "Pending"
+    }
+  ];
+
+  ServiceCenterHomePage({
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Garage Dashboard'),
-        titleTextStyle: const TextStyle(color: Colors.white),
         backgroundColor: const Color.fromARGB(255, 11, 42, 146),
       ),
-      drawer: const CustomDrawer(), // The sidebar (drawer) that slides in
+      drawer: const CustomDrawer(),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Garage Info Box (Editable)
-            GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => ProfilePage()),
-                );
-              },
-              child: const Card(
-                elevation: 5,
-                child: ListTile(
-                  leading: CircleAvatar(
-                    backgroundImage:
-                        AssetImage('assets/images/sdd.jpg'), // Garage Image
-                    radius: 30,
-                  ),
-                  title: Text('Auto Care Center'),
-                  subtitle: Text('Tap to Edit Profile'),
-                  trailing: Icon(Icons.edit),
-                ),
-              ),
-            ),
+            _buildProfileSection(context),
             const SizedBox(height: 20),
-
-            // Employee Stats Box (Editable)
-            GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const EmployeePage()),
-                );
-              },
-              child: Card(
-                elevation: 5,
-                child: ListTile(
-                  leading: const CircleAvatar(
-                    backgroundImage:
-                        AssetImage('assets/images/5.jpg'), // Employee Image
-                    radius: 30,
-                  ),
-                  title: Text('Employees: $employeeCount'),
-                  subtitle: const Text('Tap to Manage Employees'),
-                ),
-              ),
-            ),
+            _buildEmployeeSection(context),
             const SizedBox(height: 20),
-
-            // Revenue Stats (Bar Graph)
-            Card(
-              elevation: 5,
-              margin: const EdgeInsets.symmetric(vertical: 10),
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text('Revenue & Cash Flow',
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        const Icon(Icons.attach_money,
-                            color: Color.fromARGB(255, 22, 72, 165)),
-                        const SizedBox(width: 10),
-                        Text(
-                            'Total Revenue: \$${totalRevenue.toStringAsFixed(2)}',
-                            style: const TextStyle(fontSize: 16)),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    LinearProgressIndicator(
-                      value: totalRevenue / 100000,
-                      color: const Color.fromARGB(255, 21, 73, 170),
-                      backgroundColor: Colors.grey.shade200,
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        const Icon(Icons.arrow_upward, color: Colors.blue),
-                        const SizedBox(width: 10),
-                        Text('Cash Flow: \$${cashFlow.toStringAsFixed(2)}',
-                            style: const TextStyle(fontSize: 16)),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            _buildBookingsSection(context),
             const SizedBox(height: 20),
-
-            // Services Offered (Editable)
-            const Text('Services Offered',
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 10),
-            Card(
-              elevation: 5,
-              margin: const EdgeInsets.symmetric(vertical: 10),
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text('Car Fixing',
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 10),
-                    const Text(
-                        'The main service we offer is repairing and fixing all car types, from basic fixes to complex engine work.'),
-                    const SizedBox(height: 10),
-                    ElevatedButton(
-                      onPressed: () {
-                        // Navigate to Edit Services Page
-                      },
-                      child: const Text('Edit Service'),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            _buildServicesSection(context),
             const SizedBox(height: 20),
-
-            // Service Packages (Editable)
-            const Text('Service Packages',
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 10),
-            ServicePackageCard(
-              title: 'Basic',
-              description: 'Complete Car Exterior Cleaning',
-              price: 35,
-              onEdit: () {
-                // Navigate to edit package
-              },
-            ),
-            ServicePackageCard(
-              title: 'Advanced',
-              description: 'Complete Car Exterior Cleaning & Interior',
-              price: 105,
-              onEdit: () {
-                // Navigate to edit package
-              },
-            ),
+            // _buildServicePackagesSection(),
+            _buildOffersSection(context), //
           ],
         ),
       ),
     );
   }
+
+  Widget _buildProfileSection(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const ProfilePage()),
+        );
+      },
+      child: const Card(
+        elevation: 5,
+        child: ListTile(
+          leading: CircleAvatar(
+            backgroundImage: AssetImage('assets/images/sdd.jpg'),
+            radius: 30,
+          ),
+          title: Text('Auto Care Center'),
+          subtitle: Text('Tap to Edit Profile'),
+          trailing: Icon(Icons.edit),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmployeeSection(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const EmployeePage()),
+        );
+      },
+      child: const Card(
+        elevation: 5,
+        child: ListTile(
+          leading: CircleAvatar(
+            backgroundImage: AssetImage('assets/images/5.jpg'),
+            radius: 30,
+          ),
+          title: Text('Employees'),
+          subtitle: Text('Tap to Manage Employees'),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildOffersSection(BuildContext context) {
+    final offers = OffersManager.instance.offers; // Fetch offers from manager
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          "Available Offers",
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 20),
+        offers.isEmpty
+            ? Card(
+                color: Colors.orange[100],
+                elevation: 5,
+                child: const Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Text(
+                    'No Offers Available',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              )
+            : SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: DataTable(
+                  columns: const [
+                    DataColumn(label: Text('#')),
+                    DataColumn(label: Text('Code')),
+                    DataColumn(label: Text('Type')),
+                    DataColumn(label: Text('Amount')),
+                    DataColumn(label: Text('Minimum Spend')),
+                    DataColumn(label: Text('Start Date')),
+                    DataColumn(label: Text('End Date')),
+                  ],
+                  rows: offers
+                      .asMap()
+                      .entries
+                      .map(
+                        (entry) => DataRow(
+                          cells: [
+                            DataCell(Text((entry.key + 1).toString())),
+                            DataCell(Text(entry.value['Code'] ?? '')),
+                            DataCell(Text(entry.value['Type'] ?? '')),
+                            DataCell(Text(entry.value['Amount'] ?? '')),
+                            DataCell(Text(entry.value['Minimum'] ?? '')),
+                            DataCell(Text(entry.value['Start'] ?? '')),
+                            DataCell(Text(entry.value['End'] ?? '')),
+                          ],
+                        ),
+                      )
+                      .toList(),
+                ),
+              ),
+      ],
+    );
+  }
+
+  Widget _buildBookingsSection(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          "Today's Bookings",
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 20),
+        bookings.isEmpty
+            ? Card(
+                color: Colors.orange[100],
+                elevation: 5,
+                child: const Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Text(
+                    'No Bookings Today',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              )
+            : SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: DataTable(
+                  columns: const [
+                    DataColumn(label: Text('#')),
+                    DataColumn(label: Text('Customer')),
+                    DataColumn(label: Text('Mobile')),
+                    DataColumn(label: Text('Service')),
+                    DataColumn(label: Text('Time')),
+                    DataColumn(label: Text('Payment')),
+                    DataColumn(label: Text('Status')),
+                    DataColumn(label: Text('Actions')),
+                  ],
+                  rows: bookings
+                      .asMap()
+                      .entries
+                      .map(
+                        (entry) => DataRow(
+                          cells: [
+                            DataCell(Text((entry.key + 1).toString())),
+                            DataCell(Text(entry.value['Customer'] ?? '')),
+                            DataCell(Text(entry.value['Mobile'] ?? '')),
+                            DataCell(Text(entry.value['Service'] ?? '')),
+                            DataCell(Text(entry.value['Time'] ?? '')),
+                            DataCell(Text(entry.value['Payment'] ?? '')),
+                            DataCell(Text(entry.value['Status'] ?? '')),
+                            DataCell(
+                              IconButton(
+                                icon: const Icon(Icons.edit),
+                                onPressed: () {
+                                  // Handle edit action
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                      .toList(),
+                ),
+              ),
+      ],
+    );
+  }
+
+  Widget _buildServicesSection(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Services Offered',
+          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 10),
+        Card(
+          elevation: 5,
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Car Fixing',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 10),
+                const Text(
+                  'The main service we offer is repairing and fixing all car types, from basic fixes to complex engine work.',
+                ),
+                const SizedBox(height: 10),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const ServicesPage()),
+                    );
+                  },
+                  child: const Text('Edit Service'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildServicePackagesSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Service Packages',
+          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 10),
+        ServicePackageCard(
+          title: 'Basic',
+          description: 'Complete Car Exterior Cleaning',
+          price: 35,
+          onEdit: () {
+            // Navigate to edit package
+          },
+        ),
+        ServicePackageCard(
+          title: 'Advanced',
+          description: 'Complete Car Exterior Cleaning & Interior',
+          price: 105,
+          onEdit: () {
+            // Navigate to edit package
+          },
+        ),
+      ],
+    );
+  }
 }
 
+// Other widgets like `CustomDrawer`, `ServicePackageCard`, etc., remain the same.
 // Left Sidebar (Drawer) widget
 class CustomDrawer extends StatelessWidget {
   const CustomDrawer({super.key});
@@ -210,13 +345,13 @@ class CustomDrawer extends StatelessWidget {
               ],
             ),
           ),
+
           // Sidebar Items
           DrawerListTile(
             title: 'Dashboard',
             icon: Icons.dashboard,
             onTap: () {
-              // Close drawer and navigate to Dashboard
-              Navigator.pop(context);
+              Navigator.pop(context); // Close drawer
             },
           ),
           DrawerListTile(
@@ -225,7 +360,7 @@ class CustomDrawer extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => ProfilePage()),
+                MaterialPageRoute(builder: (context) => const ProfilePage()),
               );
             },
           ),
@@ -239,25 +374,63 @@ class CustomDrawer extends StatelessWidget {
               );
             },
           ),
+
+          // New: Bookings Page
+          DrawerListTile(
+            title: 'Bookings',
+            icon: Icons.book_online,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const BookingsPage()),
+              );
+            },
+          ),
+
+          // New: Services Page
           DrawerListTile(
             title: 'Services',
             icon: Icons.build,
             onTap: () {
-              // Navigate to Services Page
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ServicesPage()),
+              );
             },
           ),
+
+          // New: Offers Page
           DrawerListTile(
-            title: 'Packages',
-            icon: Icons.card_giftcard,
+            title: 'Offers',
+            icon: Icons.local_offer,
             onTap: () {
-              // Navigate to Packages Page
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const OffersPage()),
+              );
             },
           ),
+
+          // New: Reviews Page
           DrawerListTile(
-            title: 'Revenue',
-            icon: Icons.attach_money,
+            title: 'Reviews',
+            icon: Icons.star,
             onTap: () {
-              // Navigate to Revenue Page
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ReviewsPage()),
+              );
+            },
+          ),
+
+          DrawerListTile(
+            title: 'FaQ',
+            icon: Icons.question_answer,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const FAQsPage()),
+              );
             },
           ),
         ],
@@ -266,17 +439,18 @@ class CustomDrawer extends StatelessWidget {
   }
 }
 
-// Left Sidebar List Tile
+// Sidebar List Tile Component
 class DrawerListTile extends StatelessWidget {
   final String title;
   final IconData icon;
   final Function onTap;
 
-  const DrawerListTile(
-      {super.key,
-      required this.title,
-      required this.icon,
-      required this.onTap});
+  const DrawerListTile({
+    super.key,
+    required this.title,
+    required this.icon,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -288,19 +462,19 @@ class DrawerListTile extends StatelessWidget {
   }
 }
 
-// Service Package Card (Editable)
 class ServicePackageCard extends StatelessWidget {
   final String title;
   final String description;
   final double price;
-  final Function onEdit;
+  final VoidCallback onEdit;
 
-  const ServicePackageCard(
-      {super.key,
-      required this.title,
-      required this.description,
-      required this.price,
-      required this.onEdit});
+  const ServicePackageCard({
+    super.key,
+    required this.title,
+    required this.description,
+    required this.price,
+    required this.onEdit,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -312,111 +486,24 @@ class ServicePackageCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title,
-                style:
-                    const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             const SizedBox(height: 10),
             Text(description),
             const SizedBox(height: 10),
-            Text('Price: \$${price.toStringAsFixed(2)}',
-                style: const TextStyle(color: Colors.green)),
+            Text(
+              'Price: \$${price.toStringAsFixed(2)}',
+              style: const TextStyle(color: Colors.green),
+            ),
             const SizedBox(height: 10),
             ElevatedButton(
-              onPressed: () => onEdit(),
+              onPressed: onEdit,
               child: const Text('Edit Package'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// Profile Page (Edit Profile)
-class ProfilePage extends StatelessWidget {
-  final TextEditingController _garageNameController =
-      TextEditingController(text: 'Auto Care Center');
-  final TextEditingController _locationController =
-      TextEditingController(text: 'Nablus');
-  final TextEditingController _contactController =
-      TextEditingController(text: '123-456-7890');
-  final TextEditingController _detailsController =
-      TextEditingController(text: 'Expert in car repairs and maintenance.');
-
-  ProfilePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Edit Profile')),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            const CircleAvatar(
-              backgroundImage:
-                  AssetImage('assets/images/sdd.jpg'), // Profile Image
-              radius: 60,
-            ),
-            const SizedBox(height: 20),
-            TextFormField(
-              controller: _garageNameController,
-              decoration: const InputDecoration(labelText: 'Garage Name'),
-            ),
-            const SizedBox(height: 10),
-            TextFormField(
-              controller: _locationController,
-              decoration: const InputDecoration(labelText: 'Location'),
-            ),
-            const SizedBox(height: 10),
-            TextFormField(
-              controller: _contactController,
-              decoration: const InputDecoration(labelText: 'Contact Info'),
-            ),
-            const SizedBox(height: 10),
-            TextFormField(
-              controller: _detailsController,
-              decoration: const InputDecoration(labelText: 'Details'),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                // Save Profile Changes
-              },
-              child: const Text('Save Changes'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// Employee Page (Manage Employees)
-class EmployeePage extends StatelessWidget {
-  const EmployeePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Manage Employees')),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            TextFormField(
-              decoration: const InputDecoration(labelText: 'Employee Name'),
-            ),
-            const SizedBox(height: 10),
-            TextFormField(
-              decoration: const InputDecoration(labelText: 'Employee Role'),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                // Save Employee Changes
-              },
-              child: const Text('Save Changes'),
             ),
           ],
         ),

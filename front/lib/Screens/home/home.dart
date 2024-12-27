@@ -15,6 +15,8 @@ import '../../Screens/service/productpage.dart';
 import '../home/workshop/workshop.dart';
 import '../service/roadservice.dart';
 import '../owner/owner.dart';
+import '../employee/employeepage.dart';
+import '../class/employeclass.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -35,13 +37,15 @@ class _HomePageState extends State<HomePage> {
     if (index == 1) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const ServiceCenterHomePage()),
+        MaterialPageRoute(builder: (context) => ServiceCenterHomePage()),
       );
     } else if (index == 2) {
-      // Navigator.push(
-      //   context,
-      //   MaterialPageRoute(builder: (context) => ProductPage()),
-      // );
+      final Employee selectedEmployee = employees[0]; // Change index if needed
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => EmployeePage(employee: selectedEmployee)),
+      );
     } else if (index == 3) {
       Navigator.push(
         context,
