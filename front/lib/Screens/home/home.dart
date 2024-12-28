@@ -14,7 +14,7 @@ import '../Welcome/welcome_screen.dart';
 import '../../Screens/service/productpage.dart';
 import '../home/workshop/workshop.dart';
 import '../service/roadservice.dart';
-import 'basketpage.dart';
+import 'orderpage.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -53,7 +53,7 @@ class _HomePageState extends State<HomePage> {
       Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => BasketPage()), // for page basket
+            builder: (context) => OrdersPage()), // for order basket
       );
     } else if (index == 3) {
       Navigator.push(
@@ -929,18 +929,6 @@ class _MorePageState extends State<MorePage> {
           ],
         ),
       ),
-    );
-  }
-}
-
-class OrdersPage extends StatelessWidget {
-  const OrdersPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Orders')),
-      body: const Center(child: Text("This is the Orders Page")),
     );
   }
 }
