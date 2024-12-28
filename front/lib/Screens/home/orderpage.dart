@@ -25,6 +25,50 @@ class _OrdersPageState extends State<OrdersPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
+  // Default tracking steps
+  final List<TrackingStep> defaultTrackingSteps = [
+    TrackingStep(
+      step: 'Waiting for approval of the request',
+      description: 'Your request is waiting for approval.',
+      isCompleted: false,
+    ),
+    TrackingStep(
+      step: 'Waiting for receipt',
+      description: 'We are waiting to receive your car.',
+      isCompleted: false,
+    ),
+    TrackingStep(
+      step: 'The car has been delivered',
+      description: 'Your car has been delivered to the garage.',
+      isCompleted: false,
+    ),
+    TrackingStep(
+      step: 'Try the inspection and diagnosis',
+      description: 'Inspection and diagnosis are in progress.',
+      isCompleted: false,
+    ),
+    TrackingStep(
+      step: 'Work in progress',
+      description: 'Repair work is currently in progress.',
+      isCompleted: false,
+    ),
+    TrackingStep(
+      step: 'Testing the quality of the repair',
+      description: 'We are testing the quality of the repair.',
+      isCompleted: false,
+    ),
+    TrackingStep(
+      step: 'Your car is ready for receipt',
+      description: 'Your car is ready for you to pick up.',
+      isCompleted: false,
+    ),
+    TrackingStep(
+      step: 'The task is complete',
+      description: 'The repair task is complete.',
+      isCompleted: false,
+    ),
+  ];
+
   final List<Map<String, dynamic>> allOrders = [
     {
       'title': 'Order #1',
@@ -42,20 +86,17 @@ class _OrdersPageState extends State<OrdersPage>
       'trackingSteps': [
         {
           'step': 'Waiting for approval of the request',
-          'description': 'Your request is waiting for approval.',
           'isCompleted': true,
         },
         {
           'step': 'Waiting for receipt',
-          'description': 'We are waiting to receive your car.',
-          'isCompleted': false,
+          'isCompleted': true,
         },
         {
-          'step': 'Waiting for receipt',
-          'description': 'We are waiting to receive your car.',
-          'isCompleted': false,
+          'step': 'The car has been delivered',
+          'isCompleted': true,
         },
-      ]
+      ],
     },
     {
       'title': 'Order #2',
@@ -73,26 +114,21 @@ class _OrdersPageState extends State<OrdersPage>
       'trackingSteps': [
         {
           'step': 'Order received',
-          'description': 'Your order has been received.',
           'isCompleted': true,
         },
         {
           'step': 'Processing the order',
-          'description': 'Your order is being processed.',
           'isCompleted': true,
         },
         {
           'step': 'Order completed',
-          'description': 'The task is complete.',
           'isCompleted': true,
         },
-      ]
+      ],
     },
   ];
 
   String selectedTab = "All";
-  String selectedType = "All";
-  String selectedStatus = "All";
   List<Map<String, dynamic>> filteredOrders = [];
 
   @override
@@ -126,87 +162,22 @@ class _OrdersPageState extends State<OrdersPage>
       filteredOrders = selectedTab == "All"
           ? allOrders
           : allOrders.where((order) => order['type'] == selectedTab).toList();
-
-      if (selectedType != "All") {
-        filteredOrders = filteredOrders
-            .where((order) => order['type'] == selectedType)
-            .toList();
-      }
-
-      if (selectedStatus != "All") {
-        filteredOrders = filteredOrders
-            .where((order) => order['status'] == selectedStatus)
-            .toList();
-      }
     });
   }
 
-  void _applyOrderFilters() async {
-    final filters = await showDialog<Map<String, String>>(
-      context: context,
-      builder: (context) {
-        String tempType = selectedType;
-        String tempStatus = selectedStatus;
+  List<TrackingStep> _mergeTrackingSteps(List<dynamic> orderSteps) {
+    final Map<String, bool> stepsMap = {
+      for (var step in orderSteps) step['step']: step['isCompleted'] as bool,
+    };
 
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              title: const Text('Filter Orders'),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  DropdownButton<String>(
-                    value: tempType,
-                    onChanged: (value) {
-                      setState(() {
-                        tempType = value!;
-                      });
-                    },
-                    items: ['All', 'Service', 'Order']
-                        .map((type) => DropdownMenuItem(
-                              value: type,
-                              child: Text(type),
-                            ))
-                        .toList(),
-                  ),
-                  DropdownButton<String>(
-                    value: tempStatus,
-                    onChanged: (value) {
-                      setState(() {
-                        tempStatus = value!;
-                      });
-                    },
-                    items: ['All', 'Pending', 'Completed']
-                        .map((status) => DropdownMenuItem(
-                              value: status,
-                              child: Text(status),
-                            ))
-                        .toList(),
-                  ),
-                ],
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(
-                        context, {'type': tempType, 'status': tempStatus});
-                  },
-                  child: const Text('Apply'),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
-
-    if (filters != null) {
-      setState(() {
-        selectedType = filters['type']!;
-        selectedStatus = filters['status']!;
-        _filterOrders();
-      });
-    }
+    return defaultTrackingSteps.map((defaultStep) {
+      final isCompleted = stepsMap[defaultStep.step] ?? false;
+      return TrackingStep(
+        step: defaultStep.step,
+        description: defaultStep.description,
+        isCompleted: isCompleted,
+      );
+    }).toList();
   }
 
   @override
@@ -217,12 +188,6 @@ class _OrdersPageState extends State<OrdersPage>
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 1,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.filter_alt_outlined),
-            onPressed: _applyOrderFilters,
-          ),
-        ],
         bottom: TabBar(
           controller: _tabController,
           indicatorColor: const Color.fromARGB(255, 2, 4, 104),
@@ -314,15 +279,9 @@ class _OrdersPageState extends State<OrdersPage>
         context,
         MaterialPageRoute(
           builder: (context) => ServiceDetailsPage(
-            orderDetails:
-                order.map((key, value) => MapEntry(key, value.toString())),
-            trackingSteps: (order['trackingSteps'] as List)
-                .map((step) => TrackingStep(
-                      step: step['step'] as String,
-                      description: step['description'] as String,
-                      isCompleted: step['isCompleted'] as bool,
-                    ))
-                .toList(),
+            orderDetails: order.map((key, value) =>
+                MapEntry(key, value.toString())), // Convert all to strings
+            trackingSteps: _mergeTrackingSteps(order['trackingSteps'] as List),
           ),
         ),
       );
@@ -331,8 +290,8 @@ class _OrdersPageState extends State<OrdersPage>
         context,
         MaterialPageRoute(
           builder: (context) => SparePartDetailsPage(
-            orderDetails:
-                order.map((key, value) => MapEntry(key, value.toString())),
+            orderDetails: order.map((key, value) =>
+                MapEntry(key, value.toString())), // Convert all to strings
           ),
         ),
       );
