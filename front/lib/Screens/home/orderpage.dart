@@ -92,10 +92,6 @@ class _OrdersPageState extends State<OrdersPage>
           'step': 'Waiting for receipt',
           'isCompleted': true,
         },
-        {
-          'step': 'The car has been delivered',
-          'isCompleted': true,
-        },
       ],
     },
     {
@@ -129,6 +125,9 @@ class _OrdersPageState extends State<OrdersPage>
   ];
 
   String selectedTab = "All";
+  String selectedType = "All";
+  String selectedStatus = "All";
+  int selectedOrderCount = 0;
   List<Map<String, dynamic>> filteredOrders = [];
 
   @override
@@ -159,9 +158,30 @@ class _OrdersPageState extends State<OrdersPage>
 
   void _filterOrders() {
     setState(() {
-      filteredOrders = selectedTab == "All"
+      // Start with type filter from the tab
+      List<Map<String, dynamic>> filtered = selectedTab == "All"
           ? allOrders
           : allOrders.where((order) => order['type'] == selectedTab).toList();
+
+      // Apply type filter from filter dialog
+      if (selectedType != "All") {
+        filtered =
+            filtered.where((order) => order['type'] == selectedType).toList();
+      }
+
+      // Apply status filter
+      if (selectedStatus != "All") {
+        filtered = filtered
+            .where((order) => order['status'] == selectedStatus)
+            .toList();
+      }
+
+      // Apply order count filter (limit number of results)
+      if (selectedOrderCount > 0) {
+        filtered = filtered.take(selectedOrderCount).toList();
+      }
+
+      filteredOrders = filtered;
     });
   }
 
@@ -188,6 +208,12 @@ class _OrdersPageState extends State<OrdersPage>
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 1,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.filter_alt_outlined),
+            onPressed: _applyOrderFilters,
+          ),
+        ],
         bottom: TabBar(
           controller: _tabController,
           indicatorColor: const Color.fromARGB(255, 2, 4, 104),
@@ -295,6 +321,95 @@ class _OrdersPageState extends State<OrdersPage>
           ),
         ),
       );
+    }
+  }
+
+  void _applyOrderFilters() async {
+    final Map<String, dynamic>? filters =
+        await showDialog<Map<String, dynamic>>(
+      context: context,
+      builder: (BuildContext context) {
+        String _tempSelectedType = selectedType;
+        String _tempSelectedStatus = selectedStatus;
+        int _tempSelectedOrderCount = selectedOrderCount;
+
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return AlertDialog(
+              title: const Text('Filter Orders'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  DropdownButton<String>(
+                    value: _tempSelectedType,
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        _tempSelectedType = newValue!;
+                      });
+                    },
+                    items: ['All', 'Service', 'Order']
+                        .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                  ),
+                  DropdownButton<String>(
+                    value: _tempSelectedStatus,
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        _tempSelectedStatus = newValue!;
+                      });
+                    },
+                    items: ['All', 'Pending', 'Completed', 'In Progress']
+                        .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                  ),
+                  Slider(
+                    value: _tempSelectedOrderCount.toDouble(),
+                    min: 0,
+                    max: 20,
+                    divisions: 20,
+                    label: _tempSelectedOrderCount.toString(),
+                    onChanged: (double value) {
+                      setState(() {
+                        _tempSelectedOrderCount = value.toInt();
+                      });
+                    },
+                  ),
+                  const Text('Order Count'),
+                ],
+              ),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text('Apply'),
+                  onPressed: () {
+                    Navigator.pop(context, {
+                      'type': _tempSelectedType,
+                      'status': _tempSelectedStatus,
+                      'orderCount': _tempSelectedOrderCount,
+                    });
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+
+    if (filters != null) {
+      setState(() {
+        selectedType = filters['type'];
+        selectedStatus = filters['status'];
+        selectedOrderCount = filters['orderCount'];
+        _filterOrders();
+      });
     }
   }
 
