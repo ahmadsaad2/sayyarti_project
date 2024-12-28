@@ -67,26 +67,26 @@ class BookingCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              booking['service'],
+              booking['service'] ?? 'Unknown Service',
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 8),
-            Text('Garage: ${booking['garageName']}'),
-            Text('Customer: ${booking['customerName']}'),
-            Text('Date: ${booking['date']}'),
-            Text('Time: ${booking['time']}'),
+            Text('Garage: ${booking['garageName'] ?? 'Unknown Garage'}'),
+            Text('Customer: ${booking['customerName'] ?? 'Unknown Customer'}'),
+            Text('Date: ${booking['date'] ?? 'Unknown Date'}'),
+            Text('Time: ${booking['time'] ?? 'Unknown Time'}'),
             const SizedBox(height: 8),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Status: ${booking['status']}',
+                  'Status: ${booking['status'] ?? 'Unknown Status'}',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    color: getStatusColor(booking['status']),
+                    color: getStatusColor(booking['status'] ?? 'Unknown'),
                   ),
                 ),
                 ElevatedButton(

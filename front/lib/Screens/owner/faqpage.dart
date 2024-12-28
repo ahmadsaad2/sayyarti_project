@@ -4,10 +4,10 @@ class FAQsPage extends StatefulWidget {
   const FAQsPage({super.key});
 
   @override
-  _FAQsPageState createState() => _FAQsPageState();
+  FAQsPageState createState() => FAQsPageState();
 }
 
-class _FAQsPageState extends State<FAQsPage> {
+class FAQsPageState extends State<FAQsPage> {
   final List<Map<String, String>> faqs = [
     {
       "Title": "How much do you charge?",
@@ -28,7 +28,7 @@ class _FAQsPageState extends State<FAQsPage> {
   ];
 
   void _addFAQ() async {
-    final newFAQ = await Navigator.push(
+    await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => FAQForm(
@@ -170,10 +170,10 @@ class FAQForm extends StatefulWidget {
   });
 
   @override
-  _FAQFormState createState() => _FAQFormState();
+  FAQFormState createState() => FAQFormState();
 }
 
-class _FAQFormState extends State<FAQForm> {
+class FAQFormState extends State<FAQForm> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _titleController;
   late TextEditingController _descriptionController;

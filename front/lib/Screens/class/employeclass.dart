@@ -37,12 +37,12 @@ final List<Employee> employees = [
       WorkAssignment(
         day: "Tuesday",
         task: "Brake Inspection",
-        status: "Complete",
+        status: "waiting",
       ),
       WorkAssignment(
         day: "Wednesday",
         task: "Battery Replacement",
-        status: "In Progress",
+        status: "waiting",
       ),
       WorkAssignment(
         day: "Wednesday",

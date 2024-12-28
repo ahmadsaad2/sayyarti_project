@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'porfile.dart';
 import 'employee.dart';
 import 'servicegrage.dart';
-import '../booking/bookingpage.dart';
+import '../booking_owner/bookingpage.dart';
 import 'offers.dart';
 import 'review.dart';
 import 'faqpage.dart';

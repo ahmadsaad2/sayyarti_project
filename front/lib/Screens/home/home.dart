@@ -14,9 +14,7 @@ import '../Welcome/welcome_screen.dart';
 import '../../Screens/service/productpage.dart';
 import '../home/workshop/workshop.dart';
 import '../service/roadservice.dart';
-import '../owner/owner.dart';
-import '../employee/employeepage.dart';
-import '../class/employeclass.dart';
+import 'basketpage.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -35,16 +33,27 @@ class _HomePageState extends State<HomePage> {
     });
     // Handle the navigation to different pages
     if (index == 1) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => ServiceCenterHomePage()),
-      );
-    } else if (index == 2) {
-      final Employee selectedEmployee = employees[0]; // Change index if needed
+      // Navigator.push(
+      //   context,
+      //   MaterialPageRoute(builder: (context) => ServiceCenterHomePage()),           // for page owergrage
+      // );
+
       Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => EmployeePage(employee: selectedEmployee)),
+            builder: (context) => const MorePage()), // for page offer
+      );
+    } else if (index == 2) {
+      // final Employee selectedEmployee = employees[0];  // for page employee
+      // Navigator.push(
+      //   context,
+      //   MaterialPageRoute(
+      //       builder: (context) => EmployeePage(employee: selectedEmployee)),
+      // );
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => BasketPage()), // for page basket
       );
     } else if (index == 3) {
       Navigator.push(
@@ -936,17 +945,6 @@ class OrdersPage extends StatelessWidget {
   }
 }
 
-// class BasketPage extends StatelessWidget {
-//   const BasketPage({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(title: const Text('Basket')),
-//       body: const Center(child: Text("This is the Basket Page")),
-//     );
-//   }
-// }
 class JumpStartPage extends StatelessWidget {
   const JumpStartPage({super.key});
 

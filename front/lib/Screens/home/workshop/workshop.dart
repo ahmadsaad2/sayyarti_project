@@ -26,6 +26,9 @@ class _WorkshopPageState extends State<WorkshopPage> {
       'location': 'Nablus',
       'details': 'Expert in car repairs and maintenance.',
       'type': 'Mechanics',
+      'contact': '123-456-789',
+      'services': ['Oil Change', 'Brake Repair', 'General Maintenance'],
+      'carBrands': ['Toyota', 'Hyundai', 'BMW'],
     },
     {
       'name': 'Quick Fix Garage',
@@ -34,6 +37,9 @@ class _WorkshopPageState extends State<WorkshopPage> {
       'location': 'Nablus',
       'details': 'Fast and affordable service for all cars.',
       'type': 'Electrical',
+      'contact': '987-654-321',
+      'services': ['Electrical Repair', 'Battery Replacement'],
+      'carBrands': ['Ford', 'Chevrolet', 'Nissan'],
     },
     {
       'name': 'Super Tires Workshop',
@@ -42,6 +48,9 @@ class _WorkshopPageState extends State<WorkshopPage> {
       'location': 'Nablus',
       'details': 'Specializes in tire replacement and balancing.',
       'type': 'Denting',
+      'contact': '456-789-123',
+      'services': ['Tire Replacement', 'Wheel Balancing'],
+      'carBrands': ['Toyota', 'Honda', 'Mercedes'],
     },
     {
       'name': 'Engine Masters',
@@ -50,6 +59,9 @@ class _WorkshopPageState extends State<WorkshopPage> {
       'location': 'Nablus',
       'details': 'Top-rated for engine diagnostics and repairs.',
       'type': 'Mechanics',
+      'contact': '321-654-987',
+      'services': ['Engine Diagnostics', 'Engine Repair'],
+      'carBrands': ['BMW', 'Audi', 'Volkswagen'],
     },
     {
       'name': 'Elite Auto Experts',
@@ -58,6 +70,9 @@ class _WorkshopPageState extends State<WorkshopPage> {
       'location': 'Nablus',
       'details': 'Comprehensive vehicle services for all brands.',
       'type': 'Electrical',
+      'contact': '789-123-456',
+      'services': ['Electrical Repair', 'Lighting Installation'],
+      'carBrands': ['Hyundai', 'Kia', 'Mazda'],
     },
   ];
 

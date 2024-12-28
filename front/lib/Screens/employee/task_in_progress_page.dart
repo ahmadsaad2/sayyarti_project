@@ -7,10 +7,10 @@ class TaskInProgressPage extends StatefulWidget {
   const TaskInProgressPage({super.key, required this.assignment});
 
   @override
-  _TaskInProgressPageState createState() => _TaskInProgressPageState();
+  TaskInProgressPageState createState() => TaskInProgressPageState();
 }
 
-class _TaskInProgressPageState extends State<TaskInProgressPage> {
+class TaskInProgressPageState extends State<TaskInProgressPage> {
   late TextEditingController _detailsController;
 
   @override

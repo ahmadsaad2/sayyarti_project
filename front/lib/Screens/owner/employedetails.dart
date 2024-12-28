@@ -9,10 +9,10 @@ class EmployeeDetailsPage extends StatefulWidget {
       : super(key: key);
 
   @override
-  _EmployeeDetailsPageState createState() => _EmployeeDetailsPageState();
+  EmployeeDetailsPageState createState() => EmployeeDetailsPageState();
 }
 
-class _EmployeeDetailsPageState extends State<EmployeeDetailsPage> {
+class EmployeeDetailsPageState extends State<EmployeeDetailsPage> {
   final List<String> daysOfWeek = [
     'Monday',
     'Tuesday',

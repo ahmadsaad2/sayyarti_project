@@ -5,17 +5,16 @@ import '../class/work_assignment.dart';
 import 'task_details_page.dart';
 import 'task_in_progress_page.dart';
 import 'profileemployee.dart';
-import 'waitingtask.dart';
 
 class EmployeePage extends StatefulWidget {
   final Employee employee; // Accept Employee object
   const EmployeePage({super.key, required this.employee});
 
   @override
-  _EmployeePageState createState() => _EmployeePageState();
+  EmployeePageState createState() => EmployeePageState();
 }
 
-class _EmployeePageState extends State<EmployeePage> {
+class EmployeePageState extends State<EmployeePage> {
   final List<String> notifications = [
     "Task assigned: Car Wash at 10:00 AM",
     "Task completed: Polishing at 12:00 PM",
@@ -141,6 +140,61 @@ class _EmployeePageState extends State<EmployeePage> {
     );
   }
 
+  Widget _buildIncompleteTaskCard(WorkAssignment task) {
+    return MouseRegion(
+      onEnter: (_) {
+        // Add logic if needed when mouse enters
+      },
+      onExit: (_) {
+        // Add logic if needed when mouse exits
+      },
+      child: Card(
+        elevation: 5,
+        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        child: ListTile(
+          title: Text(task.task),
+          subtitle: Text("Day: ${task.day}"),
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    task.status = "In Progress";
+                  });
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Task marked as In Progress")),
+                  );
+                },
+                child: const CircleAvatar(
+                  radius: 15,
+                  backgroundColor: Colors.green,
+                  child: Icon(Icons.check, size: 18, color: Colors.white),
+                ),
+              ),
+              const SizedBox(width: 10),
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    task.status = "Declined";
+                  });
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Task marked as Declined")),
+                  );
+                },
+                child: const CircleAvatar(
+                  radius: 15,
+                  backgroundColor: Colors.red,
+                  child: Icon(Icons.close, size: 18, color: Colors.white),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildDrawer() {
     return Drawer(
       child: ListView(
@@ -225,6 +279,11 @@ class _EmployeePageState extends State<EmployeePage> {
   }
 
   Widget _buildTaskCard(WorkAssignment task) {
+    if (task.status == "waiting") {
+      return _buildIncompleteTaskCard(
+          task); // Call the widget for waiting tasks
+    }
+
     return Card(
       elevation: 5,
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
@@ -249,27 +308,8 @@ class _EmployeePageState extends State<EmployeePage> {
                       assignment: task), // Page for in-progress tasks
                 ),
               );
-            } else if (task.status == "waiting") {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      IncompleteTaskPage(task: task), // Pass the task
-                ),
-              );
             }
           }),
-    );
-  }
-
-  Widget _buildFooter() {
-    return BottomNavigationBar(
-      items: const [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.assignment_late),
-          label: 'Waiting Tasks',
-        ),
-      ],
     );
   }
 
