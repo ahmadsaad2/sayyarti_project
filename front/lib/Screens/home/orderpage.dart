@@ -68,7 +68,18 @@ class _OrdersPageState extends State<OrdersPage>
       isCompleted: false,
     ),
   ];
-
+  final List<Map<String, dynamic>> selectedOffers1 = [
+    {
+      "FLAT20": {
+        "description": "FLAT20",
+        "Type": "Flat",
+        "Amount": "20",
+        "Minimum": "100",
+        "Start": "2023-11-15",
+        "End": "2023-11-30",
+      },
+    },
+  ];
   final List<Map<String, dynamic>> allOrders = [
     {
       'title': 'Order #1',
@@ -96,7 +107,7 @@ class _OrdersPageState extends State<OrdersPage>
     },
     {
       'title': 'Order #2',
-      'type': 'Order',
+      'type': 'Service',
       'status': 'Completed',
       'date': '2024-12-29',
       'customerName': 'Sara',
@@ -221,8 +232,6 @@ class _OrdersPageState extends State<OrdersPage>
           unselectedLabelColor: Colors.grey,
           tabs: const [
             Tab(text: 'All'),
-            Tab(text: 'Service'),
-            Tab(text: 'Order'),
           ],
         ),
       ),
@@ -259,42 +268,163 @@ class _OrdersPageState extends State<OrdersPage>
   }
 
   Widget _buildOrdersList(List<Map<String, dynamic>> orders) {
-    return ListView.builder(
+    return ListView(
       padding: const EdgeInsets.all(16.0),
-      itemCount: orders.length,
-      itemBuilder: (context, index) {
-        final order = orders[index];
-        return GestureDetector(
-          onTap: () => _navigateToOrderDetails(context, order),
-          child: Card(
-            margin: const EdgeInsets.only(bottom: 16.0),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15.0),
-            ),
-            elevation: 4,
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    order['title'] ?? 'Unknown Order',
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text('Garage: ${order['garageName']}'),
-                  Text('Type: ${order['type']}'),
-                  Text('Status: ${order['status']}'),
-                  Text('Date: ${order['date']}'),
-                ],
+      children: [
+        // Orders Section
+        if (orders.isNotEmpty) ...[
+          const Padding(
+            padding: EdgeInsets.only(bottom: 16.0),
+            child: Text(
+              'Orders',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
               ),
             ),
           ),
-        );
-      },
+          ...orders.map((order) {
+            final isOfferOrder = order['type'] == 'Order';
+
+            return GestureDetector(
+              onTap: () => _navigateToOrderDetails(context, order),
+              child: Card(
+                margin: const EdgeInsets.only(bottom: 16.0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15.0),
+                ),
+                elevation: 4,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        order['title'] ?? 'Unknown Order',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text('Type: ${order['type']}'),
+                      Text('Status: ${order['status']}'),
+                      Text('Date: ${order['date']}'),
+                      if (isOfferOrder) ...[
+                        const SizedBox(height: 16),
+                        const Text(
+                          'Offers:',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        ...selectedOffers1.map((offerMap) {
+                          final offerKey = offerMap.keys.first;
+                          final offerDetails = offerMap[offerKey];
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 4.0),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Icon(Icons.local_offer,
+                                    color: Colors.green, size: 20),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    '${offerDetails['description']} - ${offerDetails['Type']} ${offerDetails['Amount']}%',
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }).toList(),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+            );
+          }).toList(),
+        ],
+
+        // Offers Section
+        if (selectedOffers1.isNotEmpty) ...[
+          const Padding(
+            padding: EdgeInsets.only(top: 24.0, bottom: 16.0),
+            child: Text(
+              ' Offers',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          ...selectedOffers1.map((offerMap) {
+            final offerKey = offerMap.keys.first;
+            final offerDetails = offerMap[offerKey];
+
+            return Card(
+              margin: const EdgeInsets.only(bottom: 16.0),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15.0),
+              ),
+              elevation: 4,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Offer: ${offerDetails['description']}',
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Type: ${offerDetails['Type']}',
+                      style: const TextStyle(
+                        fontSize: 16,
+                      ),
+                    ),
+                    Text(
+                      'Amount: ${offerDetails['Amount']}%',
+                      style: const TextStyle(
+                        fontSize: 16,
+                      ),
+                    ),
+                    Text(
+                      'Minimum Spend: \$${offerDetails['Minimum']}',
+                      style: const TextStyle(
+                        fontSize: 16,
+                      ),
+                    ),
+                    Text(
+                      'Valid From: ${offerDetails['Start']}',
+                      style: const TextStyle(
+                        fontSize: 16,
+                      ),
+                    ),
+                    Text(
+                      'Valid Until: ${offerDetails['End']}',
+                      style: const TextStyle(
+                        fontSize: 16,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }).toList(),
+        ],
+      ],
     );
   }
 
@@ -311,13 +441,13 @@ class _OrdersPageState extends State<OrdersPage>
           ),
         ),
       );
-    } else {
+    } else if (order['type'] == 'Order') {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => SparePartDetailsPage(
-            orderDetails: order.map((key, value) =>
-                MapEntry(key, value.toString())), // Convert all to strings
+          builder: (context) => OfferDetailsPage(
+            selectedOffers:
+                selectedOffers1, // Pass selectedOffers1 to the OfferDetailsPage
           ),
         ),
       );
@@ -336,10 +466,14 @@ class _OrdersPageState extends State<OrdersPage>
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setState) {
             return AlertDialog(
-              title: const Text('Filter Orders'),
+              title: const Text('Filter Content'),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  const Text(
+                    'Filter by Type:',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                   DropdownButton<String>(
                     value: tempSelectedType,
                     onChanged: (String? newValue) {
@@ -347,13 +481,18 @@ class _OrdersPageState extends State<OrdersPage>
                         tempSelectedType = newValue!;
                       });
                     },
-                    items: ['All', 'Service', 'Order']
+                    items: ['All', 'Service', 'Offer']
                         .map<DropdownMenuItem<String>>((String value) {
                       return DropdownMenuItem<String>(
                         value: value,
                         child: Text(value),
                       );
                     }).toList(),
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Filter by Status:',
+                    style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   DropdownButton<String>(
                     value: tempSelectedStatus,
@@ -370,6 +509,11 @@ class _OrdersPageState extends State<OrdersPage>
                       );
                     }).toList(),
                   ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Limit Results:',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                   Slider(
                     value: tempSelectedOrderCount.toDouble(),
                     min: 0,
@@ -382,7 +526,6 @@ class _OrdersPageState extends State<OrdersPage>
                       });
                     },
                   ),
-                  const Text('Order Count'),
                 ],
               ),
               actions: <Widget>[
@@ -408,14 +551,8 @@ class _OrdersPageState extends State<OrdersPage>
         selectedType = filters['type'];
         selectedStatus = filters['status'];
         selectedOrderCount = filters['orderCount'];
-        _filterOrders();
+        _filterOrders(); // Call filter logic
       });
     }
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
   }
 }
