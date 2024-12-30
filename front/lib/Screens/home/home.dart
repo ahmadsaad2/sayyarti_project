@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import '../home/adscroller.dart';
-import '../home/testdrive.dart';
+import 'offercard.dart';
 import 'adpage.dart';
 import 'account/profile.dart';
 import 'account/addresspage.dart';
@@ -16,6 +16,7 @@ import '../home/workshop/workshop.dart';
 import '../service/roadservice.dart';
 import 'orderpage.dart';
 import '../service/CartPage.dart';
+// import '../owner/owner.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -36,7 +37,9 @@ class _HomePageState extends State<HomePage> {
     if (index == 1) {
       // Navigator.push(
       //   context,
-      //   MaterialPageRoute(builder: (context) => ServiceCenterHomePage()),           // for page owergrage
+      //   MaterialPageRoute(
+      //       builder: (context) =>
+      //           ServiceCenterHomePage()), // for page owergrage
       // );
 
       Navigator.push(
@@ -235,7 +238,7 @@ class _HomePageState extends State<HomePage> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     const Text(
-                      "Rent Car",
+                      "Offer Products",
                       style: TextStyle(
                         fontSize: 20.0,
                         fontWeight: FontWeight.bold,
@@ -442,7 +445,7 @@ class _HomePageState extends State<HomePage> {
             ),
             BottomNavigationBarItem(
               icon: ImageIcon(AssetImage('assets/images/order.png')),
-              label: "Cart",
+              label: "Offers",
             ),
             BottomNavigationBarItem(
               icon: ImageIcon(AssetImage('assets/images/add-to-cart.png')),

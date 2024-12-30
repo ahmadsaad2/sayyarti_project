@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'bookingpagetestdrive.dart';
+import 'offerpage.dart';
 
 class TestDriveSection extends StatelessWidget {
   const TestDriveSection({super.key});
@@ -45,7 +45,7 @@ class TestDriveSection extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const BookingPage()),
+                          builder: (context) => const OfferPage()),
                     );
                   },
                   style: ElevatedButton.styleFrom(
@@ -57,7 +57,7 @@ class TestDriveSection extends StatelessWidget {
                         const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   ),
                   child: const Text(
-                    "Book Now",
+                    "Claim Offer",
                     style: TextStyle(
                       fontSize: 16, // Adjust font size for better fit
                       fontWeight: FontWeight.bold,

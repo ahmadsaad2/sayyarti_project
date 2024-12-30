@@ -9,11 +9,11 @@ class OffersPage extends StatefulWidget {
 }
 
 class _OffersPageState extends State<OffersPage> {
-  final offersManager = OffersManager.instance; // Access OffersManager
+  final offersMoffersanager = OffersManager.instance; // Access OffersManager
 
   final List<Map<String, String>> offers = [
     {
-      "Code": "OFF10",
+      "description": "OFF10",
       "Type": "Percentage",
       "Amount": "10",
       "Minimum": "50",
@@ -21,7 +21,7 @@ class _OffersPageState extends State<OffersPage> {
       "End": "2023-12-31",
     },
     {
-      "Code": "FLAT20",
+      "description": "FLAT20",
       "Type": "Flat",
       "Amount": "20",
       "Minimum": "100",
@@ -106,7 +106,7 @@ class _OffersPageState extends State<OffersPage> {
                 child: DataTable(
                   columns: const [
                     DataColumn(label: Text('#')),
-                    DataColumn(label: Text('Code')),
+                    DataColumn(label: Text('description')),
                     DataColumn(label: Text('Type')),
                     DataColumn(label: Text('Amount')),
                     DataColumn(label: Text('Minimum')),
@@ -122,7 +122,7 @@ class _OffersPageState extends State<OffersPage> {
                       return DataRow(
                         cells: [
                           DataCell(Text((index + 1).toString())),
-                          DataCell(Text(offer['Code'] ?? '')),
+                          DataCell(Text(offer['description'] ?? '')),
                           DataCell(Text(offer['Type'] ?? '')),
                           DataCell(Text('${offer['Amount']}')),
                           DataCell(Text('${offer['Minimum']}')),
@@ -179,7 +179,8 @@ class _OfferDetailsPageState extends State<OfferDetailsPage> {
   @override
   void initState() {
     super.initState();
-    _codeController = TextEditingController(text: widget.offer?['Code'] ?? '');
+    _codeController =
+        TextEditingController(text: widget.offer?['discription'] ?? '');
     _typeController = TextEditingController(text: widget.offer?['Type'] ?? '');
     _amountController =
         TextEditingController(text: widget.offer?['Amount'] ?? '');
@@ -204,7 +205,7 @@ class _OfferDetailsPageState extends State<OfferDetailsPage> {
   void _saveOffer() {
     if (_formKey.currentState!.validate()) {
       final newOffer = {
-        'Code': _codeController.text.trim(),
+        'description': _codeController.text.trim(),
         'Type': _typeController.text.trim(),
         'Amount': _amountController.text.trim(),
         'Minimum': _minimumController.text.trim(),
@@ -229,10 +230,11 @@ class _OfferDetailsPageState extends State<OfferDetailsPage> {
             children: [
               TextFormField(
                 controller: _codeController,
-                decoration: const InputDecoration(labelText: 'Offer Code'),
+                decoration:
+                    const InputDecoration(labelText: 'Offer description'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter offer code';
+                    return 'Please write offer description';
                   }
                   return null;
                 },

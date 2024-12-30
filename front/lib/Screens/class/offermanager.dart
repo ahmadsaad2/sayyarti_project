@@ -11,7 +11,7 @@ class OffersManager {
   // Offers list
   final List<Map<String, String>> _offers = [
     {
-      "Code": "OFF10",
+      "description": "OFF10",
       "Type": "Percentage",
       "Amount": "10",
       "Minimum": "50",
@@ -19,7 +19,7 @@ class OffersManager {
       "End": "2023-12-31",
     },
     {
-      "Code": "FLAT20",
+      "description": "FLAT20",
       "Type": "Flat",
       "Amount": "20",
       "Minimum": "100",

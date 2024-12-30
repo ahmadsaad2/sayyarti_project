@@ -142,7 +142,7 @@ class ServiceCenterHomePage extends StatelessWidget {
                 child: DataTable(
                   columns: const [
                     DataColumn(label: Text('#')),
-                    DataColumn(label: Text('Code')),
+                    DataColumn(label: Text('description')),
                     DataColumn(label: Text('Type')),
                     DataColumn(label: Text('Amount')),
                     DataColumn(label: Text('Minimum Spend')),
@@ -156,7 +156,7 @@ class ServiceCenterHomePage extends StatelessWidget {
                         (entry) => DataRow(
                           cells: [
                             DataCell(Text((entry.key + 1).toString())),
-                            DataCell(Text(entry.value['Code'] ?? '')),
+                            DataCell(Text(entry.value['description'] ?? '')),
                             DataCell(Text(entry.value['Type'] ?? '')),
                             DataCell(Text(entry.value['Amount'] ?? '')),
                             DataCell(Text(entry.value['Minimum'] ?? '')),
