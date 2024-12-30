@@ -329,9 +329,9 @@ class _OrdersPageState extends State<OrdersPage>
         await showDialog<Map<String, dynamic>>(
       context: context,
       builder: (BuildContext context) {
-        String _tempSelectedType = selectedType;
-        String _tempSelectedStatus = selectedStatus;
-        int _tempSelectedOrderCount = selectedOrderCount;
+        String tempSelectedType = selectedType;
+        String tempSelectedStatus = selectedStatus;
+        int tempSelectedOrderCount = selectedOrderCount;
 
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setState) {
@@ -341,10 +341,10 @@ class _OrdersPageState extends State<OrdersPage>
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   DropdownButton<String>(
-                    value: _tempSelectedType,
+                    value: tempSelectedType,
                     onChanged: (String? newValue) {
                       setState(() {
-                        _tempSelectedType = newValue!;
+                        tempSelectedType = newValue!;
                       });
                     },
                     items: ['All', 'Service', 'Order']
@@ -356,10 +356,10 @@ class _OrdersPageState extends State<OrdersPage>
                     }).toList(),
                   ),
                   DropdownButton<String>(
-                    value: _tempSelectedStatus,
+                    value: tempSelectedStatus,
                     onChanged: (String? newValue) {
                       setState(() {
-                        _tempSelectedStatus = newValue!;
+                        tempSelectedStatus = newValue!;
                       });
                     },
                     items: ['All', 'Pending', 'Completed', 'In Progress']
@@ -371,14 +371,14 @@ class _OrdersPageState extends State<OrdersPage>
                     }).toList(),
                   ),
                   Slider(
-                    value: _tempSelectedOrderCount.toDouble(),
+                    value: tempSelectedOrderCount.toDouble(),
                     min: 0,
                     max: 20,
                     divisions: 20,
-                    label: _tempSelectedOrderCount.toString(),
+                    label: tempSelectedOrderCount.toString(),
                     onChanged: (double value) {
                       setState(() {
-                        _tempSelectedOrderCount = value.toInt();
+                        tempSelectedOrderCount = value.toInt();
                       });
                     },
                   ),
@@ -390,9 +390,9 @@ class _OrdersPageState extends State<OrdersPage>
                   child: const Text('Apply'),
                   onPressed: () {
                     Navigator.pop(context, {
-                      'type': _tempSelectedType,
-                      'status': _tempSelectedStatus,
-                      'orderCount': _tempSelectedOrderCount,
+                      'type': tempSelectedType,
+                      'status': tempSelectedStatus,
+                      'orderCount': tempSelectedOrderCount,
                     });
                   },
                 ),

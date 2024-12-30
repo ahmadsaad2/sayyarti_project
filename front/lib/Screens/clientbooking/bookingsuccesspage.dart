@@ -51,10 +51,10 @@ class BookingSuccessPage extends StatelessWidget {
 
             const SizedBox(height: 8),
 
-            Text(
+            const Text(
               "We have sent your booking information to your email.",
               textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 16, color: Colors.black54),
+              style: TextStyle(fontSize: 16, color: Colors.black54),
             ),
 
             const SizedBox(height: 32),

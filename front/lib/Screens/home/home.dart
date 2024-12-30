@@ -15,6 +15,7 @@ import '../../Screens/service/productpage.dart';
 import '../home/workshop/workshop.dart';
 import '../service/roadservice.dart';
 import 'orderpage.dart';
+import '../service/CartPage.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -40,8 +41,7 @@ class _HomePageState extends State<HomePage> {
 
       Navigator.push(
         context,
-        MaterialPageRoute(
-            builder: (context) => const MorePage()), // for page offer
+        MaterialPageRoute(builder: (context) => CartPage()), // for page cart
       );
     } else if (index == 2) {
       // final Employee selectedEmployee = employees[0];  // for page employee
@@ -53,7 +53,7 @@ class _HomePageState extends State<HomePage> {
       Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => OrdersPage()), // for order basket
+            builder: (context) => const OrdersPage()), // for order basket
       );
     } else if (index == 3) {
       Navigator.push(
@@ -442,7 +442,7 @@ class _HomePageState extends State<HomePage> {
             ),
             BottomNavigationBarItem(
               icon: ImageIcon(AssetImage('assets/images/order.png')),
-              label: "Offers",
+              label: "Cart",
             ),
             BottomNavigationBarItem(
               icon: ImageIcon(AssetImage('assets/images/add-to-cart.png')),
