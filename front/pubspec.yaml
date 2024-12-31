@@ -36,6 +36,8 @@ dependencies:
   cupertino_icons: ^1.0.5
   flutter_svg: ^2.0.5
   shared_preferences: ^2.3.4
+  dropdown_search: ^6.0.1
+  fl_chart: ^0.69.2
 
 dev_dependencies:
   flutter_test:
