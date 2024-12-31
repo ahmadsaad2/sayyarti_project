@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sayyarti/Screens/admin/widgets/admin_drawer.dart';
+import 'package:sayyarti/Screens/admin/widgets/stat.dart';
 
 class AdminHome extends StatelessWidget {
   const AdminHome({super.key});
@@ -20,9 +21,13 @@ class AdminHome extends StatelessWidget {
           centerTitle: true,
         ),
         drawer: const AdminDrawer(),
-        body: const Center(
-            child:
-                Text('statistic data and other features related to the admin')),
+        body: const Column(
+          children: [
+            SizedBox(height: 16),
+            Center(child: Statistic()),
+          ],
+        ),
+        
       ),
     );
   }

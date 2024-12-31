@@ -40,11 +40,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Sayyarti',
-      theme: theme,
-      home: const WelcomeScreen(),
+    return SafeArea(
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Sayyarti',
+        theme: theme,
+        home: const WelcomeScreen(),
+      ),
     );
   }
 }
