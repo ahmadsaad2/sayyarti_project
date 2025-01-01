@@ -1,0 +1,5 @@
+git rm --cached front/.dart_tool -r
+git rm --cached front/android/.gradle -r
+git rm --cached front/android/app/src/main/java/io/flutter/plugins/GeneratedPluginRegistrant.java
+git rm --cached front/ios/Runner/GeneratedPluginRegistrant.m
+git rm --cached front/macos/Flutter/GeneratedPluginRegistrant.swift
