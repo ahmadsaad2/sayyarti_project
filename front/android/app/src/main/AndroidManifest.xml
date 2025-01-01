@@ -5,6 +5,8 @@
         android:label="front"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+        <meta-data android:name="com.google.android.geo.API_KEY"
+               android:value="AIzaSyDvbc2TN6k9G2kGG1ULY-_jl8CCt3P_bEw"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -44,4 +46,7 @@
             <data android:mimeType="text/plain"/>
         </intent>
     </queries>
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
 </manifest>
