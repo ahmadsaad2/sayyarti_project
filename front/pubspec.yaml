@@ -21,7 +21,10 @@ dependencies:
     sdk: flutter
   logger: ^1.1.0  # Add this line
   font_awesome_flutter: ^10.0.0
-  flutter_dotenv: ^5.2.1
+  shared_preferences: ^2.0.15
+  image_picker: ^0.8.7+3
+  permission_handler: ^10.3.0
+  provider: ^6.0.5  flutter_dotenv: ^5.2.1
   flutter_riverpod: ^2.6.1
   google_fonts: ^6.2.1
   google_maps_flutter: ^2.10.0

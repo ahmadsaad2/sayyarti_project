@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import '../home/adscroller.dart';
-import '../home/testdrive.dart';
+import 'offercard.dart';
 import 'adpage.dart';
 import 'account/profile.dart';
 import 'account/addresspage.dart';
@@ -11,10 +11,12 @@ import 'appcontact/terms.dart';
 import 'account/deleteaccount.dart';
 import 'account/mycar.dart';
 import '../Welcome/welcome_screen.dart';
-import '../../Screens/service/productpage.dart';
+import 'product/productpage.dart';
 import '../home/workshop/workshop.dart';
-
 import '../service/roadservice.dart';
+import 'basket/orderpage.dart';
+import 'cart/CartPage.dart';
+// import '../owner/owner.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -33,15 +35,29 @@ class _HomePageState extends State<HomePage> {
     });
     // Handle the navigation to different pages
     if (index == 1) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const OrdersPage()),
-      );
-    } else if (index == 2) {
       // Navigator.push(
       //   context,
-      //   MaterialPageRoute(builder: (context) => ProductPage()),
+      //   MaterialPageRoute(
+      //       builder: (context) =>
+      //           ServiceCenterHomePage()), // for page owergrage
       // );
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => CartPage()), // for page cart
+      );
+    } else if (index == 2) {
+      // final Employee selectedEmployee = employees[0];  // for page employee
+      // Navigator.push(
+      //   context,
+      //   MaterialPageRoute(
+      //       builder: (context) => EmployeePage(employee: selectedEmployee)),
+      // );
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => const OrdersPage()), // for order basket
+      );
     } else if (index == 3) {
       Navigator.push(
         context,
@@ -214,7 +230,7 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
 
-              // Test Drive Section
+              // offer  Section
               Padding(
                 padding: const EdgeInsets.symmetric(
                     horizontal: 16.0, vertical: 20.0),
@@ -222,7 +238,7 @@ class _HomePageState extends State<HomePage> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     const Text(
-                      "Rent Car",
+                      "Offer Products",
                       style: TextStyle(
                         fontSize: 20.0,
                         fontWeight: FontWeight.bold,
@@ -429,7 +445,7 @@ class _HomePageState extends State<HomePage> {
             ),
             BottomNavigationBarItem(
               icon: ImageIcon(AssetImage('assets/images/order.png')),
-              label: "Offers",
+              label: "Cart",
             ),
             BottomNavigationBarItem(
               icon: ImageIcon(AssetImage('assets/images/add-to-cart.png')),
@@ -920,29 +936,6 @@ class _MorePageState extends State<MorePage> {
   }
 }
 
-class OrdersPage extends StatelessWidget {
-  const OrdersPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Orders')),
-      body: const Center(child: Text("This is the Orders Page")),
-    );
-  }
-}
-
-// class BasketPage extends StatelessWidget {
-//   const BasketPage({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(title: const Text('Basket')),
-//       body: const Center(child: Text("This is the Basket Page")),
-//     );
-//   }
-// }
 class JumpStartPage extends StatelessWidget {
   const JumpStartPage({super.key});
 
