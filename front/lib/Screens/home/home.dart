@@ -11,11 +11,11 @@ import 'appcontact/terms.dart';
 import 'account/deleteaccount.dart';
 import 'account/mycar.dart';
 import '../Welcome/welcome_screen.dart';
-import '../../Screens/service/productpage.dart';
+import 'product/productpage.dart';
 import '../home/workshop/workshop.dart';
 import '../service/roadservice.dart';
-import 'orderpage.dart';
-import '../service/CartPage.dart';
+import 'basket/orderpage.dart';
+import 'cart/CartPage.dart';
 // import '../owner/owner.dart';
 
 class HomePage extends StatefulWidget {
@@ -230,7 +230,7 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
 
-              // Test Drive Section
+              // offer  Section
               Padding(
                 padding: const EdgeInsets.symmetric(
                     horizontal: 16.0, vertical: 20.0),
@@ -445,7 +445,7 @@ class _HomePageState extends State<HomePage> {
             ),
             BottomNavigationBarItem(
               icon: ImageIcon(AssetImage('assets/images/order.png')),
-              label: "Offers",
+              label: "Cart",
             ),
             BottomNavigationBarItem(
               icon: ImageIcon(AssetImage('assets/images/add-to-cart.png')),
