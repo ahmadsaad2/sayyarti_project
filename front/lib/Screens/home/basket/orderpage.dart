@@ -15,7 +15,7 @@ class TrackingStep {
 }
 
 class OrdersPage extends StatefulWidget {
-  const OrdersPage({Key? key}) : super(key: key);
+  const OrdersPage({super.key});
 
   @override
   _OrdersPageState createState() => _OrdersPageState();
@@ -343,14 +343,14 @@ class _OrdersPageState extends State<OrdersPage>
                               ],
                             ),
                           );
-                        }).toList(),
+                        }),
                       ],
                     ],
                   ),
                 ),
               ),
             );
-          }).toList(),
+          }),
         ],
 
         // Offers Section
@@ -422,7 +422,7 @@ class _OrdersPageState extends State<OrdersPage>
                 ),
               ),
             );
-          }).toList(),
+          }),
         ],
       ],
     );

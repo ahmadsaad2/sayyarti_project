@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 class ResetPasswordPage extends StatefulWidget {
   final String title;
 
-  const ResetPasswordPage({Key? key, required this.title}) : super(key: key);
+  const ResetPasswordPage({super.key, required this.title});
 
   @override
   // ignore: library_private_types_in_public_api

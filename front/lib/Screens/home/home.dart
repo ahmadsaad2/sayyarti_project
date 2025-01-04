@@ -19,7 +19,7 @@ import 'cart/CartPage.dart';
 // import '../owner/owner.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({super.key});
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -504,7 +504,7 @@ class _HomePageState extends State<HomePage> {
 }
 
 class AllProductsPage extends StatelessWidget {
-  const AllProductsPage({Key? key}) : super(key: key);
+  const AllProductsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -785,7 +785,7 @@ class InspectionPage extends StatelessWidget {
 }
 
 class MorePage extends StatefulWidget {
-  const MorePage({Key? key}) : super(key: key);
+  const MorePage({super.key});
 
   @override
   _MorePageState createState() => _MorePageState();

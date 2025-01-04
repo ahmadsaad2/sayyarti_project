@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 
 class AddCarPage extends StatefulWidget {
-  const AddCarPage({Key? key}) : super(key: key);
+  const AddCarPage({super.key});
 
   @override
   // ignore: library_private_types_in_public_api

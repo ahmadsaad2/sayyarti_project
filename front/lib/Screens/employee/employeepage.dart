@@ -272,7 +272,7 @@ class EmployeePageState extends State<EmployeePage> {
             ),
           ),
           const SizedBox(height: 8),
-          ...tasks.map((task) => _buildTaskCard(task)).toList(),
+          ...tasks.map((task) => _buildTaskCard(task)),
         ],
       ),
     );

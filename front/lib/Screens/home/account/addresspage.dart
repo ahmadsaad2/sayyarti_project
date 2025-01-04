@@ -8,7 +8,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class AddressPage extends StatefulWidget {
-  const AddressPage({Key? key}) : super(key: key);
+  const AddressPage({super.key});
 
   @override
   State<AddressPage> createState() => _AddressPageState();

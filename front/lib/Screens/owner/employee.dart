@@ -173,7 +173,7 @@ class _EmployeePageState extends State<EmployeePage> {
                     },
                   ),
                 );
-              }).toList(),
+              }),
             ],
           ),
         );

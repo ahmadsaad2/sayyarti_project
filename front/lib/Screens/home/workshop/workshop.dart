@@ -4,7 +4,7 @@ import 'workshopdetails.dart';
 class WorkshopPage extends StatefulWidget {
   final String workshopType; // Parameter to filter workshops by type
 
-  const WorkshopPage({Key? key, required this.workshopType}) : super(key: key);
+  const WorkshopPage({super.key, required this.workshopType});
 
   @override
   // ignore: library_private_types_in_public_api

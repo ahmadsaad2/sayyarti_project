@@ -4,7 +4,7 @@ import '../cart/CartPage.dart';
 class ProductDetailsPage extends StatefulWidget {
   final Map<String, dynamic> product;
 
-  const ProductDetailsPage({Key? key, required this.product}) : super(key: key);
+  const ProductDetailsPage({super.key, required this.product});
 
   @override
   _ProductDetailsPageState createState() => _ProductDetailsPageState();

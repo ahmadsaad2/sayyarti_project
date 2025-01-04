@@ -37,8 +37,8 @@ import 'package:sayyarti/Screens/resetpassword/resetpassword.dart';
 
 class ForgotPassword extends StatelessWidget {
   const ForgotPassword({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

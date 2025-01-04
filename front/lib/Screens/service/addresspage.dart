@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:sayyarti/Screens/map/widgets/add_location.dart';
 
 class AddAddressPage extends StatelessWidget {
-  const AddAddressPage({Key? key}) : super(key: key);
+  const AddAddressPage({super.key});
 
   @override
   Widget build(BuildContext context) {
