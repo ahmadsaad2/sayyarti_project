@@ -58,6 +58,18 @@ class _LoginFormState extends State<LoginForm> {
             context,
             MaterialPageRoute(builder: (context) => const AdminHome()),
           );
+        } else if (data['role'] == 'company_admin') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => const Text('company_admin')),
+          );
+        } else if (data['role'] == 'service_provider') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => const Text('service_provider')),
+          );
         }
       }
       if (res.statusCode >= 400) {

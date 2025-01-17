@@ -44,7 +44,8 @@ class _HomePageState extends State<HomePage> {
 
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => CartPage()), // for page cart
+        MaterialPageRoute(
+            builder: (context) => const CartPage()), // for page cart
       );
     } else if (index == 2) {
       // final Employee selectedEmployee = employees[0];  // for page employee

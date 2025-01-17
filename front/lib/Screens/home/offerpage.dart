@@ -28,7 +28,7 @@ class _OfferPageState extends State<OfferPage> {
             Container(
               width: double.infinity,
               height: 400,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 image: DecorationImage(
                   image: AssetImage('assets/images/offer.png'),
                   fit: BoxFit.cover,
@@ -37,12 +37,12 @@ class _OfferPageState extends State<OfferPage> {
             ),
             const SizedBox(height: 20),
             // Offer Details Section
-            Padding(
-              padding: const EdgeInsets.all(16.0),
+            const Padding(
+              padding: EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     "Discover exclusive deals and discounts on your car!",
                     style: TextStyle(
                       fontSize: 15,
@@ -50,8 +50,8 @@ class _OfferPageState extends State<OfferPage> {
                       color: Colors.black,
                     ),
                   ),
-                  const SizedBox(height: 20),
-                  const Text(
+                  SizedBox(height: 20),
+                  Text(
                     "Offers:",
                     style: TextStyle(
                       fontSize: 18,
@@ -59,7 +59,7 @@ class _OfferPageState extends State<OfferPage> {
                       color: Colors.black,
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  SizedBox(height: 10),
                 ],
               ),
             ),

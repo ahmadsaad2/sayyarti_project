@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'productdetails.dart';
+// import 'productdetails.dart';
 import '../cart/CartPage.dart';
 
 class ProductPage extends StatefulWidget {
@@ -317,17 +317,17 @@ class _ProductPageState extends State<ProductPage> {
                 var product = _filteredProducts[index];
                 return GestureDetector(
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ProductDetailsPage(
-                          product: {
-                            ...product,
-                            'price': product['price'].toString()
-                          }, // Ensure price is passed as a String
-                        ),
-                      ),
-                    );
+                    // Navigator.push(
+                    //   context,
+                    //   MaterialPageRoute(
+                    //     builder: (context) => ProductDetailsPage(
+                    //       product: {
+                    //         ...product,
+                    //         'price': product['price'].toString()
+                    //       }, // Ensure price is passed as a String
+                    //     ),
+                    //   ),
+                    // );
                   },
                   child: Card(
                     elevation: 5,
@@ -369,17 +369,17 @@ class _ProductPageState extends State<ProductPage> {
                             ),
                           ),
                           onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ProductDetailsPage(
-                                  product: {
-                                    ...product,
-                                    'price': product['price'].toString()
-                                  }, // Ensure price is passed as a String
-                                ),
-                              ),
-                            );
+                            // Navigator.push(
+                            //   context,
+                            //   MaterialPageRoute(
+                            //     builder: (context) => ProductDetailsPage(
+                            //       product: {
+                            //         ...product,
+                            //         'price': product['price'].toString()
+                            //       }, // Ensure price is passed as a String
+                            //     ),
+                            //   ),
+                            // );
                           },
                           child: const Text(
                             'Add to Cart',

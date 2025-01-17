@@ -328,7 +328,7 @@ class _OrdersPageState extends State<OrdersPage>
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Icon(Icons.local_offer,
+                                const Icon(Icons.local_offer,
                                     color: Colors.green, size: 20),
                                 const SizedBox(width: 8),
                                 Expanded(
