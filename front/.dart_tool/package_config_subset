@@ -250,6 +250,10 @@ mime
 3.2
 file:///C:/Users/hamoo/AppData/Local/Pub/Cache/hosted/pub.dev/mime-2.0.0/
 file:///C:/Users/hamoo/AppData/Local/Pub/Cache/hosted/pub.dev/mime-2.0.0/lib/
+nested
+2.12
+file:///C:/Users/hamoo/AppData/Local/Pub/Cache/hosted/pub.dev/nested-1.0.0/
+file:///C:/Users/hamoo/AppData/Local/Pub/Cache/hosted/pub.dev/nested-1.0.0/lib/
 path
 3.0
 file:///C:/Users/hamoo/AppData/Local/Pub/Cache/hosted/pub.dev/path-1.9.0/
@@ -318,6 +322,10 @@ plugin_platform_interface
 3.0
 file:///C:/Users/hamoo/AppData/Local/Pub/Cache/hosted/pub.dev/plugin_platform_interface-2.1.8/
 file:///C:/Users/hamoo/AppData/Local/Pub/Cache/hosted/pub.dev/plugin_platform_interface-2.1.8/lib/
+provider
+2.12
+file:///C:/Users/hamoo/AppData/Local/Pub/Cache/hosted/pub.dev/provider-6.1.2/
+file:///C:/Users/hamoo/AppData/Local/Pub/Cache/hosted/pub.dev/provider-6.1.2/lib/
 riverpod
 2.17
 file:///C:/Users/hamoo/AppData/Local/Pub/Cache/hosted/pub.dev/riverpod-2.6.1/
@@ -332,8 +340,8 @@ file:///C:/Users/hamoo/AppData/Local/Pub/Cache/hosted/pub.dev/shared_preferences
 file:///C:/Users/hamoo/AppData/Local/Pub/Cache/hosted/pub.dev/shared_preferences-2.3.5/lib/
 shared_preferences_android
 3.5
-file:///C:/Users/hamoo/AppData/Local/Pub/Cache/hosted/pub.dev/shared_preferences_android-2.4.1/
-file:///C:/Users/hamoo/AppData/Local/Pub/Cache/hosted/pub.dev/shared_preferences_android-2.4.1/lib/
+file:///C:/Users/hamoo/AppData/Local/Pub/Cache/hosted/pub.dev/shared_preferences_android-2.4.2/
+file:///C:/Users/hamoo/AppData/Local/Pub/Cache/hosted/pub.dev/shared_preferences_android-2.4.2/lib/
 shared_preferences_foundation
 3.4
 file:///C:/Users/hamoo/AppData/Local/Pub/Cache/hosted/pub.dev/shared_preferences_foundation-2.5.4/
@@ -428,8 +436,8 @@ file:///C:/Users/hamoo/AppData/Local/Pub/Cache/hosted/pub.dev/yaml-3.1.3/
 file:///C:/Users/hamoo/AppData/Local/Pub/Cache/hosted/pub.dev/yaml-3.1.3/lib/
 sayyarti
 3.1
-file:///C:/Users/hamoo/Desktop/sayarati/Sayyarti_project/front/
-file:///C:/Users/hamoo/Desktop/sayarati/Sayyarti_project/front/lib/
+file:///C:/Users/hamoo/Desktop/Sayyarti_project/front/
+file:///C:/Users/hamoo/Desktop/Sayyarti_project/front/lib/
 sky_engine
 3.2
 file:///C:/src/flutter/bin/cache/pkg/sky_engine/
