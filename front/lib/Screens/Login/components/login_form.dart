@@ -48,6 +48,16 @@ class _LoginFormState extends State<LoginForm> {
         final prefs = await SharedPreferences.getInstance();
         prefs.setString('token', data['token']);
         prefs.setString('role', data['role']);
+        prefs.setString('name', data['username']);
+        prefs.setString('id', data['id'].toString());
+        final String? phone = data['phone'];
+        print(phone);
+        if (phone != null && phone.isNotEmpty) {
+          prefs.setString('phone', data['phone']);
+        } else {
+          prefs.remove('phone');
+        }
+
         if (data['role'] == 'user') {
           Navigator.push(
             context,

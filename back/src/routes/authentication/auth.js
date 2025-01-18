@@ -111,7 +111,9 @@ router.post('/signin', async (req, res) => {
                 message: 'Authentication successful',
                 token: token,
                 role: user.role,
-                id: user.id
+                id: user.id,
+                username: user.name,
+                phone: user.phone
             });//return the user role to navigate according to its role and the token for further auth
         }
     } catch (error) {

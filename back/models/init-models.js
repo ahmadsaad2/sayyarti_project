@@ -11,6 +11,7 @@ import _serviceorders from "./serviceorders.js";
 import _services from "./services.js";
 import _users from "./users.js";
 import _passwordreset from "./password-reset.js";
+import _address from "./address.js";
 
 export default function initModels(sequelize) {
   const cars = _cars(sequelize, DataTypes);
@@ -25,6 +26,7 @@ export default function initModels(sequelize) {
   const services = _services(sequelize, DataTypes);
   const users = _users(sequelize, DataTypes);
   const passwordreset = _passwordreset(sequelize, DataTypes);
+  const address = _address(sequelize, DataTypes);
 
   employees.belongsTo(companies, { as: "company", foreignKey: "company_id" });
   companies.hasMany(employees, { as: "employees", foreignKey: "company_id" });
@@ -52,6 +54,8 @@ export default function initModels(sequelize) {
   users.hasMany(rentalorders, { as: "rentalorders", foreignKey: "user_id" });
   serviceorders.belongsTo(users, { as: "user", foreignKey: "user_id" });
   users.hasMany(serviceorders, { as: "serviceorders", foreignKey: "user_id" });
+  address.belongsTo(users, { as: "user", foreignKey: "user_id" });
+  users.hasMany(address, { as: "addresses", foreignKey: "user_id" });
 
   return {
     cars,
@@ -66,6 +70,7 @@ export default function initModels(sequelize) {
     services,
     users,
     passwordreset,
+    address,
   };
 }
 
