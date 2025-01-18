@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sayyarti/Screens/admin/screens/admin_home.dart';
 import '../../home/home.dart';
+import '../../../screens/owner/owner.dart';
 import '../../../components/already_have_an_account_acheck.dart';
 import '../../../components/forgot_passwod.dart'; // Import the ForgotPassword widget
 import '../../../constants.dart';
@@ -23,12 +24,14 @@ class _LoginFormState extends State<LoginForm> {
   var _enteredEmail = '';
   var _enteredPass = '';
   var _isLogging = false;
+
   void _saveForm() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
       setState(() {
         _isLogging = true;
       });
+
       final url = Uri.http(backendUrl, '/auth/signin');
       final res = await http.post(
         url,
@@ -40,14 +43,20 @@ class _LoginFormState extends State<LoginForm> {
           'password': _enteredPass,
         }),
       );
+
       setState(() {
         _isLogging = false;
       });
+
       if (res.statusCode == 200) {
         final data = jsonDecode(res.body);
         final prefs = await SharedPreferences.getInstance();
+
+        // Save token and role in shared preferences
         prefs.setString('token', data['token']);
         prefs.setString('role', data['role']);
+
+        // Navigate based on the role
         if (data['role'] == 'user') {
           Navigator.push(
             context,
@@ -58,9 +67,13 @@ class _LoginFormState extends State<LoginForm> {
             context,
             MaterialPageRoute(builder: (context) => const AdminHome()),
           );
+        } else if (data['role'] == 'company_admin') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ServiceCenterHomePage()),
+          );
         }
-      }
-      if (res.statusCode >= 400) {
+      } else if (res.statusCode >= 400) {
         if (!context.mounted) {
           print('no context mounted');
           return;
@@ -136,7 +149,7 @@ class _LoginFormState extends State<LoginForm> {
                 if (value == null ||
                     value.isEmpty ||
                     value.trim().length <= 8) {
-                  return 'Password must be atleast 8 characters long.';
+                  return 'Password must be at least 8 characters long.';
                 }
                 return null;
               },

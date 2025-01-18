@@ -17,6 +17,10 @@ import '../service/roadservice.dart';
 import 'basket/orderpage.dart';
 import 'cart/CartPage.dart';
 // import '../owner/owner.dart';
+import '../serviceemergency/fueldeliverypage.dart';
+import '../serviceemergency/towingpage.dart';
+import '../serviceemergency/tyrepage.dart';
+import '../serviceemergency/jumpstart.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -183,7 +187,7 @@ class _HomePageState extends State<HomePage> {
               GridView.count(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                crossAxisCount: 4, // 4 columns
+                crossAxisCount: 3, // 4 columns
                 mainAxisSpacing: 10,
                 crossAxisSpacing: 10,
                 children: [
@@ -192,12 +196,12 @@ class _HomePageState extends State<HomePage> {
                   _buildSparePartsBox(context, 'Spare Parts',
                       'assets/images/part.jpg' // Replace with the image path for spare parts
                       ),
-                  _buildServiceBox(
-                    context,
-                    "Fuel",
-                    "assets/images/fuel.png",
-                    const WorkshopPage(workshopType: 'Fuel'),
-                  ),
+                  // _buildServiceBox(
+                  //   context,
+                  //   "Fuel",
+                  //   "assets/images/fuel.png",
+                  //   const WorkshopPage(workshopType: 'Fuel'),
+                  // ),
                   _buildServiceBox(
                     context,
                     "Car Wash",
@@ -216,12 +220,12 @@ class _HomePageState extends State<HomePage> {
                     "assets/images/oil.png",
                     const WorkshopPage(workshopType: 'Minor Service'),
                   ),
-                  _buildServiceBox(
-                    context,
-                    "trucks ",
-                    "assets/images/truck.png",
-                    const WorkshopPage(workshopType: 'Trucks'),
-                  ),
+                  // _buildServiceBox(
+                  //   context,
+                  //   "trucks ",
+                  //   "assets/images/truck.png",
+                  //   const WorkshopPage(workshopType: 'Trucks'),
+                  // ),
                   GestureDetector(
                     onTap: () => _showEmergencyServices(context),
                     child: _buildServiceBoxWithImage(
@@ -650,26 +654,21 @@ void _showEmergencyServices(BuildContext context) {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildEmergencyOption(
-                    context,
-                    "Jump Start",
-                    "assets/images/jmp.png",
-                    const RoadServicePage(roadServiceType: 'Jump Start')),
-                _buildEmergencyOption(
-                    context,
-                    "Tire Problems",
-                    "assets/images/rep.png",
-                    const RoadServicePage(roadServiceType: 'Tire Problems')),
+                _buildEmergencyOption(context, "Jump Start",
+                    "assets/images/jmp.png", JumpStartAssistancePage()),
+                // const RoadServicePage(roadServiceType: 'Jump Start')),
+                _buildEmergencyOption(context, "Tire Problems",
+                    "assets/images/rep.png", TireProblemOverviewPage()),
+                // const RoadServicePage(roadServiceType: 'Tire Problems')),
                 _buildEmergencyOption(
                     context,
                     "Towing Service",
                     "assets/images/tawing.png",
-                    const RoadServicePage(roadServiceType: 'Towing Service')),
-                _buildEmergencyOption(
-                    context,
-                    "Fuel Delivery",
-                    "assets/images/fuel.png",
-                    const RoadServicePage(roadServiceType: 'Fuel Delivery')),
+                    // const RoadServicePage(roadServiceType: 'Towing Service')),
+                    TowingServiceOverviewPage()),
+                _buildEmergencyOption(context, "Fuel Delivery",
+                    "assets/images/fuel.png", FuelDeliveryPage()),
+                // const RoadServicePage(roadServiceType: 'Fuel Delivery')),
               ],
             ),
           ],
@@ -704,84 +703,6 @@ Widget _buildEmergencyOption(
       ],
     ),
   );
-}
-
-// Dummy Pages for Navigation
-class FuelPage extends StatelessWidget {
-  const FuelPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(title: const Text('Fuel Service')),
-        body: const Center(child: Text("Fuel Service Page")));
-  }
-}
-
-class CarWashPage extends StatelessWidget {
-  const CarWashPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(title: const Text('Car Wash')),
-        body: const Center(child: Text("Car Wash Page")));
-  }
-}
-
-class TyresPage extends StatelessWidget {
-  const TyresPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(title: const Text('Tyres Service')),
-        body: const Center(child: Text("Tyres Service Page")));
-  }
-}
-
-class MinorServicePage extends StatelessWidget {
-  const MinorServicePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(title: const Text('Minor Service')),
-        body: const Center(child: Text("Minor Service Page")));
-  }
-}
-
-class OilChangePage extends StatelessWidget {
-  const OilChangePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(title: const Text('Oil Change')),
-        body: const Center(child: Text("Oil Change Page")));
-  }
-}
-
-class BatteryPage extends StatelessWidget {
-  const BatteryPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(title: const Text('Battery Service')),
-        body: const Center(child: Text("Battery Service Page")));
-  }
-}
-
-class InspectionPage extends StatelessWidget {
-  const InspectionPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(title: const Text('Inspection Service')),
-        body: const Center(child: Text("Inspection Service Page")));
-  }
 }
 
 class MorePage extends StatefulWidget {
