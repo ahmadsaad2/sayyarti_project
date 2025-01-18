@@ -11,6 +11,7 @@ dotenv.config();
 //import routes
 import authentication from './src/routes/authentication/auth.js';
 import admin from './src/routes/admin/admin.js';
+import user from './src/routes/user/user.js';
 
 
 //connection to database and sync the tables
@@ -34,6 +35,7 @@ app.use(express.json());
 // Routes
 app.use('/auth', authentication);
 app.use('/admin', admin);
+app.use('/user', user);
 
 
 const PORT = process.env.PORT || 5000;
