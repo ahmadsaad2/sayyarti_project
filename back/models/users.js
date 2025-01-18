@@ -32,6 +32,23 @@ export default function(sequelize, DataTypes) {
       type: DataTypes.ENUM('user','service_provider','admin','company_admin'),
       allowNull: false,
       defaultValue: 'user'
+    },
+    lat: {
+      type: DataTypes.FLOAT,
+      allowNull: true, 
+    },
+    lng: {
+      type: DataTypes.FLOAT,
+      allowNull: true, 
+    },
+    img_uri: {
+      type: DataTypes.STRING(512), // Adjust the length based on your URI needs
+      allowNull: true, // Set to false if the field is required
+    },
+    trusted: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
     }
   }, {
     sequelize,
