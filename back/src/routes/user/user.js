@@ -7,7 +7,7 @@ import nodemailer from 'nodemailer';
 import { verifyTokenAndAuthorization } from '../../middleware/userVerification.js';
 
 dotenv.config();
-const { companies, users, employees } = models;
+const { companies, users, address } = models;
 const router = Router();
 
 
@@ -30,6 +30,42 @@ router.put('/info-update/:id', verifyTokenAndAuthorization, async (req, res) => 
         console.log(error);
         return res.status(500).json({ message: 'Server error' });
     }
-})
+});
+/**
+ * @desc ADD an address 
+ * @route /api/user/add-address/:id
+ * @method POST
+ * @access private
+ */
+router.post('/add-address/:id', verifyTokenAndAuthorization, async (req, res) => {
+    try {
+        const newAddress = await address.create({
+            address: req.body.address,
+            lat: req.body.lat,
+            lng: req.body.lng,
+            user_id: req.params.id,
+        });
+        return res.status(200).json({ message: 'address added successfully', newAddress });
+    } catch (error) {
+        
+    }
+});
+
+/**
+ * @desc get all user addresses 
+ * @route /api/user/get-address/:id
+ * @method GET
+ * @access private
+ */
+router.get('/get-address/:id', verifyTokenAndAuthorization, async (req, res) => {
+    try {
+        const addresses = await address.findAll({
+            where: { user_id: req.params.id }
+        });
+        return res.status(200).json({ addresses });
+    } catch (error) {
+        
+    }
+});
 
 export default router;

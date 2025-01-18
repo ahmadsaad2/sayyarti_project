@@ -20,9 +20,9 @@ class _MyProfilePageState extends State<MyProfilePage> {
   @override
   void initState() {
     super.initState();
-    _usernameController.text = "Ahmad PS";
-    _phoneController.text = "+1";
-    _emailController.text = "ahmadps991@gmail.com";
+    _usernameController.text = "";
+    _phoneController.text = "059";
+    _emailController.text = "";
   }
 
   @override
