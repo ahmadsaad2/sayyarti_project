@@ -35,12 +35,8 @@ export default function(sequelize, DataTypes) {
       type: DataTypes.DECIMAL(10,2),
       allowNull: false
     },
-    payment_methods: {
-      type: DataTypes.TEXT,
-      allowNull: true
-    },
     image_urls: {
-      type: DataTypes.TEXT,
+      type: DataTypes.JSON,
       allowNull: true
     }
   }, {
