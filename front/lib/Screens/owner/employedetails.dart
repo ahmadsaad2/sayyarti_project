@@ -5,8 +5,7 @@ import '../class/work_assignment.dart';
 class EmployeeDetailsPage extends StatefulWidget {
   final Employee employee;
 
-  const EmployeeDetailsPage({Key? key, required this.employee})
-      : super(key: key);
+  const EmployeeDetailsPage({super.key, required this.employee});
 
   @override
   EmployeeDetailsPageState createState() => EmployeeDetailsPageState();

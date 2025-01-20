@@ -1,3 +1,4 @@
+import Joi from 'joi';
 import Sequelize from 'sequelize';
 export default function(sequelize, DataTypes) {
   return sequelize.define('companies', {
@@ -23,6 +24,11 @@ export default function(sequelize, DataTypes) {
     email: {
       type: DataTypes.STRING(255),
       allowNull: false
+    },
+    image:{
+      type:DataTypes.STRING(255),
+      allowNull:true,
+
     }
   }, {
     sequelize,

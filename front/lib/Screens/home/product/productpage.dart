@@ -5,7 +5,7 @@ import '../cart/CartPage.dart';
 class ProductPage extends StatefulWidget {
   final String categoryName;
 
-  const ProductPage({Key? key, required this.categoryName}) : super(key: key);
+  const ProductPage({super.key, required this.categoryName});
 
   @override
   _ProductPageState createState() => _ProductPageState();
@@ -13,11 +13,11 @@ class ProductPage extends StatefulWidget {
 
 class _ProductPageState extends State<ProductPage> {
   int _selectedIndex = 0;
-  String _selectedType = "All";
+  final String _selectedType = "All";
   String _selectedCarCategory = "All";
   String _selectedPriceOrder = "Default";
   String _searchQuery = "";
-  TextEditingController _searchController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
 
   static const List<String> _categories = <String>[
     'Spare Parts',

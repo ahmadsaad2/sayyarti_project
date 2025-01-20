@@ -5,8 +5,7 @@ import '../../clientbooking/bookingpage.dart';
 class WorkshopDetailsPage extends StatelessWidget {
   final Map<String, dynamic> workshop;
 
-  const WorkshopDetailsPage({Key? key, required this.workshop})
-      : super(key: key);
+  const WorkshopDetailsPage({super.key, required this.workshop});
 
   @override
   Widget build(BuildContext context) {

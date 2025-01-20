@@ -7,10 +7,10 @@ class ServiceDetailsPage extends StatefulWidget {
   final List<TrackingStep> trackingSteps;
 
   const ServiceDetailsPage({
-    Key? key,
+    super.key,
     required this.orderDetails,
     required this.trackingSteps,
-  }) : super(key: key);
+  });
 
   @override
   _ServiceDetailsPageState createState() => _ServiceDetailsPageState();

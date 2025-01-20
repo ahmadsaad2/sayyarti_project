@@ -12,6 +12,7 @@ dotenv.config();
 import authentication from './src/routes/authentication/auth.js';
 import admin from './src/routes/admin/admin.js';
 import user from './src/routes/user/user.js';
+import companyRoutes from '../back/src/routes/admin/compnoayRoutes.js';
 
 
 //connection to database and sync the tables
@@ -36,6 +37,7 @@ app.use(express.json());
 app.use('/auth', authentication);
 app.use('/admin', admin);
 app.use('/user', user);
+app.use('/api/admin', companyRoutes);
 
 
 const PORT = process.env.PORT || 5000;

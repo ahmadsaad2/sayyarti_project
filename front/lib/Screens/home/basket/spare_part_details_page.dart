@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 class OfferDetailsPage extends StatelessWidget {
   final List<Map<String, dynamic>> selectedOffers;
 
-  const OfferDetailsPage({Key? key, required this.selectedOffers})
-      : super(key: key);
+  const OfferDetailsPage({super.key, required this.selectedOffers});
 
   @override
   Widget build(BuildContext context) {

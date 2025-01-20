@@ -6,7 +6,7 @@ import 'BookingSuccessPage.dart';
 class BookingPage extends StatefulWidget {
   final Map<String, dynamic> workshop;
 
-  const BookingPage({Key? key, required this.workshop}) : super(key: key);
+  const BookingPage({super.key, required this.workshop});
 
   @override
   _BookingPageState createState() => _BookingPageState();

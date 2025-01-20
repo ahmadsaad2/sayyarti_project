@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import '../home/cart/CartPage.dart';
+import 'package:sayyarti/screens/home/cart/CartPage.dart';
 
 class ProductDetailsPage extends StatefulWidget {
   final Map<String, dynamic> product;
 
-  const ProductDetailsPage({Key? key, required this.product}) : super(key: key);
+  const ProductDetailsPage({super.key, required this.product});
 
   @override
   _ProductDetailsPageState createState() => _ProductDetailsPageState();

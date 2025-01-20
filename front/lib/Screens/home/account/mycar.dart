@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../service/addcar.dart'; // Import the AddCarPage
 
 class MyCarsPage extends StatelessWidget {
-  MyCarsPage({Key? key}) : super(key: key);
+  MyCarsPage({super.key});
 
   final List<Map<String, String>> cars = [
     {'title': 'Car 1', 'model': '2022', 'subtitle': 'Model: 2022'},

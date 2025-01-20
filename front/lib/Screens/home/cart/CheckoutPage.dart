@@ -4,7 +4,7 @@ import 'sucessorder.dart';
 class CheckoutPage extends StatefulWidget {
   final double total;
 
-  const CheckoutPage({Key? key, required this.total}) : super(key: key);
+  const CheckoutPage({super.key, required this.total});
 
   @override
   _CheckoutPageState createState() => _CheckoutPageState();

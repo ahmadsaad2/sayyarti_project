@@ -15,8 +15,6 @@ class ServiceCenterHomePage extends StatelessWidget {
   final String contact = '123-456-7890';
   final String details = 'Expert in car repairs and maintenance.';
   final String imagePath = 'assets/images/5.jpg'; // Placeholder image path
-  final double totalRevenue = 15000.0;
-  final double cashFlow = 5000.0;
 
   final List<Map<String, String>> bookings = [
     {
