@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'Screens/Welcome/welcome_screen.dart';
 import 'constants.dart';
+import 'Screens/Welcome/welcome_screen.dart';
 
 final theme = ThemeData(
   primaryColor: const Color.fromARGB(255, 8, 75, 219),
@@ -63,7 +63,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
   void initState() {
     super.initState();
     // Simulate a loading process
-    Future.delayed(const Duration(seconds: 3), () {
+    Future.delayed(const Duration(seconds: 5), () {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) => const WelcomeScreen()),
       );
@@ -73,31 +73,14 @@ class _LoadingScreenState extends State<LoadingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFF002b92), // Use the hex color code here
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset('assets/images/logo.png'), // Add your logo image
+            Image.asset('assets/images/logo.gif'),
             const SizedBox(height: 20),
-            const Text(
-              'Sayyarti',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
-            ),
-            const SizedBox(height: 10),
-            const Text(
-              'For everything you need for your car',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey,
-              ),
-            ),
-            const SizedBox(height: 20),
-            const CircularProgressIndicator(), // Loading indicator
+            const CircularProgressIndicator(),
           ],
         ),
       ),
