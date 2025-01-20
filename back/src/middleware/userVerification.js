@@ -18,7 +18,7 @@ export function verifyToken(req, res, next) {
 //verify token & authorize the user
 export function verifyTokenAndAuthorization(req, res, next) {
     verifyToken(req, res, () => {
-        if (req.user.id === req.params.id || req.user.role == 'admin') {
+        if (req.user.userId == req.params.id || req.user.role == 'admin') {
             next();
         } else {
             return res.status(403).json({ message: 'you are not allowed' });

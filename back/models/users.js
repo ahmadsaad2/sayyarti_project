@@ -24,15 +24,25 @@ export default function(sequelize, DataTypes) {
       type: DataTypes.STRING(20),
       allowNull: true
     },
-    address: {
-      type: DataTypes.TEXT,
-      allowNull: true
-    },
     role: {
       type: DataTypes.ENUM('user','service_provider','admin','company_admin'),
       allowNull: false,
       defaultValue: 'user'
-    }
+    },
+    img_uri: {
+      type: DataTypes.STRING(512), 
+      allowNull: true, 
+    },
+    trusted: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
+    verify_stat:{
+      type: DataTypes.ENUM('verified','pending','unverified'),
+      allowNull: false,
+      defaultValue: 'unverified'
+    },
   }, {
     sequelize,
     tableName: 'users',

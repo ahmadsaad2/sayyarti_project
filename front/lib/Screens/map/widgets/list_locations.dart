@@ -3,9 +3,11 @@ import 'package:sayyarti/model/place.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class LocationList extends StatelessWidget {
-  const LocationList({super.key, required this.locations});
+  const LocationList(
+      {super.key, required this.locations, required this.isLoading});
 
   final List<Place> locations;
+  final bool isLoading;
 
   String locationImage(lat, lng) {
     return 'https://maps.googleapis.com/maps/api/staticmap?center=$lat,$lng&zoom=16&size=600x300&maptype=roadmap&markers=color:blue%7Clabel:A%7C$lat,$lng&key=${dotenv.env['GOOGLE_MAPS_API_KEY']}';
@@ -13,12 +15,16 @@ class LocationList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
     if (locations.isEmpty) {
       return const Center(
         child: Text('No addresses have been added yet!'),
       );
     }
-
     return ListView.builder(
       itemCount: locations.length,
       itemBuilder: (ctx, index) => ListTile(

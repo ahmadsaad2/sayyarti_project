@@ -3,7 +3,7 @@ import 'package:sayyarti/Screens/admin/screens/admin_home.dart';
 import '../../home/home.dart';
 import '../../../screens/owner/owner.dart';
 import '../../../components/already_have_an_account_acheck.dart';
-import '../../../components/forgot_passwod.dart'; // Import the ForgotPassword widget
+import '../../../components/forgot_passwod.dart';
 import '../../../constants.dart';
 import '../../Signup/signup_screen.dart';
 import 'dart:convert';
@@ -55,8 +55,18 @@ class _LoginFormState extends State<LoginForm> {
         // Save token and role in shared preferences
         prefs.setString('token', data['token']);
         prefs.setString('role', data['role']);
+        prefs.setString('name', data['username']);
+        prefs.setString('id', data['id'].toString());
+        prefs.setBool('trusted', data['istrusted']);
+        print(data['istrusted'].toString());
+        final String? phone = data['phone'];
+        print(phone);
+        if (phone != null && phone.isNotEmpty) {
+          prefs.setString('phone', data['phone']);
+        } else {
+          prefs.remove('phone');
+        }
 
-        // Navigate based on the role
         if (data['role'] == 'user') {
           Navigator.push(
             context,
@@ -70,7 +80,14 @@ class _LoginFormState extends State<LoginForm> {
         } else if (data['role'] == 'company_admin') {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => ServiceCenterHomePage()),
+            MaterialPageRoute(
+                builder: (context) => const Text('company_admin')),
+          );
+        } else if (data['role'] == 'service_provider') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => const Text('service_provider')),
           );
         }
       } else if (res.statusCode >= 400) {
