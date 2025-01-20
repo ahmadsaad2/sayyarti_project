@@ -30,7 +30,7 @@ export default function(sequelize, DataTypes) {
       defaultValue: 'user'
     },
     img_uri: {
-      type: DataTypes.STRING(512), 
+      type: DataTypes.TEXT, 
       allowNull: true, 
     },
     trusted: {
