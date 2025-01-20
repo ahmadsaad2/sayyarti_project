@@ -113,7 +113,8 @@ router.post('/signin', async (req, res) => {
                 role: user.role,
                 id: user.id,
                 username: user.name,
-                phone: user.phone
+                phone: user.phone,
+                istrusted: user.trusted
             });//return the user role to navigate according to its role and the token for further auth
         }
     } catch (error) {

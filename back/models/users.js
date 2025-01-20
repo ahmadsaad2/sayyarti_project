@@ -37,7 +37,12 @@ export default function(sequelize, DataTypes) {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,
-    }
+    },
+    verify_stat:{
+      type: DataTypes.ENUM('verified','pending','unverified'),
+      allowNull: false,
+      defaultValue: 'unverified'
+    },
   }, {
     sequelize,
     tableName: 'users',

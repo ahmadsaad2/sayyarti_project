@@ -1,6 +1,8 @@
 // ignore_for_file: library_private_types_in_public_api
 
 import 'package:flutter/material.dart';
+import 'package:sayyarti/Screens/home/accountverifiaction/screen/verify.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../home/adscroller.dart';
 import 'offercard.dart';
 import 'adpage.dart';
@@ -793,9 +795,25 @@ class MorePage extends StatefulWidget {
 }
 
 class _MorePageState extends State<MorePage> {
+  var _istrusted = false;
+  String userName = '';
+  void _trusted() async {
+    final prefs = await SharedPreferences.getInstance();
+    final trusted = prefs.getBool('trusted');
+    userName = prefs.getString('name') ?? '';
+    setState(() {
+      _istrusted = trusted ?? false;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _trusted();
+  }
+
   @override
   Widget build(BuildContext context) {
-    String userName = 'User Name';
     int point = 0;
     String firstLetter = userName.isNotEmpty
         ? userName[0].toUpperCase()
@@ -872,12 +890,27 @@ class _MorePageState extends State<MorePage> {
                 );
               },
             ),
+            _istrusted
+                ? const SizedBox.shrink()
+                : ListTile(
+                    leading: const Icon(Icons.verified_user_outlined),
+                    title: const Text('Verify Your Account'),
+                    trailing: const Icon(Icons.arrow_forward_ios),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const Verify()),
+                      );
+                    },
+                  ),
             ListTile(
               leading: const Icon(Icons.logout),
               title: const Text('LogOut'),
               trailing: const Icon(Icons.arrow_forward_ios),
-              onTap: () {
-                Navigator.push(
+              onTap: () async {
+                final prefs = await SharedPreferences.getInstance();
+                await prefs.clear();
+                Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
                       builder: (context) => const WelcomeScreen()),
@@ -891,8 +924,10 @@ class _MorePageState extends State<MorePage> {
                 style: TextStyle(color: Colors.red),
               ),
               trailing: const Icon(Icons.arrow_forward_ios),
-              onTap: () {
-                Navigator.push(
+              onTap: () async {
+                final prefs = await SharedPreferences.getInstance();
+                await prefs.clear();
+                Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(builder: (context) => DeleteAccountPage()),
                 );
