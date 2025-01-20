@@ -68,4 +68,22 @@ router.get('/get-address/:id', verifyTokenAndAuthorization, async (req, res) => 
     }
 });
 
+/**
+ * @desc get user info 
+ * @route /api/user/get-address/:id
+ * @method GET
+ * @access private
+ */
+router.get('/get-info/:id', verifyTokenAndAuthorization, async (req, res) => {
+    console.log('getting user info');
+    try {
+        const user = await users.findByPk(req.params.id);
+        console.log('done');
+        return res.status(200).json({ user });
+    } catch (error) {
+        console.log('done');
+        return res.status(500).json({ message: 'Server error' });
+    }
+});
+
 export default router;

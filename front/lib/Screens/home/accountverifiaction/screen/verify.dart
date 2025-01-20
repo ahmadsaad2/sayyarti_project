@@ -11,7 +11,7 @@ class Verify extends StatelessWidget {
         title: const Text('Verify Account'),
         backgroundColor: const Color.fromARGB(255, 16, 80, 177),
       ),
-      body: Center(
+      body: const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

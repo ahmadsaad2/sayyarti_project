@@ -75,8 +75,7 @@ router.get('/company', verifyTokenAndAdmin, async (req, res) => {
  * @method POST
  * @access private
  */
-//role company_admin
-// role admin
+
 router.post('/company-admin/create', verifyTokenAndAdmin, async (req, res) => {
     try {
         console.log('creating the company admin');
@@ -118,6 +117,28 @@ router.post('/company-admin/create', verifyTokenAndAdmin, async (req, res) => {
         console.log('stage 4 done');
 
         return res.status(201).json({ message: 'company admin created successfully', newUser, newEmployee });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: 'Server error' });
+    }
+});
+
+/**
+ * @desc Get all unverified users
+ * @route /api/admin/company-admin/create
+ * @method GET
+ * @access private
+ */
+router.get('/unverified-users', async (req, res) => {
+    try {
+        const unverifiedUsers = await users.findAll({
+            where: { verify_stat: 'pending' },
+            attributes: ['id','name', 'img_uri', 'role']
+        });
+        if (unverifiedUsers.length === 0) {
+            return res.status(207).json({ message: 'No  users found' });
+        }
+        return res.status(200).json({ unverifiedUsers });
     } catch (error) {
         console.log(error);
         return res.status(500).json({ message: 'Server error' });
