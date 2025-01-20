@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sayyarti/Screens/admin/screens/admin_home.dart';
 import '../../home/home.dart';
 import '../../../components/already_have_an_account_acheck.dart';
-import '../../../components/forgot_passwod.dart'; // Import the ForgotPassword widget
+import '../../../components/forgot_passwod.dart';
 import '../../../constants.dart';
 import '../../Signup/signup_screen.dart';
 import 'dart:convert';
@@ -50,6 +50,8 @@ class _LoginFormState extends State<LoginForm> {
         prefs.setString('role', data['role']);
         prefs.setString('name', data['username']);
         prefs.setString('id', data['id'].toString());
+        prefs.setBool('trusted', data['istrusted']);
+        print(data['istrusted'].toString());
         final String? phone = data['phone'];
         print(phone);
         if (phone != null && phone.isNotEmpty) {

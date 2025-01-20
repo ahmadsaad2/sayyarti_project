@@ -37,14 +37,14 @@ class _AddressPageState extends State<AddressPage> {
         final response = json.decode(backRes.body);
         final List<dynamic> data = response['addresses'];
         final List<Place> loadedLocations = [];
-        data.forEach((location) {
+        for (var location in data) {
           loadedLocations.add(Place(
             address: location['address'],
             latitude: location['lat'],
             longitude: location['lng'],
             isDefault: location['is_default'],
           ));
-        });
+        }
         setState(() {
           _locations.addAll(loadedLocations);
           _isLoading = false;
