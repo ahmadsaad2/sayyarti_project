@@ -6,11 +6,11 @@ class AdDetailsPage extends StatelessWidget {
   final String adDescription;
 
   const AdDetailsPage({
-    Key? key,
+    super.key,
     required this.imagePath,
     required this.adTitle,
     required this.adDescription,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

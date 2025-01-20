@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'Screens/Welcome/welcome_screen.dart';
-import 'package:sayyarti/constants.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'Screens/Welcome/welcome_screen.dart';
+import 'constants.dart';
 
 final theme = ThemeData(
   primaryColor: const Color.fromARGB(255, 8, 75, 219),
@@ -36,7 +36,7 @@ Future<void> main() async {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +45,61 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'Sayyarti',
         theme: theme,
-        home: const WelcomeScreen(),
+        home: const LoadingScreen(),
+      ),
+    );
+  }
+}
+
+class LoadingScreen extends StatefulWidget {
+  const LoadingScreen({super.key});
+
+  @override
+  _LoadingScreenState createState() => _LoadingScreenState();
+}
+
+class _LoadingScreenState extends State<LoadingScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Simulate a loading process
+    Future.delayed(const Duration(seconds: 3), () {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const WelcomeScreen()),
+      );
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset('assets/images/logo.png'), // Add your logo image
+            const SizedBox(height: 20),
+            const Text(
+              'Sayyarti',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+            const SizedBox(height: 10),
+            const Text(
+              'For everything you need for your car',
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey,
+              ),
+            ),
+            const SizedBox(height: 20),
+            const CircularProgressIndicator(), // Loading indicator
+          ],
+        ),
       ),
     );
   }

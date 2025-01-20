@@ -10,7 +10,7 @@ dotenv.config();
 const { companies, users, employees } = models;
 const router = Router();
 
-//nodemailer set up 
+//nodemailer set up
 const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
     port: 465,

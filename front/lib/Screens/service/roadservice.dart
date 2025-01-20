@@ -4,8 +4,7 @@ import 'package:flutter/material.dart';
 class RoadServiceDetailsPage extends StatelessWidget {
   final Map<String, dynamic> roadService;
 
-  const RoadServiceDetailsPage({Key? key, required this.roadService})
-      : super(key: key);
+  const RoadServiceDetailsPage({super.key, required this.roadService});
 
   @override
   Widget build(BuildContext context) {
@@ -87,8 +86,7 @@ class RoadServiceDetailsPage extends StatelessWidget {
 class RoadServicePage extends StatefulWidget {
   final String roadServiceType; // Parameter to filter road services by type
 
-  const RoadServicePage({Key? key, required this.roadServiceType})
-      : super(key: key);
+  const RoadServicePage({super.key, required this.roadServiceType});
 
   @override
   // ignore: library_private_types_in_public_api

@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 class BookingSuccessPage extends StatelessWidget {
   final Map<String, dynamic> bookingData;
 
-  const BookingSuccessPage({Key? key, required this.bookingData})
-      : super(key: key);
+  const BookingSuccessPage({super.key, required this.bookingData});
 
   @override
   Widget build(BuildContext context) {
