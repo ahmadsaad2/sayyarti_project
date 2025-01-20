@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart'; // Ensure this package is added to pubspec.yaml
+import '../../model/assistancerequest.dart'; // Import the AssistanceRequest model
 
 class TowingServiceFormPage extends StatefulWidget {
   const TowingServiceFormPage({super.key});
@@ -49,7 +50,7 @@ class _TowingServiceFormPageState extends State<TowingServiceFormPage> {
             child: FlutterMap(
               options: MapOptions(
                 initialCenter: LatLng(32.2211, 35.2544), // Nablus, Palestine
-                initialZoom: 13.0, // Adjust the zoom level as needed
+                initialZoom: 13.0,
                 onTap: (tapPosition, point) {
                   setState(() {
                     if (isPickup) {
@@ -61,9 +62,9 @@ class _TowingServiceFormPageState extends State<TowingServiceFormPage> {
               ),
               children: [
                 TileLayer(
-                  urlTemplate:
-                      'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                  subdomains: ['a', 'b', 'c'],
+                  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                  userAgentPackageName:
+                      'com.example.app', // Add your app's package name
                 ),
                 if (isPickup && pickupLocation != null)
                   MarkerLayer(
@@ -83,7 +84,6 @@ class _TowingServiceFormPageState extends State<TowingServiceFormPage> {
     );
   }
 
-  // Validate and Submit
   void _submitRequest(BuildContext context) {
     if (phoneNumberController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -92,21 +92,35 @@ class _TowingServiceFormPageState extends State<TowingServiceFormPage> {
       return;
     }
 
-    // Print all details in the terminal
-    print('Car Brand: $selectedCarBrand');
-    print('License Plate Number: ${licensePlateController.text}');
-    print('Vehicle Type: $selectedVehicleType');
-    print('Vehicle Condition: $selectedVehicleCondition');
-    print('Pickup Address: ${pickupAddressController.text}');
-    print(
-        'Pickup Location: ${pickupLocation?.latitude}, ${pickupLocation?.longitude}');
-    print('Nearest Landmark: ${nearestLandmarkController.text}');
-    print('Destination Address: ${destinationAddressController.text}');
-    print('Preferred Drop-off Point: $preferredDropOffPoint');
-    print('Towing Type: $selectedTowingType');
-    print('Customer Name: ${customerNameController.text}');
-    print('Phone Number: ${phoneNumberController.text}');
-    print('Alternative Contact: ${alternativeContactController.text}');
+    // Create an AssistanceRequest object
+    AssistanceRequest request = AssistanceRequest(
+      userId: 1, // Replace with actual user ID
+      serviceType: "Towing", // Hardcoded service type
+      requestDate: DateTime.now(), // Current date and time
+      vehicleMakeModel: selectedCarBrand,
+      vehicleType: selectedVehicleType,
+      licensePlate: licensePlateController.text,
+      vehicleCondition: selectedVehicleCondition,
+      currentLocationAddress: pickupAddressController.text,
+      nearestLandmark: nearestLandmarkController.text,
+      latitude: pickupLocation?.latitude,
+      longitude: pickupLocation?.longitude,
+      towingType: selectedTowingType,
+      preferredDropOffPoint: preferredDropOffPoint,
+      customerName: customerNameController.text,
+      phoneNumber: phoneNumberController.text,
+      alternativeContact: alternativeContactController.text,
+    );
+
+    // Print the request data to the debug console
+    print('Confirmed Order Data:');
+    print(request.toJson());
+
+    // Add the request to the list
+    AssistanceRequest().addRequest(request);
+
+    // Print all requests for debugging
+    AssistanceRequest().printAllRequests();
 
     // Navigate to confirmation page
     Navigator.push(

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart'; // Ensure this package is added to pubspec.yaml
+import '../../model/assistancerequest.dart'; // Import the AssistanceRequestModel class
+import 'conforimorder.dart'; // Import the OrderConfirmationPage class
 
 class FuelDeliveryPage extends StatefulWidget {
   const FuelDeliveryPage({super.key});
@@ -10,19 +12,23 @@ class FuelDeliveryPage extends StatefulWidget {
 }
 
 class _FuelDeliveryPageState extends State<FuelDeliveryPage> {
-  String selectedCarType = 'Sedan'; // Changed to car type
+  int userId = 1; // Example userId
+  TextEditingController customerNameController = TextEditingController();
+
+  String selectedCarType = 'Sedan';
   String selectedFuelType = 'Petrol';
-  double fuelQuantity = 10.0; // Default fuel quantity in liters
+  double fuelQuantity = 10.0;
   DateTime selectedTime = DateTime.now();
-  DateTime selectedDate = DateTime.now(); // Added for date selection
+  DateTime selectedDate = DateTime.now();
   TextEditingController locationController = TextEditingController();
-  TextEditingController nearestLocationController =
-      TextEditingController(); // Added for nearest location
-  TextEditingController phoneNumberController =
-      TextEditingController(); // Added for phone number validation
+  TextEditingController nearestLocationController = TextEditingController();
+  TextEditingController phoneNumberController = TextEditingController();
   LatLng? selectedLocation;
-  double pricePerLiter = 2.0; // Example price per liter
-  double totalPrice = 0.0; // Added for total price calculation
+  double pricePerLiter = 2.0;
+  double totalPrice = 0.0;
+
+  // Define the list to store assistance requests
+  List<AssistanceRequest> dummyAssistanceRequests = [];
 
   Future<void> _selectTime(BuildContext context) async {
     final TimeOfDay? picked = await showTimePicker(
@@ -67,20 +73,19 @@ class _FuelDeliveryPageState extends State<FuelDeliveryPage> {
             height: 300,
             child: FlutterMap(
               options: MapOptions(
-                initialCenter: LatLng(32.2211, 35.2544), // Nablus, Palestine
-                initialZoom: 13.0, // Adjust the zoom level as needed
+                initialCenter: LatLng(32.2211, 35.2544),
+                initialZoom: 13.0,
                 onTap: (tapPosition, point) {
                   setState(() {
                     selectedLocation = point;
                   });
-                  Navigator.pop(context); // Close the map dialog
+                  Navigator.pop(context);
                 },
               ),
               children: [
                 TileLayer(
                   urlTemplate:
-                      'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                  subdomains: ['a', 'b', 'c'],
+                      'https://tile.openstreetmap.org/{z}/{x}/{y}.png', // Updated URL
                 ),
                 if (selectedLocation != null)
                   MarkerLayer(
@@ -107,9 +112,11 @@ class _FuelDeliveryPageState extends State<FuelDeliveryPage> {
   }
 
   void _navigateToOrderConfirmation(BuildContext context) {
-    if (phoneNumberController.text.isEmpty) {
+    if (phoneNumberController.text.isEmpty ||
+        customerNameController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter your phone number.')),
+        const SnackBar(
+            content: Text('Please enter your name and phone number.')),
       );
       return;
     }
@@ -127,15 +134,35 @@ class _FuelDeliveryPageState extends State<FuelDeliveryPage> {
           nearestLocation: nearestLocationController.text,
           selectedLocation: selectedLocation,
           phoneNumber: phoneNumberController.text,
+          userId: userId, // Pass userId
+          customerName: customerNameController.text, // Pass customerName
+          onConfirmOrder: (request) {
+            addRequest(request);
+          },
         ),
       ),
     );
   }
 
+  void addRequest(AssistanceRequest request) {
+    // Add the request to the list
+    dummyAssistanceRequests.add(request);
+
+    // Print all requests for debugging
+    printAllRequests();
+  }
+
+  void printAllRequests() {
+    print('All Assistance Requests in the List:');
+    for (var request in dummyAssistanceRequests) {
+      print(request.toJson()); // Print each request as JSON
+    }
+  }
+
   @override
   void initState() {
     super.initState();
-    _calculateTotalPrice(); // Initialize total price
+    _calculateTotalPrice();
   }
 
   @override
@@ -149,7 +176,6 @@ class _FuelDeliveryPageState extends State<FuelDeliveryPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Hero Image
             Container(
               width: double.infinity,
               height: 250,
@@ -161,7 +187,6 @@ class _FuelDeliveryPageState extends State<FuelDeliveryPage> {
               ),
             ),
             const SizedBox(height: 20),
-            // Service Details Section
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
@@ -185,7 +210,7 @@ class _FuelDeliveryPageState extends State<FuelDeliveryPage> {
                   ),
                   const SizedBox(height: 20),
                   const Text(
-                    "Select the Type of Car:", // Changed to "Select the Type of Car"
+                    "Select the Type of Car:",
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -262,7 +287,7 @@ class _FuelDeliveryPageState extends State<FuelDeliveryPage> {
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    'Total Price: \${totalPrice.toStringAsFixed(2)}',
+                    'Total Price: \$${totalPrice.toStringAsFixed(2)}',
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -348,6 +373,25 @@ class _FuelDeliveryPageState extends State<FuelDeliveryPage> {
                   ),
                   const SizedBox(height: 20),
                   const Text(
+                    "Enter Your Name:",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  TextFormField(
+                    controller: customerNameController,
+                    decoration: InputDecoration(
+                      hintText: 'Enter your name',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  const Text(
                     "Enter Your Phone Number:",
                     style: TextStyle(
                       fontSize: 18,
@@ -382,99 +426,6 @@ class _FuelDeliveryPageState extends State<FuelDeliveryPage> {
                     ),
                   ),
                 ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class OrderConfirmationPage extends StatelessWidget {
-  final String carType;
-  final String fuelType;
-  final double fuelQuantity;
-  final double totalPrice;
-  final DateTime selectedDate;
-  final DateTime selectedTime;
-  final String nearestLocation;
-  final LatLng? selectedLocation;
-  final String phoneNumber;
-
-  const OrderConfirmationPage({
-    super.key,
-    required this.carType,
-    required this.fuelType,
-    required this.fuelQuantity,
-    required this.totalPrice,
-    required this.selectedDate,
-    required this.selectedTime,
-    required this.nearestLocation,
-    required this.selectedLocation,
-    required this.phoneNumber,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    // Print details in the terminal
-    print('Car Type: $carType');
-    print('Fuel Type: $fuelType');
-    print('Fuel Quantity: $fuelQuantity liters');
-    print('Total Price: \$${totalPrice.toStringAsFixed(2)}');
-    print('Selected Date: ${selectedDate.toLocal()}');
-    print('Selected Time: ${selectedTime.hour}:${selectedTime.minute}');
-    print('Nearest Location: $nearestLocation');
-    print(
-        'Selected Location: ${selectedLocation?.latitude}, ${selectedLocation?.longitude}');
-    print('Phone Number: $phoneNumber');
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Order Confirmation"),
-        backgroundColor: const Color.fromARGB(255, 46, 1, 150),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              "Order Summary",
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 20),
-            Text("Car Type: $carType"),
-            Text("Fuel Type: $fuelType"),
-            Text("Fuel Quantity: $fuelQuantity liters"),
-            Text("Total Price: \$${totalPrice.toStringAsFixed(2)}"),
-            Text("Selected Date: ${selectedDate.toLocal()}"),
-            Text("Selected Time: ${selectedTime.hour}:${selectedTime.minute}"),
-            Text("Nearest Location: $nearestLocation"),
-            if (selectedLocation != null)
-              Text(
-                  "Selected Location: ${selectedLocation!.latitude}, ${selectedLocation!.longitude}"),
-            Text("Phone Number: $phoneNumber"),
-            const SizedBox(height: 20),
-            Center(
-              child: ElevatedButton(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Order confirmed!'),
-                    ),
-                  );
-                  Navigator.pop(context); // Go back to the previous page
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 54, 8, 182),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-                ),
-                child: const Text(
-                  'Confirm Order',
-                  style: TextStyle(fontSize: 18),
-                ),
               ),
             ),
           ],

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart'; // Ensure this package is added to pubspec.yaml
+import '../../model/assistancerequest.dart';
 
 class TireProblemPage extends StatefulWidget {
   const TireProblemPage({super.key});
@@ -79,7 +80,6 @@ class _TireProblemPageState extends State<TireProblemPage> {
     );
   }
 
-  // Validate and Submit
   void _submitRequest(BuildContext context) {
     if (vehicleMakeModelController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -89,23 +89,35 @@ class _TireProblemPageState extends State<TireProblemPage> {
       return;
     }
 
-    // Print all details in the terminal
-    print('Tire Problem: $selectedTireProblem');
-    print('Number of Tires Affected: $selectedNumberOfTires');
-    print('Vehicle Make and Model: ${vehicleMakeModelController.text}');
-    print('Vehicle Type: $selectedVehicleType');
-    print('Spare Tire Availability: $spareTireAvailability');
-    print('Tools Available: ${toolsAvailableController.text}');
-    print('Requested Service: $selectedService');
-    print('Pickup Address: ${pickupAddressController.text}');
-    print(
-        'Pickup Location: ${pickupLocation?.latitude}, ${pickupLocation?.longitude}');
-    print('Nearest Landmark: ${nearestLandmarkController.text}');
-    print('Roadside Details: $roadsideDetails');
-    print('Immediate Assistance: $immediateAssistance');
-    if (!immediateAssistance) {
-      print('Scheduled Time: $selectedTime');
-    }
+    // Create an AssistanceRequest object
+    AssistanceRequest request = AssistanceRequest(
+      userId: 1, // Replace with actual user ID
+      serviceType: "Tire Problem", // Hardcoded service type
+      requestDate: DateTime.now(), // Current date and time
+      vehicleMakeModel: vehicleMakeModelController.text,
+      vehicleType: selectedVehicleType,
+      issueDescription: selectedTireProblem,
+      additionalNotes: toolsAvailableController.text,
+      currentLocationAddress: pickupAddressController.text,
+      nearestLandmark: nearestLandmarkController.text,
+      latitude: pickupLocation?.latitude,
+      longitude: pickupLocation?.longitude,
+      immediateAssistance: immediateAssistance,
+      scheduledTime: immediateAssistance ? null : selectedTime,
+      requestedService: selectedService,
+      customerName: "John Doe", // Replace with actual customer name
+      phoneNumber: "1234567890", // Replace with actual phone number
+    );
+
+    // Print the request data to the debug console
+    print('Confirmed Order Data:');
+    print(request.toJson());
+
+    // Add the request to the list
+    AssistanceRequest().addRequest(request);
+
+    // Print all requests for debugging
+    AssistanceRequest().printAllRequests();
 
     // Navigate to confirmation page
     Navigator.push(

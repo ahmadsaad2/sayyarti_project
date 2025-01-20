@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'service_details_page.dart';
 import 'spare_part_details_page.dart';
+import 'emergency.dart';
+import '../../../model/assistancerequest.dart';
 
 class TrackingStep {
   final String step;
@@ -68,6 +70,7 @@ class _OrdersPageState extends State<OrdersPage>
       isCompleted: false,
     ),
   ];
+
   final List<Map<String, dynamic>> selectedOffers1 = [
     {
       "FLAT20": {
@@ -80,6 +83,7 @@ class _OrdersPageState extends State<OrdersPage>
       },
     },
   ];
+
   final List<Map<String, dynamic>> allOrders = [
     {
       'title': 'Order #1',
@@ -130,6 +134,44 @@ class _OrdersPageState extends State<OrdersPage>
         {
           'step': 'Order completed',
           'isCompleted': true,
+        },
+      ],
+    },
+    {
+      'title': 'Order #3',
+      'type': 'AssistanceRequest',
+      'status': 'Pending',
+      'userId': 1,
+      'serviceType': 'Towing',
+      'requestDate': '2024-12-28T10:00:00Z',
+      'vehicleMakeModel': 'Toyota Camry',
+      'vehicleType': 'Car',
+      'licensePlate': '123-XYZ',
+      'vehicleCondition': 'Non-drivable',
+      'currentLocationAddress': '123 Main St, Nablus',
+      'nearestLandmark': 'Near City Center',
+      'latitude': 32.2211,
+      'longitude': 35.2544,
+      'customerName': 'Ahmad',
+      'phoneNumber': '0591234567',
+      'alternativeContact': '0597654321',
+      'towingType': 'Flatbed Tow',
+      'preferredDropOffPoint': 'Repair Shop',
+    },
+    {
+      'title': 'Order #4',
+      'type': 'Order',
+      'status': 'Completed',
+      'offers': [
+        {
+          "FLAT20": {
+            "description": "FLAT20",
+            "Type": "Flat",
+            "Amount": "20",
+            "Minimum": "100",
+            "Start": "2023-11-15",
+            "End": "2023-11-30",
+          },
         },
       ],
     },
@@ -232,6 +274,8 @@ class _OrdersPageState extends State<OrdersPage>
           unselectedLabelColor: Colors.grey,
           tabs: const [
             Tab(text: 'All'),
+            Tab(text: 'Service'),
+            Tab(text: 'Order'),
           ],
         ),
       ),
@@ -268,6 +312,9 @@ class _OrdersPageState extends State<OrdersPage>
   }
 
   Widget _buildOrdersList(List<Map<String, dynamic>> orders) {
+    // Check if there are any orders of type 'Order'
+    final hasOrderType = orders.any((order) => order['type'] == 'Order');
+
     return ListView(
       padding: const EdgeInsets.all(16.0),
       children: [
@@ -320,105 +367,36 @@ class _OrdersPageState extends State<OrdersPage>
                           ),
                         ),
                         const SizedBox(height: 8),
-                        ...selectedOffers1.map((offerMap) {
-                          final offerKey = offerMap.keys.first;
-                          final offerDetails = offerMap[offerKey];
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 4.0),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Icon(Icons.local_offer,
-                                    color: Colors.green, size: 20),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: Text(
-                                    '${offerDetails['description']} - ${offerDetails['Type']} ${offerDetails['Amount']}%',
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.black87,
+                        ...(order['offers'] as List<Map<String, dynamic>>?)
+                                ?.map((offerMap) {
+                              final offerKey = offerMap.keys.first;
+                              final offerDetails = offerMap[offerKey];
+                              return Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 4.0),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Icon(Icons.local_offer,
+                                        color: Colors.green, size: 20),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: Text(
+                                        '${offerDetails['description']} - ${offerDetails['Type']} ${offerDetails['Amount']}%',
+                                        style: const TextStyle(
+                                          fontSize: 14,
+                                          color: Colors.black87,
+                                        ),
+                                      ),
                                     ),
-                                  ),
+                                  ],
                                 ),
-                              ],
-                            ),
-                          );
-                        }),
+                              );
+                            }) ??
+                            [],
                       ],
                     ],
                   ),
-                ),
-              ),
-            );
-          }),
-        ],
-
-        // Offers Section
-        if (selectedOffers1.isNotEmpty) ...[
-          const Padding(
-            padding: EdgeInsets.only(top: 24.0, bottom: 16.0),
-            child: Text(
-              ' Offers',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          ...selectedOffers1.map((offerMap) {
-            final offerKey = offerMap.keys.first;
-            final offerDetails = offerMap[offerKey];
-
-            return Card(
-              margin: const EdgeInsets.only(bottom: 16.0),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15.0),
-              ),
-              elevation: 4,
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Offer: ${offerDetails['description']}',
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Type: ${offerDetails['Type']}',
-                      style: const TextStyle(
-                        fontSize: 16,
-                      ),
-                    ),
-                    Text(
-                      'Amount: ${offerDetails['Amount']}%',
-                      style: const TextStyle(
-                        fontSize: 16,
-                      ),
-                    ),
-                    Text(
-                      'Minimum Spend: \$${offerDetails['Minimum']}',
-                      style: const TextStyle(
-                        fontSize: 16,
-                      ),
-                    ),
-                    Text(
-                      'Valid From: ${offerDetails['Start']}',
-                      style: const TextStyle(
-                        fontSize: 16,
-                      ),
-                    ),
-                    Text(
-                      'Valid Until: ${offerDetails['End']}',
-                      style: const TextStyle(
-                        fontSize: 16,
-                      ),
-                    ),
-                  ],
                 ),
               ),
             );
@@ -431,6 +409,7 @@ class _OrdersPageState extends State<OrdersPage>
   void _navigateToOrderDetails(
       BuildContext context, Map<String, dynamic> order) {
     if (order['type'] == 'Service') {
+      // Navigate to ServiceDetailsPage for Service type
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -441,13 +420,45 @@ class _OrdersPageState extends State<OrdersPage>
           ),
         ),
       );
+    } else if (order['type'] == 'AssistanceRequest') {
+      // Convert the order map to an AssistanceRequest object
+      AssistanceRequest request = AssistanceRequest(
+        userId: order['userId'],
+        serviceType: order['serviceType'],
+        requestDate: order['requestDate'] != null
+            ? DateTime.parse(order['requestDate'])
+            : null,
+        vehicleMakeModel: order['vehicleMakeModel'],
+        vehicleType: order['vehicleType'],
+        licensePlate: order['licensePlate'],
+        vehicleCondition: order['vehicleCondition'],
+        currentLocationAddress: order['currentLocationAddress'],
+        nearestLandmark: order['nearestLandmark'],
+        latitude: order['latitude'],
+        longitude: order['longitude'],
+        customerName: order['customerName'],
+        phoneNumber: order['phoneNumber'],
+        alternativeContact: order['alternativeContact'],
+        towingType: order['towingType'],
+        preferredDropOffPoint: order['preferredDropOffPoint'],
+      );
+
+      // Navigate to AssistanceRequestDetailsPage for AssistanceRequest type
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => AssistanceRequestDetailsPage(
+            request: request,
+          ),
+        ),
+      );
     } else if (order['type'] == 'Order') {
+      // Navigate to OfferDetailsPage for Order type
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => OfferDetailsPage(
-            selectedOffers:
-                selectedOffers1, // Pass selectedOffers1 to the OfferDetailsPage
+            selectedOffers: order['offers'] ?? [],
           ),
         ),
       );
@@ -481,7 +492,7 @@ class _OrdersPageState extends State<OrdersPage>
                         tempSelectedType = newValue!;
                       });
                     },
-                    items: ['All', 'Service', 'Offer']
+                    items: ['All', 'Service', 'AssistanceRequest', 'Order']
                         .map<DropdownMenuItem<String>>((String value) {
                       return DropdownMenuItem<String>(
                         value: value,

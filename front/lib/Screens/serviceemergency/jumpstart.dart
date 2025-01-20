@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import '../../model/assistancerequest.dart'; // Import the AssistanceRequest model
 
 class JumpStartAssistancePage extends StatefulWidget {
   const JumpStartAssistancePage({super.key});
@@ -83,7 +84,6 @@ class _JumpStartAssistancePageState extends State<JumpStartAssistancePage> {
     );
   }
 
-  // Submit Request
   void _submitRequest(BuildContext context) {
     if (vehicleMakeModelController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -93,25 +93,36 @@ class _JumpStartAssistancePageState extends State<JumpStartAssistancePage> {
       return;
     }
 
-    // Print all details in the terminal (for debugging)
-    print('Vehicle Make and Model: ${vehicleMakeModelController.text}');
-    print('Vehicle Type: $selectedVehicleType');
-    print('Battery Type: ${batteryTypeController.text}');
-    print('Selected Issue: $selectedIssue');
-    print('Additional Notes: ${additionalNotesController.text}');
-    print('Current Location: ${currentLocationController.text}');
-    print('Nearest Landmark: ${nearestLandmarkController.text}');
-    print(
-        'Selected Location: ${selectedLocation?.latitude}, ${selectedLocation?.longitude}');
-    print('Immediate Assistance: $immediateAssistance');
-    if (!immediateAssistance) {
-      print('Scheduled Time: $scheduledTime');
-    }
-    print('Replace Battery: $replaceBattery');
-    print('Diagnose Issues: $diagnoseIssues');
-    print('Name: ${nameController.text}');
-    print('Phone: ${phoneController.text}');
-    print('Email: ${emailController.text}');
+    // Create an AssistanceRequest object
+    AssistanceRequest request = AssistanceRequest(
+      userId: 1, // Replace with actual user ID
+      serviceType: "Jump Start", // Hardcoded service type
+      requestDate: DateTime.now(), // Current date and time
+      vehicleMakeModel: vehicleMakeModelController.text,
+      vehicleType: selectedVehicleType,
+      batteryType: batteryTypeController.text,
+      issueDescription: selectedIssue,
+      additionalNotes: additionalNotesController.text,
+      currentLocationAddress: currentLocationController.text,
+      nearestLandmark: nearestLandmarkController.text,
+      latitude: selectedLocation?.latitude,
+      longitude: selectedLocation?.longitude,
+      immediateAssistance: immediateAssistance,
+      scheduledTime: immediateAssistance ? null : scheduledTime,
+      customerName: nameController.text,
+      phoneNumber: phoneController.text,
+      alternativeContact: emailController.text,
+    );
+
+    // Print the request data to the debug console
+    print('Confirmed Order Data:');
+    print(request.toJson());
+
+    // Add the request to the list
+    AssistanceRequest().addRequest(request);
+
+    // Print all requests for debugging
+    AssistanceRequest().printAllRequests();
 
     // Navigate to confirmation page
     Navigator.push(
