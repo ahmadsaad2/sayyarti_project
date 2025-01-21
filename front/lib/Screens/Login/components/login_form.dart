@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sayyarti/Screens/admin/screens/admin_home.dart';
 import '../../home/home.dart';
-import '../../../screens/owner/owner.dart';
 import '../../../components/already_have_an_account_acheck.dart';
 import '../../../components/forgot_passwod.dart';
 import '../../../constants.dart';

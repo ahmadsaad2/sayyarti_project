@@ -169,9 +169,9 @@ class _MyProfilePageState extends State<MyProfilePage> {
                         if (value == null || value.isEmpty) {
                           return 'Please enter a phone number';
                         }
-                        final _phoneRegex =
+                        final phoneRegex =
                             RegExp(r'^(059|056)\d{7}$|^(59|56)\d{7}$');
-                        if (!_phoneRegex.hasMatch(value)) {
+                        if (!phoneRegex.hasMatch(value)) {
                           return 'Please enter a valid phone number';
                         }
                         return null;
