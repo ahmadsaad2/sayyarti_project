@@ -8,6 +8,7 @@ import '../../Signup/signup_screen.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sayyarti/Screens/owner/owner.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({
@@ -79,8 +80,7 @@ class _LoginFormState extends State<LoginForm> {
         } else if (data['role'] == 'company_admin') {
           Navigator.push(
             context,
-            MaterialPageRoute(
-                builder: (context) => const Text('company_admin')),
+            MaterialPageRoute(builder: (context) => ServiceCenterHomePage()),
           );
         } else if (data['role'] == 'service_provider') {
           Navigator.push(
