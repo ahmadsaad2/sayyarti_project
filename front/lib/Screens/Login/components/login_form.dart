@@ -80,8 +80,7 @@ class _LoginFormState extends State<LoginForm> {
         } else if (data['role'] == 'company_admin') {
           Navigator.push(
             context,
-            MaterialPageRoute(
-                builder: (context) => const Text('company_admin')),
+            MaterialPageRoute(builder: (context) => ServiceCenterHomePage()),
           );
         } else if (data['role'] == 'service_provider') {
           Navigator.push(
