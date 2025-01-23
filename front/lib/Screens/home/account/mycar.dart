@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sayyarti/Screens/home/account/addcar.dart';
 import '../../service/addcar.dart'; // Import the AddCarPage
 
 class MyCarsPage extends StatelessWidget {
@@ -12,7 +13,19 @@ class MyCarsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Cars'),
+        title: const Text('My Cars'),
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (ctx) => AddCar(),
+                ),
+              );
+            },
+            icon: const Icon(Icons.add),
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

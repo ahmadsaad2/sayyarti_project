@@ -15,7 +15,7 @@ export default function(sequelize, DataTypes) {
         key: 'id'
       }
     },
-    make: {
+    brand: {
       type: DataTypes.STRING(255),
       allowNull: false
     },
@@ -27,18 +27,15 @@ export default function(sequelize, DataTypes) {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    description: {
+    wheel: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    fuel: {
       type: DataTypes.TEXT,
       allowNull: true
     },
-    price: {
-      type: DataTypes.DECIMAL(10,2),
-      allowNull: false
-    },
-    image_urls: {
-      type: DataTypes.JSON,
-      allowNull: true
-    }
+
   }, {
     sequelize,
     tableName: 'cars',
