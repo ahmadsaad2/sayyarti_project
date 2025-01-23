@@ -37,7 +37,7 @@ app.use(express.json());
 app.use('/auth', authentication);
 app.use('/admin', admin);
 app.use('/user', user);
-app.use('/api/admin', companyRoutes);
+// app.use('/api/admin', companyRoutes);
 
 
 const PORT = process.env.PORT || 5000;

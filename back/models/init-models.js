@@ -12,6 +12,7 @@ import _services from "./services.js";
 import _users from "./users.js";
 import _passwordreset from "./password-reset.js";
 import _address from "./address.js";
+import _brands from "./brands.js";
 
 export default function initModels(sequelize) {
   const cars = _cars(sequelize, DataTypes);
@@ -27,6 +28,7 @@ export default function initModels(sequelize) {
   const users = _users(sequelize, DataTypes);
   const passwordreset = _passwordreset(sequelize, DataTypes);
   const address = _address(sequelize, DataTypes);
+  const brands = _brands(sequelize, DataTypes);
 
   employees.belongsTo(companies, { as: "company", foreignKey: "company_id" });
   companies.hasMany(employees, { as: "employees", foreignKey: "company_id" });
@@ -71,6 +73,7 @@ export default function initModels(sequelize) {
     users,
     passwordreset,
     address,
+    brands,
   };
 }
 
