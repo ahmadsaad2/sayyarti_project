@@ -1,127 +1,48 @@
 import 'work_assignment.dart';
 
 class Employee {
-  late String name;
-  late String email; // Add the email field
-  late String position;
-  late String contact;
-  late final List<WorkAssignment> workAssignments;
+  final int id;
+  final String name;
+  final String email;
+  final String position;
+  final String contact;
+  final List<WorkAssignment> workAssignments;
 
   Employee({
+    required this.id,
     required this.name,
-    required this.email, // Initialize email
+    required this.email,
     required this.position,
     required this.contact,
     required this.workAssignments,
   });
-}
 
-// Mock employee data
-final List<Employee> employees = [
-  Employee(
-    name: "John Doe",
-    email: "john.doe@example.com",
-    position: "Mechanic",
-    contact: "123-456-7890",
-    workAssignments: [
-      WorkAssignment(
-        day: "Monday",
-        task: "Oil Change",
-        status: "In Progress",
-      ),
-      WorkAssignment(
-        day: "Tuesday",
-        task: "Tire Replacement",
-        status: "waiting",
-      ),
-      WorkAssignment(
-        day: "Tuesday",
-        task: "Brake Inspection",
-        status: "waiting",
-      ),
-      WorkAssignment(
-        day: "Wednesday",
-        task: "Battery Replacement",
-        status: "waiting",
-      ),
-      WorkAssignment(
-        day: "Wednesday",
-        task: "Headlight Adjustment",
-        status: "Complete",
-      ),
-      WorkAssignment(
-        day: "Thursday",
-        task: "Air Filter Replacement",
-        status: "waiting",
-      ),
-      WorkAssignment(
-        day: "Friday",
-        task: "Engine Diagnostics",
-        status: "In Progress",
-      ),
-      WorkAssignment(
-        day: "Friday",
-        task: "Paint Touch-Up",
-        status: "Complete",
-      ),
-      WorkAssignment(
-        day: "Saturday",
-        task: "Wheel Alignment",
-        status: "waiting",
-      ),
-    ],
-  ),
-  Employee(
-    name: "Jane Smith",
-    email: "jane.smith@example.com",
-    position: "Electrician",
-    contact: "987-654-3210",
-    workAssignments: [
-      WorkAssignment(
-        day: "Monday",
-        task: "Oil Change",
-        status: "In Progress",
-      ),
-      WorkAssignment(
-        day: "Tuesday",
-        task: "Tire Replacement",
-        status: "waiting",
-      ),
-      WorkAssignment(
-        day: "Tuesday",
-        task: "Brake Inspection",
-        status: "Complete",
-      ),
-      WorkAssignment(
-        day: "Wednesday",
-        task: "Battery Replacement",
-        status: "In Progress",
-      ),
-      WorkAssignment(
-        day: "Wednesday",
-        task: "Headlight Adjustment",
-        status: "Complete",
-      ),
-      WorkAssignment(
-        day: "Thursday",
-        task: "Air Filter Replacement",
-        status: "waiting",
-      ),
-      WorkAssignment(
-        day: "Friday",
-        task: "Engine Diagnostics",
-        status: "In Progress",
-      ),
-      WorkAssignment(
-        day: "Friday",
-        task: "Paint Touch-Up",
-        status: "Complete",
-      ),
-      WorkAssignment(
-        day: "Saturday",
-        task: "Wheel Alignment",
-        status: "waiting",
-      ),
-    ],
-  ),
-];
+  // Deserialize from JSON
+  factory Employee.fromJson(Map<String, dynamic> json) {
+    return Employee(
+      id: json['id'] ?? 0,
+      name: json['user']['name'] ?? '', // User's name from nested JSON
+      email: json['user']['email'] ?? '', // User's email from nested JSON
+      position: json['role'] ?? '', // Role is part of the employee
+      contact:
+          json['user']['contact'] ?? 'No Contact', // Assuming `contact` exists
+      workAssignments: (json['workAssignments'] as List<dynamic>?)
+              ?.map((item) => WorkAssignment.fromJson(item))
+              .toList() ??
+          [],
+    );
+  }
+
+  // Serialize to JSON
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'email': email,
+      'position': position,
+      'contact': contact,
+      'workAssignments':
+          workAssignments.map((assignment) => assignment.toJson()).toList(),
+    };
+  }
+}

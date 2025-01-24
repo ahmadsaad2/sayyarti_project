@@ -1,15 +1,31 @@
 class WorkAssignment {
+  int id;
   String day;
   String task;
-  String status; // Status: "waiting", "In Progress", "Complete"
   bool worked;
-  String details; // Add this line
 
   WorkAssignment({
+    required this.id,
     required this.day,
     required this.task,
-    this.status = "waiting", // Default status
-    this.worked = false,
-    this.details = "",
+    required this.worked,
   });
+
+  factory WorkAssignment.fromJson(Map<String, dynamic> json) {
+    return WorkAssignment(
+      id: json['id'] ?? 0,
+      day: json['day'] ?? '',
+      task: json['task'] ?? '',
+      worked: json['worked'] ?? false,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'day': day,
+      'task': task,
+      'worked': worked,
+    };
+  }
 }

@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import '../class/employeclass.dart';
 import '../class/work_assignment.dart';
 
@@ -19,7 +21,7 @@ class EmployeeDetailsPageState extends State<EmployeeDetailsPage> {
     'Thursday',
     'Friday',
     'Saturday',
-    'Sunday'
+    'Sunday',
   ];
 
   late List<WorkAssignment> workAssignments;
@@ -27,24 +29,69 @@ class EmployeeDetailsPageState extends State<EmployeeDetailsPage> {
   @override
   void initState() {
     super.initState();
-
-    // Initialize work assignments with existing data or empty tasks
+    // Initialize each day's assignment or create a blank one if none exist
     workAssignments = daysOfWeek.map((day) {
       return widget.employee.workAssignments.firstWhere(
         (assignment) => assignment.day == day,
-        orElse: () => WorkAssignment(day: day, task: '', worked: false),
+        orElse: () => WorkAssignment(
+          id: 0,
+          day: day,
+          task: '',
+          worked: false,
+        ),
       );
     }).toList();
   }
 
-  void _saveChanges() {
+  // Send each assignment via PUT
+  Future<void> _updateOrCreateAssignments() async {
+    for (final assignment in workAssignments) {
+      // If 'task' is empty, you might skip or handle differently
+      // We'll update for all, even if task is blank
+      try {
+        final url = Uri.parse(
+          'http://192.168.88.4:5000/api/workassignments/assign/'
+          '${widget.employee.id}/${assignment.day}',
+        );
+
+        final response = await http.put(
+          url,
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode({
+            'task': assignment.task,
+            'worked': assignment.worked,
+          }),
+        );
+
+        if (response.statusCode == 201) {
+          debugPrint('Created assignment for ${assignment.day}');
+        } else if (response.statusCode == 200) {
+          debugPrint('Updated assignment for ${assignment.day}');
+        } else {
+          debugPrint(
+            'Failed to upsert ${assignment.day}. Response: ${response.body}',
+          );
+        }
+      } catch (e) {
+        debugPrint('Error upserting assignment for ${assignment.day}: $e');
+      }
+    }
+  }
+
+  void _saveChanges() async {
     setState(() {
-      widget.employee.workAssignments = workAssignments;
+      widget.employee.workAssignments
+        ..clear()
+        ..addAll(workAssignments);
     });
 
-    // Show a confirmation message
+    await _updateOrCreateAssignments();
+
+    if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Work assignments updated successfully!')),
+      const SnackBar(
+        content: Text('Assignments updated/created successfully!'),
+      ),
     );
   }
 
@@ -54,121 +101,115 @@ class EmployeeDetailsPageState extends State<EmployeeDetailsPage> {
       appBar: AppBar(
         title: Text('${widget.employee.name} Details'),
       ),
-      body: ListView(
-        children: [
-          // Employee Info
-          ListTile(
-            title: Text('Name: ${widget.employee.name}'),
-            subtitle: Text('Position: ${widget.employee.position}'),
-          ),
-          ListTile(
-            title: Text('Contact: ${widget.employee.contact}'),
-          ),
-
-          // Work Assignments Section
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildEmployeeInfoCard(),
+            Text(
               'Work Assignments',
-              style: Theme.of(context)
-                  .textTheme
-                  .titleLarge, // Updated from headline6 to titleLarge
+              style: Theme.of(context).textTheme.titleLarge,
             ),
-          ),
-          DataTable(
-            columns: const [
-              DataColumn(label: Text('Day')),
-              DataColumn(label: Text('Task')),
-              DataColumn(label: Text('Worked?')),
-            ],
-            rows: List.generate(
-              daysOfWeek.length,
-              (index) {
-                final day = daysOfWeek[index];
-                final workAssignment = workAssignments[index];
-
-                return DataRow(
-                  cells: [
-                    DataCell(Text(day)),
-                    DataCell(
-                      TextFormField(
-                        initialValue: workAssignment.task,
-                        onChanged: (value) {
-                          setState(() {
-                            workAssignment.task = value;
-                          });
-                        },
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          contentPadding: EdgeInsets.symmetric(horizontal: 8),
-                        ),
-                      ),
-                    ),
-                    DataCell(
-                      Row(
-                        children: [
-                          IconButton(
-                            icon: Icon(
-                              workAssignment.worked
-                                  ? Icons.check_circle
-                                  : Icons.cancel,
-                              color: workAssignment.worked
-                                  ? Colors.green
-                                  : Colors.red,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                workAssignment.worked = !workAssignment.worked;
-                              });
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                );
-              },
+            const SizedBox(height: 10),
+            _buildAssignmentsTable(),
+            const SizedBox(height: 20),
+            Center(
+              child: ElevatedButton(
+                onPressed: _saveChanges,
+                child: const Text('Save & PUT Changes'),
+              ),
             ),
-          ),
-
-          // Save Button
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: ElevatedButton(
-              onPressed: _saveChanges,
-              child: const Text('Save Changes'),
-            ),
-          ),
-
-          // Attendance Calendar Section
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
+            const SizedBox(height: 20),
+            Text(
               'Attendance Calendar',
-              style: Theme.of(context)
-                  .textTheme
-                  .titleLarge, // Updated from headline6 to titleLarge
+              style: Theme.of(context).textTheme.titleLarge,
             ),
-          ),
-          ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: daysOfWeek.length,
-            itemBuilder: (context, index) {
-              final day = daysOfWeek[index];
-              final attendance = workAssignments[index].worked;
+            const SizedBox(height: 10),
+            ...workAssignments.map(_buildAttendanceCard),
+          ],
+        ),
+      ),
+    );
+  }
 
-              return ListTile(
-                title: Text(day),
-                subtitle: Text(attendance ? 'Worked' : 'Did not work'),
-                trailing: Icon(
-                  attendance ? Icons.check_circle : Icons.cancel,
-                  color: attendance ? Colors.green : Colors.red,
+  Widget _buildEmployeeInfoCard() {
+    return Card(
+      elevation: 4,
+      margin: const EdgeInsets.only(bottom: 16.0),
+      child: ListTile(
+        title: Text(
+          widget.employee.name.isNotEmpty ? widget.employee.name : 'No Name',
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Position: ${widget.employee.position}'),
+            Text('Contact: ${widget.employee.contact}'),
+            Text('Email: ${widget.employee.email}'),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAssignmentsTable() {
+    return DataTable(
+      columnSpacing: 16,
+      columns: const [
+        DataColumn(label: Text('Day')),
+        DataColumn(label: Text('Task')),
+        DataColumn(label: Text('Worked?')),
+      ],
+      rows: workAssignments.map((workAssignment) {
+        return DataRow(
+          cells: [
+            DataCell(Text(workAssignment.day)),
+            DataCell(
+              TextFormField(
+                initialValue: workAssignment.task,
+                onChanged: (value) {
+                  setState(() {
+                    workAssignment.task = value.trim();
+                  });
+                },
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  contentPadding: EdgeInsets.symmetric(horizontal: 8),
                 ),
-              );
-            },
-          ),
-        ],
+              ),
+            ),
+            DataCell(
+              IconButton(
+                icon: Icon(
+                  workAssignment.worked ? Icons.check_circle : Icons.cancel,
+                  color: workAssignment.worked ? Colors.green : Colors.red,
+                ),
+                onPressed: () {
+                  setState(() {
+                    workAssignment.worked = !workAssignment.worked;
+                  });
+                },
+              ),
+            ),
+          ],
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildAttendanceCard(WorkAssignment workAssignment) {
+    return Card(
+      elevation: 2,
+      margin: const EdgeInsets.symmetric(vertical: 6.0),
+      child: ListTile(
+        title: Text(workAssignment.day),
+        subtitle: Text(workAssignment.worked ? 'Worked' : 'Did not work'),
+        trailing: Icon(
+          workAssignment.worked ? Icons.check_circle : Icons.cancel,
+          color: workAssignment.worked ? Colors.green : Colors.red,
+        ),
       ),
     );
   }

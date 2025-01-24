@@ -12,10 +12,10 @@ dotenv.config();
 import authentication from './src/routes/authentication/auth.js';
 import admin from './src/routes/admin/admin.js';
 import user from './src/routes/user/user.js';
-import companyRoutes from '../back/src/routes/admin/compnoayRoutes.js';
+import companyRoutes from './src/routes/COMPAN/companyroutes.js';
+import employeesRoutes from './src/routes/COMPAN/employeeroutes.js';
+import workAssignmentRoutes from './src/routes/COMPAN/workassigmentsroutes.js';
 
-
-//connection to database and sync the tables
 dbConnect();
 
 
@@ -37,8 +37,9 @@ app.use(express.json());
 app.use('/auth', authentication);
 app.use('/admin', admin);
 app.use('/user', user);
-app.use('/api/admin', companyRoutes);
-
+app.use('/api/company', companyRoutes);
+app.use('/api/employees', employeesRoutes);
+app.use('/api/workassignments', workAssignmentRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

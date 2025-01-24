@@ -1,187 +1,70 @@
-// this page for employee management
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 import 'employeform.dart';
-import 'employedetails.dart';
 import '../class/employeclass.dart';
-import '../class/car.dart';
+import './employedetails.dart';
 
 class EmployeePage extends StatefulWidget {
-  const EmployeePage({super.key});
+  final int companyId; // ID of the company
+
+  const EmployeePage({super.key, required this.companyId});
 
   @override
   _EmployeePageState createState() => _EmployeePageState();
 }
 
 class _EmployeePageState extends State<EmployeePage> {
-  final List<Employee> employees = [];
-  final List<Car> cars = [
-    Car(id: '1', model: 'Toyota Camry'),
-    Car(id: '2', model: 'BMW X5'),
-  ];
+  List<Employee> employees = [];
+  bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    _loadEmployees();
+    _fetchEmployees(); // Fetch employees on page load
   }
 
-  /// Load employees from SharedPreferences
-  Future<void> _loadEmployees() async {
-    final prefs = await SharedPreferences.getInstance();
-    final employeeList = prefs.getStringList('employees') ?? [];
-    setState(() {
-      employees.clear();
-      for (var employeeJson in employeeList) {
-        final employeeMap = jsonDecode(employeeJson);
-        employees.add(Employee(
-          name: employeeMap['name'],
-          email: employeeMap['email'],
-          position: employeeMap['position'],
-          contact: employeeMap['contact'],
-          workAssignments: [], // Load assignments if stored
-        ));
+  /// Fetch employees for the given company ID
+  Future<void> _fetchEmployees() async {
+    setState(() => _isLoading = true);
+    try {
+      final response = await http.get(
+        Uri.parse(
+            'http://192.168.88.4:5000/api/employees/company/${widget.companyId}'),
+      );
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body)['employees'] as List;
+        setState(() {
+          employees = data.map((e) => Employee.fromJson(e)).toList();
+        });
+      } else {
+        throw Exception('Failed to load employees');
       }
-    });
-  }
-
-  /// Save employees to SharedPreferences
-  Future<void> _saveEmployees() async {
-    final prefs = await SharedPreferences.getInstance();
-    final employeeList = employees
-        .map((employee) => jsonEncode({
-              'name': employee.name,
-              'email': employee.email,
-              'position': employee.position,
-              'contact': employee.contact,
-            }))
-        .toList();
-    await prefs.setStringList('employees', employeeList);
-  }
-
-  /// Show a SnackBar for feedback
-  void _showSnackBar(String message) {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(message)));
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error fetching employees: $e')),
+      );
+    } finally {
+      setState(() => _isLoading = false);
+    }
   }
 
   /// Add a new employee
-  void _addEmployee() {
-    Navigator.push(
+  Future<void> _addEmployee() async {
+    final newEmployee = await Navigator.push<Employee?>(
       context,
       MaterialPageRoute(
-        builder: (context) => Scaffold(
-          appBar: AppBar(title: const Text('Add New Employee')),
-          body: EmployeeForm(
-            onSaveComplete: () async {
-              await _loadEmployees(); // Refresh the employee list
-              await _saveEmployees(); // Persist data
-              _showSnackBar('Employee added successfully!');
-              Navigator.pop(context); // Return to the previous page
-            },
-          ),
-        ),
+        builder: (context) => EmployeeForm(companyId: widget.companyId),
       ),
     );
+
+    if (newEmployee != null) {
+      // Refresh employees after adding a new one
+      _fetchEmployees();
+    }
   }
 
-  /// Edit an existing employee
-  void _editEmployee(int index) {
-    final employee = employees[index]; // Get the employee to edit
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Edit Employee'),
-          content: SingleChildScrollView(
-            child: SizedBox(
-              width: MediaQuery.of(context).size.width * 0.9,
-              child: EmployeeForm(
-                name: employee.name,
-                email: employee.email,
-                position: employee.position,
-                contact: employee.contact,
-                onSaveComplete: () async {
-                  await _loadEmployees(); // Refresh the list
-                  await _saveEmployees(); // Persist data
-                  _showSnackBar('Employee updated successfully!');
-                  Navigator.of(context).pop(); // Close the dialog
-                },
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  /// Delete an employee
-  void _deleteEmployee(int index) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Delete Employee'),
-          content: const Text('Are you sure you want to delete this employee?'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () async {
-                setState(() {
-                  employees.removeAt(index);
-                });
-                await _saveEmployees(); // Persist data
-                _showSnackBar('Employee deleted successfully!');
-                Navigator.of(context).pop();
-              },
-              child: const Text('Delete'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  /// Assign work to an employee
-  void _assignWork(int index) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Assign Work to Employee'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text('Select a car to assign work:'),
-              ...cars.map((car) {
-                return ListTile(
-                  title: Text(car.model),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.check),
-                    onPressed: () {
-                      setState(() {
-                        car.assignEmployee(employees[index]);
-                      });
-                      Navigator.of(context).pop();
-                      _showSnackBar(
-                          '${car.model} assigned to ${employees[index].name}!');
-                    },
-                  ),
-                );
-              }),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  /// View detailed employee information
+  /// View employee details
   void _viewEmployeeDetails(Employee employee) {
     Navigator.push(
       context,
@@ -191,11 +74,35 @@ class _EmployeePageState extends State<EmployeePage> {
     );
   }
 
+  /// Delete an employee
+  Future<void> _deleteEmployee(int employeeId) async {
+    try {
+      final response = await http.delete(
+        Uri.parse('http://192.168.88.4:5000/api/employees/$employeeId'),
+      );
+
+      if (response.statusCode == 200) {
+        setState(() {
+          employees.removeWhere((employee) => employee.id == employeeId);
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Employee deleted!')),
+        );
+      } else {
+        throw Exception('Failed to delete employee');
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error deleting employee: $e')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Manage Employees'),
+        title: const Text('Company Employees'),
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
@@ -203,40 +110,40 @@ class _EmployeePageState extends State<EmployeePage> {
           ),
         ],
       ),
-      body: employees.isEmpty
-          ? const Center(child: Text('No employees added yet!'))
-          : ListView.builder(
-              itemCount: employees.length,
-              itemBuilder: (context, index) {
-                return Card(
-                  elevation: 4,
-                  margin:
-                      const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
-                  child: ListTile(
-                    title: Text(employees[index].name),
-                    subtitle: Text('Position: ${employees[index].position}'),
-                    onTap: () => _viewEmployeeDetails(employees[index]),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.edit),
-                          onPressed: () => _editEmployee(index),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : employees.isEmpty
+              ? const Center(child: Text('No employees found!'))
+              : ListView.builder(
+                  itemCount: employees.length,
+                  itemBuilder: (context, index) {
+                    final employee = employees[index];
+                    return Dismissible(
+                      key: Key(employee.id.toString()),
+                      direction: DismissDirection.endToStart,
+                      background: Container(
+                        color: Colors.red,
+                        alignment: Alignment.centerRight,
+                        padding: const EdgeInsets.only(right: 20),
+                        child: const Icon(Icons.delete, color: Colors.white),
+                      ),
+                      onDismissed: (direction) {
+                        _deleteEmployee(employee.id!);
+                      },
+                      child: Card(
+                        elevation: 4,
+                        margin: const EdgeInsets.symmetric(
+                          vertical: 6,
+                          horizontal: 10,
                         ),
-                        IconButton(
-                          icon: const Icon(Icons.delete),
-                          onPressed: () => _deleteEmployee(index),
+                        child: ListTile(
+                          title: Text(employee.name ?? 'Unknown Name'),
+                          onTap: () => _viewEmployeeDetails(employee),
                         ),
-                        IconButton(
-                          icon: const Icon(Icons.work),
-                          onPressed: () => _assignWork(index),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
+                      ),
+                    );
+                  },
+                ),
     );
   }
 }

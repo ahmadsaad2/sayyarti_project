@@ -12,6 +12,7 @@ import _services from "./services.js";
 import _users from "./users.js";
 import _passwordreset from "./password-reset.js";
 import _address from "./address.js";
+import _WorkAssignment from './workassignment.js';
 
 export default function initModels(sequelize) {
   const cars = _cars(sequelize, DataTypes);
@@ -27,6 +28,8 @@ export default function initModels(sequelize) {
   const users = _users(sequelize, DataTypes);
   const passwordreset = _passwordreset(sequelize, DataTypes);
   const address = _address(sequelize, DataTypes);
+
+  const workassignment = _WorkAssignment(sequelize, DataTypes);
 
   employees.belongsTo(companies, { as: "company", foreignKey: "company_id" });
   companies.hasMany(employees, { as: "employees", foreignKey: "company_id" });
@@ -56,7 +59,19 @@ export default function initModels(sequelize) {
   users.hasMany(serviceorders, { as: "serviceorders", foreignKey: "user_id" });
   address.belongsTo(users, { as: "user", foreignKey: "user_id" });
   users.hasMany(address, { as: "addresses", foreignKey: "user_id" });
+ 
+  employees.hasMany(workassignment, {
+    foreignKey: 'employee_id',
+    as: 'workAssignments',
+  });
 
+  workassignment.belongsTo(employees, {
+    foreignKey: 'employee_id',
+    as: 'employee',
+  });
+
+  companies.belongsTo(users, { foreignKey: 'user_id' });
+  users.hasMany(companies,{ foreignKey: 'user_id' });
   return {
     cars,
     cart,
@@ -70,8 +85,8 @@ export default function initModels(sequelize) {
     services,
     users,
     passwordreset,
+    workassignment,
     address,
   };
 }
 
-// export default initModels;

@@ -8,14 +8,64 @@ import 'offers.dart';
 import 'review.dart';
 import 'faqpage.dart';
 import '../class/offermanager.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-class ServiceCenterHomePage extends StatelessWidget {
-  final String garageName = 'Auto Care Center';
-  final String location = 'Nablus';
-  final String contact = '123-456-7890';
-  final String details = 'Expert in car repairs and maintenance.';
-  final String imagePath = 'assets/images/5.jpg'; // Placeholder image path
+class CompanyProfile {
+  final int? id;
+  final String? name;
+  final String? address;
+  final String? contact;
+  final String? email;
+  final String? image;
+  final int? userId;
 
+  CompanyProfile({
+    this.id,
+    this.name,
+    this.address,
+    this.contact,
+    this.email,
+    this.image,
+    this.userId,
+  });
+
+  factory CompanyProfile.fromJson(Map<String, dynamic> json) {
+    return CompanyProfile(
+      id: json['id'] as int?,
+      name: json['name'] as String?,
+      address: json['address'] as String?,
+      contact: json['contact'] as String?,
+      email: json['email'] as String?,
+      image: json['image'] as String?,
+      userId: json['user_id'] as int?,
+    );
+  }
+}
+
+Future<CompanyProfile> fetchCompanyProfile(int userId) async {
+  final response = await http.get(
+    Uri.parse('http://192.168.88.4:5000/api/company/user/$userId'),
+  );
+  if (response.statusCode == 200) {
+    final data = json.decode(response.body);
+    final companyJson = data['company']; // Extract the nested object
+    return CompanyProfile.fromJson(companyJson);
+  } else {
+    throw Exception('Failed to load company profile');
+  }
+}
+
+class ServiceCenterHomePage extends StatefulWidget {
+  final int userId;
+
+  const ServiceCenterHomePage({super.key, required this.userId});
+
+  @override
+  _ServiceCenterHomePageState createState() => _ServiceCenterHomePageState();
+}
+
+class _ServiceCenterHomePageState extends State<ServiceCenterHomePage> {
   final List<Map<String, String>> bookings = [
     {
       "Customer": "John Doe",
@@ -35,9 +85,13 @@ class ServiceCenterHomePage extends StatelessWidget {
     }
   ];
 
-  ServiceCenterHomePage({
-    super.key,
-  });
+  late Future<CompanyProfile> futureCompanyProfile;
+
+  @override
+  void initState() {
+    super.initState();
+    futureCompanyProfile = fetchCompanyProfile(widget.userId);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,68 +100,89 @@ class ServiceCenterHomePage extends StatelessWidget {
         title: const Text('Garage Dashboard'),
         backgroundColor: const Color.fromARGB(255, 11, 42, 146),
       ),
-      drawer: const CustomDrawer(),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildProfileSection(context),
-            const SizedBox(height: 20),
-            _buildEmployeeSection(context),
-            const SizedBox(height: 20),
-            _buildBookingsSection(context),
-            const SizedBox(height: 20),
-            _buildServicesSection(context),
-            const SizedBox(height: 20),
-            // _buildServicePackagesSection(),
-            _buildOffersSection(context), //
-          ],
+      drawer: CustomDrawer(userId: widget.userId),
+      body: FutureBuilder<CompanyProfile>(
+        future: futureCompanyProfile,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (!snapshot.hasData) {
+            return const Center(child: Text('No company data found'));
+          }
+
+          final company = snapshot.data!;
+
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildProfileSection(context, company),
+                const SizedBox(height: 20),
+                _buildEmployeeSection(
+                    context, company.id!), // Pass companyId here
+                const SizedBox(height: 20),
+                _buildBookingsSection(context),
+                const SizedBox(height: 20),
+                _buildServicesSection(context),
+                const SizedBox(height: 20),
+                _buildOffersSection(context),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildProfileSection(BuildContext context, CompanyProfile company) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ProfilePage(userId: widget.userId),
+          ),
+        );
+      },
+      child: Card(
+        elevation: 5,
+        child: ListTile(
+          leading: CircleAvatar(
+            backgroundImage: company.image != null
+                ? NetworkImage(company.image!) as ImageProvider
+                : const AssetImage('assets/images/sdd.jpg'),
+            radius: 30,
+          ),
+          title: Text(company.name ?? 'No Name'),
+          subtitle: const Text('Tap to Edit Profile'),
+          trailing: const Icon(Icons.edit),
         ),
       ),
     );
   }
 
-  Widget _buildProfileSection(BuildContext context) {
+  Widget _buildEmployeeSection(BuildContext context, int companyId) {
     return GestureDetector(
       onTap: () {
+        // Navigate to EmployeePage with the provided companyId
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const ProfilePage()),
+          MaterialPageRoute(
+            builder: (context) => EmployeePage(companyId: companyId),
+          ),
         );
       },
-      child: const Card(
-        elevation: 5,
+      child: Card(
+        margin: const EdgeInsets.all(8.0),
         child: ListTile(
-          leading: CircleAvatar(
-            backgroundImage: AssetImage('assets/images/sdd.jpg'),
-            radius: 30,
-          ),
-          title: Text('Auto Care Center'),
-          subtitle: Text('Tap to Edit Profile'),
-          trailing: Icon(Icons.edit),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildEmployeeSection(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const EmployeePage()),
-        );
-      },
-      child: const Card(
-        elevation: 5,
-        child: ListTile(
-          leading: CircleAvatar(
-            backgroundImage: AssetImage('assets/images/5.jpg'),
-            radius: 30,
-          ),
-          title: Text('Employees'),
-          subtitle: Text('Tap to Manage Employees'),
+          leading: const Icon(Icons.group, color: Colors.blue),
+          title: const Text('Manage Employees'),
+          subtitle:
+              const Text('View and manage employees working in this company'),
+          trailing: const Icon(Icons.arrow_forward_ios, size: 16),
         ),
       ),
     );
@@ -312,7 +387,9 @@ class ServiceCenterHomePage extends StatelessWidget {
 // Other widgets like `CustomDrawer`, `ServicePackageCard`, etc., remain the same.
 // Left Sidebar (Drawer) widget
 class CustomDrawer extends StatelessWidget {
-  const CustomDrawer({super.key});
+  final int userId;
+
+  const CustomDrawer({super.key, required this.userId});
 
   @override
   Widget build(BuildContext context) {
@@ -358,19 +435,21 @@ class CustomDrawer extends StatelessWidget {
             icon: Icons.account_circle,
             onTap: () {
               Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const ProfilePage()),
-              );
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ProfilePage(userId: userId),
+                  ));
             },
           ),
           DrawerListTile(
             title: 'Employees',
             icon: Icons.people,
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const EmployeePage()),
-              );
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(          builder: (context) => EmployeePage(companyId: companyId!),
+
+              // ));
             },
           ),
 

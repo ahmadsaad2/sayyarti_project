@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sayyarti/Screens/admin/screens/admin_home.dart';
+import 'package:sayyarti/Screens/owner/owner.dart';
 import '../../home/home.dart';
 import '../../../components/already_have_an_account_acheck.dart';
 import '../../../components/forgot_passwod.dart';
@@ -8,7 +9,6 @@ import '../../Signup/signup_screen.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sayyarti/Screens/owner/owner.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({
@@ -20,10 +20,16 @@ class LoginForm extends StatefulWidget {
 }
 
 class _LoginFormState extends State<LoginForm> {
+  int loggedInUserId = 0; // Initialize with a default value
   final _formKey = GlobalKey<FormState>();
   var _enteredEmail = '';
   var _enteredPass = '';
   var _isLogging = false;
+  void onLoginSuccess(int userId) {
+    setState(() {
+      loggedInUserId = userId; // Assign the logged-in user's ID
+    });
+  }
 
   void _saveForm() async {
     if (_formKey.currentState!.validate()) {
@@ -56,13 +62,12 @@ class _LoginFormState extends State<LoginForm> {
         prefs.setString('token', data['token']);
         prefs.setString('role', data['role']);
         prefs.setString('name', data['username']);
-        prefs.setString('id', data['id'].toString());
+        prefs.setInt('userId', data['id']); // Save userId as an integer
         prefs.setBool('trusted', data['istrusted']);
-        print(data['istrusted'].toString());
+
         final String? phone = data['phone'];
-        print(phone);
         if (phone != null && phone.isNotEmpty) {
-          prefs.setString('phone', data['phone']);
+          prefs.setString('phone', phone);
         } else {
           prefs.remove('phone');
         }
@@ -80,13 +85,16 @@ class _LoginFormState extends State<LoginForm> {
         } else if (data['role'] == 'company_admin') {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => ServiceCenterHomePage()),
+            MaterialPageRoute(
+              builder: (context) => ServiceCenterHomePage(userId: data['id']),
+            ),
           );
         } else if (data['role'] == 'service_provider') {
           Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => const Text('service_provider')),
+              builder: (context) => const Text('service_provider'),
+            ),
           );
         }
       } else if (res.statusCode >= 400) {
