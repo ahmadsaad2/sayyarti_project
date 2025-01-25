@@ -1,82 +1,132 @@
-// this page for grage service
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import './Servicedetailspageowner.dart';
 
 class ServicesPage extends StatefulWidget {
-  const ServicesPage({super.key});
+  final int companyId;
+  const ServicesPage({Key? key, required this.companyId}) : super(key: key);
 
   @override
   _ServicesPageState createState() => _ServicesPageState();
 }
 
 class _ServicesPageState extends State<ServicesPage> {
-  final List<Map<String, String>> services = [
-    {
-      "Name": "Oil Change",
-      "Time": "30 mins",
-      "Price": "50",
-      "Details": "Change engine oil and filter"
-    },
-    {
-      "Name": "Tire Replacement",
-      "Time": "1 hour",
-      "Price": "100",
-      "Details": "Replace all four tires"
-    },
-  ];
+  List<Map<String, dynamic>> services = [];
+  bool _isLoading = false;
 
-  void _addService() async {
+  @override
+  void initState() {
+    super.initState();
+    _fetchServices();
+  }
+
+  Future<void> _fetchServices() async {
+    setState(() => _isLoading = true);
+
+    try {
+      // Example: GET /api/services?company_id=widget.companyId
+      final url = Uri.parse(
+        'http://192.168.88.4:5000/api/services?company_id=${widget.companyId}',
+      );
+
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        setState(() {
+          services = data.map((item) => item as Map<String, dynamic>).toList();
+        });
+      } else {
+        throw Exception('Failed to load services');
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error fetching services: $e')),
+      );
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _addService() async {
     final newService = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => const ServiceDetailsPage(service: null),
+        builder: (context) => ServiceDetailsPage(
+          service: null,
+          companyId: widget.companyId,
+        ),
       ),
     );
 
+    // If a service was successfully added (non-null result), re-fetch
     if (newService != null) {
-      setState(() {
-        services.add(newService);
-      });
+      _fetchServices();
     }
   }
 
-  void _editService(int index) async {
-    final updatedService = await Navigator.push(
+  Future<void> _editService(int index) async {
+    final serviceToEdit = services[index];
+    final updated = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ServiceDetailsPage(service: services[index]),
+        builder: (context) => ServiceDetailsPage(
+          service: serviceToEdit,
+          companyId: widget.companyId,
+        ),
       ),
     );
 
-    if (updatedService != null) {
-      setState(() {
-        services[index] = updatedService;
-      });
+    // If a service was successfully updated, re-fetch
+    if (updated != null) {
+      _fetchServices();
     }
   }
 
-  void _deleteService(int index) {
-    showDialog(
+  Future<void> _deleteService(int index) async {
+    final serviceToDelete = services[index];
+    final serviceId = serviceToDelete['id'];
+
+    final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete Service'),
         content: const Text('Are you sure you want to delete this service?'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () => Navigator.of(context).pop(false),
             child: const Text('Cancel'),
           ),
           TextButton(
-            onPressed: () {
-              setState(() {
-                services.removeAt(index);
-              });
-              Navigator.of(context).pop();
-            },
+            onPressed: () => Navigator.of(context).pop(true),
             child: const Text('Delete'),
           ),
         ],
       ),
     );
+
+    if (confirm == true) {
+      try {
+        final url =
+            Uri.parse('http://192.168.88.4:5000/api/services/$serviceId');
+        final response = await http.delete(url);
+
+        if (response.statusCode == 200) {
+          setState(() {
+            services.removeAt(index);
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Service deleted!')),
+          );
+        } else {
+          throw Exception('Failed to delete service');
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error deleting service: $e')),
+        );
+      }
+    }
   }
 
   @override
@@ -87,181 +137,66 @@ class _ServicesPageState extends State<ServicesPage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            ElevatedButton(
-              onPressed: _addService,
-              child: const Text('Add Service'),
-            ),
-            const SizedBox(height: 16),
-            Expanded(
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: DataTable(
-                  columns: const [
-                    DataColumn(label: Text('#')),
-                    DataColumn(label: Text('Name')),
-                    DataColumn(label: Text('Time')),
-                    DataColumn(label: Text('Price')),
-                    DataColumn(label: Text('Details')),
-                    DataColumn(label: Text('Actions')),
-                  ],
-                  rows: services.asMap().entries.map(
-                    (entry) {
-                      final index = entry.key;
-                      final service = entry.value;
-
-                      return DataRow(
-                        cells: [
-                          DataCell(Text((index + 1).toString())),
-                          DataCell(Text(service['Name'] ?? '')),
-                          DataCell(Text(service['Time'] ?? '')),
-                          DataCell(Text('\$${service['Price']}')),
-                          DataCell(Text(service['Details'] ?? '')),
-                          DataCell(
-                            Row(
-                              children: [
-                                IconButton(
-                                  icon: const Icon(Icons.edit,
-                                      color: Colors.blue),
-                                  onPressed: () => _editService(index),
-                                ),
-                                IconButton(
-                                  icon: const Icon(Icons.delete,
-                                      color: Colors.red),
-                                  onPressed: () => _deleteService(index),
-                                ),
-                              ],
-                            ),
-                          ),
+        child: _isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : Column(
+                children: [
+                  ElevatedButton(
+                    onPressed: _addService,
+                    child: const Text('Add Service'),
+                  ),
+                  const SizedBox(height: 16),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: DataTable(
+                        columns: const [
+                          DataColumn(label: Text('#')),
+                          DataColumn(label: Text('Name')),
+                          DataColumn(label: Text('Time')),
+                          DataColumn(label: Text('Price')),
+                          DataColumn(label: Text('Details')),
+                          DataColumn(label: Text('Actions')),
                         ],
-                      );
-                    },
-                  ).toList(),
-                ),
+                        rows: services.asMap().entries.map((entry) {
+                          final index = entry.key;
+                          final service = entry.value;
+
+                          return DataRow(
+                            cells: [
+                              DataCell(Text((index + 1).toString())),
+                              DataCell(Text(service['name'] ?? '')),
+                              DataCell(Text(service['time'] ?? '')),
+                              DataCell(Text('\$${service['price'] ?? '0'}')),
+                              DataCell(Text(service['details'] ?? '')),
+                              DataCell(
+                                Row(
+                                  children: [
+                                    IconButton(
+                                      icon: const Icon(
+                                        Icons.edit,
+                                        color: Colors.blue,
+                                      ),
+                                      onPressed: () => _editService(index),
+                                    ),
+                                    IconButton(
+                                      icon: const Icon(
+                                        Icons.delete,
+                                        color: Colors.red,
+                                      ),
+                                      onPressed: () => _deleteService(index),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class ServiceDetailsPage extends StatefulWidget {
-  final Map<String, String>? service;
-
-  const ServiceDetailsPage({super.key, this.service});
-
-  @override
-  _ServiceDetailsPageState createState() => _ServiceDetailsPageState();
-}
-
-class _ServiceDetailsPageState extends State<ServiceDetailsPage> {
-  final _formKey = GlobalKey<FormState>();
-  late TextEditingController _nameController;
-  late TextEditingController _timeController;
-  late TextEditingController _priceController;
-  late TextEditingController _detailsController;
-
-  @override
-  void initState() {
-    super.initState();
-    _nameController =
-        TextEditingController(text: widget.service?['Name'] ?? '');
-    _timeController =
-        TextEditingController(text: widget.service?['Time'] ?? '');
-    _priceController =
-        TextEditingController(text: widget.service?['Price'] ?? '');
-    _detailsController =
-        TextEditingController(text: widget.service?['Details'] ?? '');
-  }
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _timeController.dispose();
-    _priceController.dispose();
-    _detailsController.dispose();
-    super.dispose();
-  }
-
-  void _saveService() {
-    if (_formKey.currentState!.validate()) {
-      final newService = {
-        'Name': _nameController.text.trim(),
-        'Time': _timeController.text.trim(),
-        'Price': _priceController.text.trim(),
-        'Details': _detailsController.text.trim(),
-      };
-      Navigator.pop(context, newService);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.service == null ? 'Add Service' : 'Edit Service'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              TextFormField(
-                controller: _nameController,
-                decoration: const InputDecoration(labelText: 'Service Name'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter service name';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 10),
-              TextFormField(
-                controller: _timeController,
-                decoration: const InputDecoration(labelText: 'Service Time'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter service time';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 10),
-              TextFormField(
-                controller: _priceController,
-                decoration: const InputDecoration(labelText: 'Price'),
-                keyboardType: TextInputType.number,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter price';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 10),
-              TextFormField(
-                controller: _detailsController,
-                decoration: const InputDecoration(labelText: 'Details'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter service details';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _saveService,
-                child: const Text('Save Service'),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }

@@ -1,4 +1,3 @@
-// this page for compony owner (grage owner)
 import 'package:flutter/material.dart';
 import 'porfile.dart';
 import 'employee.dart';
@@ -7,15 +6,67 @@ import '../booking_owner/bookingpage.dart';
 import 'offers.dart';
 import 'review.dart';
 import 'faqpage.dart';
-import '../class/offermanager.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-class ServiceCenterHomePage extends StatelessWidget {
-  final String garageName = 'Auto Care Center';
-  final String location = 'Nablus';
-  final String contact = '123-456-7890';
-  final String details = 'Expert in car repairs and maintenance.';
-  final String imagePath = 'assets/images/5.jpg'; // Placeholder image path
+// Model for company profile
+class CompanyProfile {
+  final int? id;
+  final String? name;
+  final String? address;
+  final String? contact;
+  final String? email;
+  final String? image;
+  final int? userId;
 
+  CompanyProfile({
+    this.id,
+    this.name,
+    this.address,
+    this.contact,
+    this.email,
+    this.image,
+    this.userId,
+  });
+
+  factory CompanyProfile.fromJson(Map<String, dynamic> json) {
+    return CompanyProfile(
+      id: json['id'] as int?,
+      name: json['name'] as String?,
+      address: json['address'] as String?,
+      contact: json['contact'] as String?,
+      email: json['email'] as String?,
+      image: json['image'] as String?,
+      userId: json['user_id'] as int?,
+    );
+  }
+}
+
+// Fetch company profile from the backend
+Future<CompanyProfile> fetchCompanyProfile(int userId) async {
+  final response = await http.get(
+    Uri.parse('http://192.168.88.4:5000/api/company/user/$userId'),
+  );
+  if (response.statusCode == 200) {
+    final data = json.decode(response.body);
+    final companyJson = data['company'];
+    return CompanyProfile.fromJson(companyJson);
+  } else {
+    throw Exception('Failed to load company profile');
+  }
+}
+
+class ServiceCenterHomePage extends StatefulWidget {
+  final int userId;
+
+  const ServiceCenterHomePage({Key? key, required this.userId})
+      : super(key: key);
+
+  @override
+  _ServiceCenterHomePageState createState() => _ServiceCenterHomePageState();
+}
+
+class _ServiceCenterHomePageState extends State<ServiceCenterHomePage> {
   final List<Map<String, String>> bookings = [
     {
       "Customer": "John Doe",
@@ -35,139 +86,166 @@ class ServiceCenterHomePage extends StatelessWidget {
     }
   ];
 
-  ServiceCenterHomePage({
-    super.key,
-  });
+  late Future<CompanyProfile> futureCompanyProfile;
+
+  @override
+  void initState() {
+    super.initState();
+    futureCompanyProfile = fetchCompanyProfile(widget.userId);
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Garage Dashboard'),
-        backgroundColor: const Color.fromARGB(255, 11, 42, 146),
-      ),
-      drawer: const CustomDrawer(),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildProfileSection(context),
-            const SizedBox(height: 20),
-            _buildEmployeeSection(context),
-            const SizedBox(height: 20),
-            _buildBookingsSection(context),
-            const SizedBox(height: 20),
-            _buildServicesSection(context),
-            const SizedBox(height: 20),
-            // _buildServicePackagesSection(),
-            _buildOffersSection(context), //
-          ],
-        ),
-      ),
+    return FutureBuilder<CompanyProfile>(
+      future: futureCompanyProfile,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        } else if (snapshot.hasError) {
+          return Scaffold(
+            body: Center(child: Text('Error: ${snapshot.error}')),
+          );
+        } else if (!snapshot.hasData) {
+          return const Scaffold(
+            body: Center(child: Text('No company data found')),
+          );
+        }
+
+        final company = snapshot.data!;
+
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text('Garage Dashboard',
+                style: TextStyle(color: Colors.white)),
+            backgroundColor: const Color.fromARGB(255, 11, 42, 146),
+            elevation: 0,
+          ),
+          drawer: CustomDrawer(
+            userId: widget.userId,
+            companyId: company.id!,
+          ),
+          body: SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildProfileSection(context, company),
+                const SizedBox(height: 20),
+                _buildEmployeeSection(context, company.id!),
+                const SizedBox(height: 20),
+                _buildBookingsSection(context),
+                const SizedBox(height: 20),
+                _buildServicesSection(context, company.id!),
+                const SizedBox(height: 20),
+                _buildOffersSection(context, company.id!),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
-  Widget _buildProfileSection(BuildContext context) {
+  Widget _buildProfileSection(BuildContext context, CompanyProfile company) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const ProfilePage()),
+          MaterialPageRoute(
+            builder: (context) => ProfilePage(userId: widget.userId),
+          ),
         );
       },
-      child: const Card(
+      child: Card(
         elevation: 5,
-        child: ListTile(
-          leading: CircleAvatar(
-            backgroundImage: AssetImage('assets/images/sdd.jpg'),
-            radius: 30,
-          ),
-          title: Text('Auto Care Center'),
-          subtitle: Text('Tap to Edit Profile'),
-          trailing: Icon(Icons.edit),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
         ),
-      ),
-    );
-  }
-
-  Widget _buildEmployeeSection(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const EmployeePage()),
-        );
-      },
-      child: const Card(
-        elevation: 5,
-        child: ListTile(
-          leading: CircleAvatar(
-            backgroundImage: AssetImage('assets/images/5.jpg'),
-            radius: 30,
-          ),
-          title: Text('Employees'),
-          subtitle: Text('Tap to Manage Employees'),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildOffersSection(BuildContext context) {
-    final offers = OffersManager.instance.offers; // Fetch offers from manager
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          "Available Offers",
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 20),
-        offers.isEmpty
-            ? Card(
-                color: Colors.orange[100],
-                elevation: 5,
-                child: const Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Text(
-                    'No Offers Available',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                ),
-              )
-            : SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: DataTable(
-                  columns: const [
-                    DataColumn(label: Text('#')),
-                    DataColumn(label: Text('description')),
-                    DataColumn(label: Text('Type')),
-                    DataColumn(label: Text('Amount')),
-                    DataColumn(label: Text('Minimum Spend')),
-                    DataColumn(label: Text('Start Date')),
-                    DataColumn(label: Text('End Date')),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              CircleAvatar(
+                backgroundImage: company.image != null
+                    ? NetworkImage(company.image!) as ImageProvider
+                    : const AssetImage('assets/images/sdd.jpg'),
+                radius: 30,
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      company.name ?? 'No Name',
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    const Text(
+                      'Manage your company profile, update details, and view insights.',
+                      style: TextStyle(fontSize: 14, color: Colors.grey),
+                    ),
                   ],
-                  rows: offers
-                      .asMap()
-                      .entries
-                      .map(
-                        (entry) => DataRow(
-                          cells: [
-                            DataCell(Text((entry.key + 1).toString())),
-                            DataCell(Text(entry.value['description'] ?? '')),
-                            DataCell(Text(entry.value['Type'] ?? '')),
-                            DataCell(Text(entry.value['Amount'] ?? '')),
-                            DataCell(Text(entry.value['Minimum'] ?? '')),
-                            DataCell(Text(entry.value['Start'] ?? '')),
-                            DataCell(Text(entry.value['End'] ?? '')),
-                          ],
-                        ),
-                      )
-                      .toList(),
                 ),
               ),
-      ],
+              const Icon(Icons.edit, color: Colors.blue),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmployeeSection(BuildContext context, int companyId) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => EmployeePage(companyId: companyId),
+          ),
+        );
+      },
+      child: Card(
+        elevation: 5,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              const Icon(Icons.group, color: Colors.blue, size: 40),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Manage Employees',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    const Text(
+                      'View, add, or remove employees. Manage roles and permissions.',
+                      style: TextStyle(fontSize: 14, color: Colors.grey),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(Icons.arrow_forward_ios, size: 16),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -177,66 +255,84 @@ class ServiceCenterHomePage extends StatelessWidget {
       children: [
         const Text(
           "Today's Bookings",
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 10),
+        const Text(
+          'View and manage all bookings scheduled for today. Confirm, reschedule, or cancel appointments as needed.',
+          style: TextStyle(fontSize: 14, color: Colors.grey),
         ),
         const SizedBox(height: 20),
         bookings.isEmpty
             ? Card(
-                color: Colors.orange[100],
                 elevation: 5,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                color: Colors.orange[100],
                 child: const Padding(
                   padding: EdgeInsets.all(16.0),
-                  child: Text(
-                    'No Bookings Today',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  child: Center(
+                    child: Text(
+                      'No Bookings Today',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.orange,
+                      ),
+                    ),
                   ),
                 ),
               )
-            : SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: DataTable(
-                  columns: const [
-                    DataColumn(label: Text('#')),
-                    DataColumn(label: Text('Customer')),
-                    DataColumn(label: Text('Mobile')),
-                    DataColumn(label: Text('Service')),
-                    DataColumn(label: Text('Time')),
-                    DataColumn(label: Text('Payment')),
-                    DataColumn(label: Text('Status')),
-                    DataColumn(label: Text('Actions')),
-                  ],
-                  rows: bookings
-                      .asMap()
-                      .entries
-                      .map(
-                        (entry) => DataRow(
-                          cells: [
-                            DataCell(Text((entry.key + 1).toString())),
-                            DataCell(Text(entry.value['Customer'] ?? '')),
-                            DataCell(Text(entry.value['Mobile'] ?? '')),
-                            DataCell(Text(entry.value['Service'] ?? '')),
-                            DataCell(Text(entry.value['Time'] ?? '')),
-                            DataCell(Text(entry.value['Payment'] ?? '')),
-                            DataCell(Text(entry.value['Status'] ?? '')),
-                            DataCell(
-                              IconButton(
-                                icon: const Icon(Icons.edit),
-                                onPressed: () {
-                                  // Handle edit action
-                                },
-                              ),
+            : Card(
+                elevation: 5,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: DataTable(
+                    columns: const [
+                      DataColumn(label: Text('#')),
+                      DataColumn(label: Text('Customer')),
+                      DataColumn(label: Text('Mobile')),
+                      DataColumn(label: Text('Service')),
+                      DataColumn(label: Text('Time')),
+                      DataColumn(label: Text('Payment')),
+                      DataColumn(label: Text('Status')),
+                      DataColumn(label: Text('Actions')),
+                    ],
+                    rows: bookings.asMap().entries.map((entry) {
+                      final index = entry.key;
+                      final booking = entry.value;
+                      return DataRow(
+                        cells: [
+                          DataCell(Text((index + 1).toString())),
+                          DataCell(Text(booking['Customer'] ?? '')),
+                          DataCell(Text(booking['Mobile'] ?? '')),
+                          DataCell(Text(booking['Service'] ?? '')),
+                          DataCell(Text(booking['Time'] ?? '')),
+                          DataCell(Text(booking['Payment'] ?? '')),
+                          DataCell(Text(booking['Status'] ?? '')),
+                          DataCell(
+                            IconButton(
+                              icon: const Icon(Icons.edit),
+                              onPressed: () {
+                                // Handle edit action
+                              },
                             ),
-                          ],
-                        ),
-                      )
-                      .toList(),
+                          ),
+                        ],
+                      );
+                    }).toList(),
+                  ),
                 ),
               ),
       ],
     );
   }
 
-  Widget _buildServicesSection(BuildContext context) {
+  Widget _buildServicesSection(BuildContext context, int companyId) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -245,31 +341,51 @@ class ServiceCenterHomePage extends StatelessWidget {
           style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 10),
+        const Text(
+          'Explore and manage the services your company offers. Add new services or update existing ones to meet customer needs.',
+          style: TextStyle(fontSize: 14, color: Colors.grey),
+        ),
+        const SizedBox(height: 20),
         Card(
           elevation: 5,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  'Car Fixing',
+                  'Car Repair & Maintenance',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 10),
                 const Text(
-                  'The main service we offer is repairing and fixing all car types, from basic fixes to complex engine work.',
+                  'We specialize in repairing and maintaining all types of vehicles. From oil changes to engine overhauls, we’ve got you covered.',
+                  style: TextStyle(fontSize: 14, color: Colors.grey),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const ServicesPage()),
+                        builder: (context) =>
+                            ServicesPage(companyId: companyId),
+                      ),
                     );
                   },
-                  child: const Text('Edit Service'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: const Text(
+                    'Edit Services',
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
               ],
             ),
@@ -279,40 +395,79 @@ class ServiceCenterHomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildServicePackagesSection() {
+  Widget _buildOffersSection(BuildContext context, int companyId) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          'Service Packages',
+          'Available Offers',
           style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 10),
-        ServicePackageCard(
-          title: 'Basic',
-          description: 'Complete Car Exterior Cleaning',
-          price: 35,
-          onEdit: () {
-            // Navigate to edit package
-          },
+        const Text(
+          'Create and manage special offers to attract more customers. Update discounts, promotions, and seasonal deals.',
+          style: TextStyle(fontSize: 14, color: Colors.grey),
         ),
-        ServicePackageCard(
-          title: 'Advanced',
-          description: 'Complete Car Exterior Cleaning & Interior',
-          price: 105,
-          onEdit: () {
-            // Navigate to edit package
-          },
+        const SizedBox(height: 20),
+        Card(
+          elevation: 5,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Current Offers',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 10),
+                const Text(
+                  'No active offers at the moment. Tap below to create new offers.',
+                  style: TextStyle(fontSize: 14, color: Colors.grey),
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => OffersPage(companyId: companyId),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: const Text(
+                    'Manage Offers',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ],
     );
   }
 }
 
-// Other widgets like `CustomDrawer`, `ServicePackageCard`, etc., remain the same.
-// Left Sidebar (Drawer) widget
+// Custom Drawer
 class CustomDrawer extends StatelessWidget {
-  const CustomDrawer({super.key});
+  final int userId;
+  final int companyId;
+
+  const CustomDrawer({
+    Key? key,
+    required this.userId,
+    required this.companyId,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -320,7 +475,6 @@ class CustomDrawer extends StatelessWidget {
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
-          // Drawer Header with garage image
           const DrawerHeader(
             decoration: BoxDecoration(
               color: Color.fromARGB(255, 16, 59, 177),
@@ -344,13 +498,11 @@ class CustomDrawer extends StatelessWidget {
               ],
             ),
           ),
-
-          // Sidebar Items
           DrawerListTile(
             title: 'Dashboard',
             icon: Icons.dashboard,
             onTap: () {
-              Navigator.pop(context); // Close drawer
+              Navigator.pop(context);
             },
           ),
           DrawerListTile(
@@ -358,9 +510,10 @@ class CustomDrawer extends StatelessWidget {
             icon: Icons.account_circle,
             onTap: () {
               Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const ProfilePage()),
-              );
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ProfilePage(userId: userId),
+                  ));
             },
           ),
           DrawerListTile(
@@ -368,13 +521,12 @@ class CustomDrawer extends StatelessWidget {
             icon: Icons.people,
             onTap: () {
               Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const EmployeePage()),
-              );
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => EmployeePage(companyId: companyId),
+                  ));
             },
           ),
-
-          // New: Bookings Page
           DrawerListTile(
             title: 'Bookings',
             icon: Icons.book_online,
@@ -385,43 +537,41 @@ class CustomDrawer extends StatelessWidget {
               );
             },
           ),
-
-          // New: Services Page
           DrawerListTile(
             title: 'Services',
             icon: Icons.build,
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const ServicesPage()),
+                MaterialPageRoute(
+                  builder: (context) => ServicesPage(companyId: companyId),
+                ),
               );
             },
           ),
-
-          // New: Offers Page
           DrawerListTile(
             title: 'Offers',
             icon: Icons.local_offer,
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const OffersPage()),
+                MaterialPageRoute(
+                  builder: (context) => OffersPage(companyId: companyId),
+                ),
               );
             },
           ),
-
-          // New: Reviews Page
           DrawerListTile(
             title: 'Reviews',
             icon: Icons.star,
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const ReviewsPage()),
+                MaterialPageRoute(
+                    builder: (context) => ReviewsPage(companyId: companyId)),
               );
             },
           ),
-
           DrawerListTile(
             title: 'FaQ',
             icon: Icons.question_answer,
@@ -438,75 +588,25 @@ class CustomDrawer extends StatelessWidget {
   }
 }
 
-// Sidebar List Tile Component
+// Reusable ListTile for drawer
 class DrawerListTile extends StatelessWidget {
   final String title;
   final IconData icon;
-  final Function onTap;
+  final VoidCallback onTap;
 
   const DrawerListTile({
-    super.key,
+    Key? key,
     required this.title,
     required this.icon,
     required this.onTap,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
       leading: Icon(icon, color: const Color.fromARGB(255, 23, 38, 180)),
       title: Text(title),
-      onTap: () => onTap(),
-    );
-  }
-}
-
-class ServicePackageCard extends StatelessWidget {
-  final String title;
-  final String description;
-  final double price;
-  final VoidCallback onEdit;
-
-  const ServicePackageCard({
-    super.key,
-    required this.title,
-    required this.description,
-    required this.price,
-    required this.onEdit,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      elevation: 5,
-      margin: const EdgeInsets.symmetric(vertical: 10),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 10),
-            Text(description),
-            const SizedBox(height: 10),
-            Text(
-              'Price: \$${price.toStringAsFixed(2)}',
-              style: const TextStyle(color: Colors.green),
-            ),
-            const SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: onEdit,
-              child: const Text('Edit Package'),
-            ),
-          ],
-        ),
-      ),
+      onTap: onTap,
     );
   }
 }

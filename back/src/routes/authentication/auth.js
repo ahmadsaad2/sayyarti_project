@@ -1,6 +1,5 @@
 import { Router } from 'express';
 import models from '../../../models/index.js';
-
 import bcrypt from 'bcrypt';
 import { where } from 'sequelize';
 import jwt from 'jsonwebtoken';

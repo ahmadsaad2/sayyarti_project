@@ -91,8 +91,8 @@ class _ImagePickState extends State<ImagePick> {
       imageUrl = jsonMap['url'];
       print(imageUrl);
       final prefs = await SharedPreferences.getInstance();
-      final _userId = prefs.getString('id');
-      final url = Uri.http(backendUrl, '/user/info-update/$_userId');
+      final userId = prefs.getString('id');
+      final url = Uri.http(backendUrl, '/user/info-update/$userId');
       final backRes = await http.put(
         url,
         headers: {
@@ -187,7 +187,7 @@ class _ImagePickState extends State<ImagePick> {
                 )
               : const Text('No Image Selected'),
           const SizedBox(height: 18),
-          Container(
+          SizedBox(
             width: double.infinity,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
