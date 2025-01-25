@@ -43,6 +43,10 @@ export default function(sequelize, DataTypes) {
       allowNull: false,
       defaultValue: 'unverified'
     },
+    fcm_token:{
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    }
   }, {
     sequelize,
     tableName: 'users',
