@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sayyarti/Screens/admin/screens/admin_home.dart';
+import 'package:sayyarti/firebasefunctions/fcm_setup.dart';
 import '../../home/home.dart';
 import '../../../screens/owner/owner.dart';
 import '../../../components/already_have_an_account_acheck.dart';
@@ -66,7 +67,7 @@ class _LoginFormState extends State<LoginForm> {
         } else {
           prefs.remove('phone');
         }
-
+        initializeFCM();
         if (data['role'] == 'user') {
           Navigator.push(
             context,

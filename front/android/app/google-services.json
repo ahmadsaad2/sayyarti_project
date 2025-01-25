@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "858143106580",
+    "project_id": "sayyarati",
+    "storage_bucket": "sayyarati.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:858143106580:android:a0683957187a1053abe901",
+        "android_client_info": {
+          "package_name": "com.example.front"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCPtQq47Vt3YY41d5QObfbi__LOSnABEmE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

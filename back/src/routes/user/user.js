@@ -5,6 +5,7 @@ import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
 import nodemailer from 'nodemailer';
 import { verifyTokenAndAuthorization } from '../../middleware/userVerification.js';
+import { where } from 'sequelize';
 
 dotenv.config();
 const { users, address, brands, cars } = models;
@@ -100,6 +101,7 @@ router.get('/get-brands', async (req, res) => {
         return res.status(500).json({ message: 'Server error' });
     }
 });
+
 /**
  * @desc add a new car
  * @router /api/user/add-car/:id
@@ -122,5 +124,23 @@ router.post('/add-car/:id', verifyTokenAndAuthorization, async (req, res) => {
     }
 });
 
+/**
+ * @desc add a new car
+ * @router /api/user/chat-conv/
+ * @method GET
+ * @access public
+ */
+router.get('/user/chat-conv', async (req, res) => {
+    try {
+        const conv = await users.findAll({
+            where: {
+                role: ['company_admin', 'service_provider'],
+            },
+        });
+        return res.status(200).json({conv});
+    } catch (error) {
+        return res.status(500).json({message:'Server error'});
+    }
+});
 
 export default router;

@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:sayyarti/firebasefunctions/fcm_setup.dart';
+import 'package:sayyarti/firebasefunctions/local_notifications.dart';
 import 'Screens/Welcome/welcome_screen.dart';
 import 'constants.dart';
+
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
 final theme = ThemeData(
   primaryColor: const Color.fromARGB(255, 8, 75, 219),
@@ -32,6 +37,11 @@ final theme = ThemeData(
 
 Future<void> main() async {
   await dotenv.load(fileName: ".env");
+  // two below lines added for firebase as documentation
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  //the below for local notifications
+  initializeLocalNotifications();
   runApp(const MyApp());
 }
 
@@ -42,6 +52,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: MaterialApp(
+        navigatorKey: navigatorKey,
         debugShowCheckedModeBanner: false,
         title: 'Sayyarti',
         theme: theme,
