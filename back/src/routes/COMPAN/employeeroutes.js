@@ -1,8 +1,50 @@
 import { Router } from 'express';
 import models from '../../../models/index.js'; // Correct relative path to models
+import bcrypt from 'bcrypt';  // For bcrypt module
 
 const router = Router();
 const { employees, companies, users, workassignment } = models; // Destructure the required models
+
+// router.post('/', async (req, res) => {
+//   const { company_id, name, email, password, role } = req.body;
+
+//   try {
+//     const company = await companies.findByPk(company_id);
+//     if (!company) {
+//       return res.status(404).json({ message: 'Company not found.' });
+//     }
+
+//     const existingUser = await users.findOne({ where: { email } });
+//     if (existingUser) {
+//       return res.status(400).json({ message: 'A user with this email already exists.' });
+//     }
+//     const salt = await bcrypt.genSalt(10); // Generate salt
+
+//     const hashedPassword = await bcrypt.hash(password, salt); // Hash the password
+
+//     const newUser = await users.create({
+//       name,
+//       email,
+//       password: hashedPassword, // Store the hashed password
+//       role: 'service_provider',
+//     });
+
+//     const newEmployee = await employees.create({
+//       company_id,
+//       user_id: newUser.id,
+//       role,
+//     });
+
+//     return res.status(201).json({
+//       message: 'Employee account created successfully.',
+//       user: newUser,
+//       employee: newEmployee,
+//     });
+//   } catch (error) {
+//     console.error('Error adding employee:', error);
+//     return res.status(500).json({ message: 'Server error', error: error.message });
+//   }
+// });
 
 router.post('/', async (req, res) => {
   const { company_id, name, email, password, role } = req.body;
@@ -13,22 +55,31 @@ router.post('/', async (req, res) => {
       return res.status(404).json({ message: 'Company not found.' });
     }
 
+    // Check if user already exists
     const existingUser = await users.findOne({ where: { email } });
     if (existingUser) {
       return res.status(400).json({ message: 'A user with this email already exists.' });
     }
 
+    // Hash the password before storing it in the database
+    const salt = await bcrypt.genSalt(10); // Generate salt
+    const hashedPassword = await bcrypt.hash(password, salt); // Hash the password
+
+    // Create a new user
     const newUser = await users.create({
       name,
       email,
-      password,
+      password: hashedPassword, // Store the hashed password
       role: 'service_provider',
     });
 
+    // Create a new employee
     const newEmployee = await employees.create({
       company_id,
       user_id: newUser.id,
       role,
+      name,
+      email,
     });
 
     return res.status(201).json({
@@ -41,7 +92,6 @@ router.post('/', async (req, res) => {
     return res.status(500).json({ message: 'Server error', error: error.message });
   }
 });
-
 // DELETE: Remove an employee by ID
 router.delete('/:employeeId', async (req, res) => {
   const { employeeId } = req.params;

@@ -15,7 +15,10 @@ import user from './src/routes/user/user.js';
 import companyRoutes from './src/routes/COMPAN/companyroutes.js';
 import employeesRoutes from './src/routes/COMPAN/employeeroutes.js';
 import workAssignmentRoutes from './src/routes/COMPAN/workassigmentsroutes.js';
-
+import servicesRoutes from './src/routes/COMPAN/servicesRoutes.js';
+import offersRoutes from './src/routes/COMPAN/offerRoutes.js';
+import reviewsRoutes from './src/routes/COMPAN/reviewsRoutes.js';
+import employesRoutes from './src/routes/employee/employesRoutes.js';
 dbConnect();
 
 
@@ -40,6 +43,10 @@ app.use('/user', user);
 app.use('/api/company', companyRoutes);
 app.use('/api/employees', employeesRoutes);
 app.use('/api/workassignments', workAssignmentRoutes);
+app.use('/api/services', servicesRoutes);
+app.use('/api/offers', offersRoutes);
+app.use('/api/reviews', reviewsRoutes);
+app.use('/api/employee', employesRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

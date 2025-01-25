@@ -1,139 +1,182 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class ReviewsPage extends StatefulWidget {
-  const ReviewsPage({super.key});
+  final int companyId; // The company ID whose reviews we want to display
+
+  const ReviewsPage({Key? key, required this.companyId}) : super(key: key);
 
   @override
   _ReviewsPageState createState() => _ReviewsPageState();
 }
 
 class _ReviewsPageState extends State<ReviewsPage> {
-  final List<Map<String, dynamic>> reviews = [
-    {
-      "Name": "John Doe",
-      "Service": "Car Wash",
-      "Rating": 5,
-      "Review": "Excellent service! Highly recommended.",
-    },
-    {
-      "Name": "Jane Smith",
-      "Service": "Oil Change",
-      "Rating": 4,
-      "Review": "Good service, but slightly delayed.",
-    },
-  ];
+  List<Map<String, dynamic>> _reviews = [];
+  bool _isLoading = false;
 
-  void _deleteReview(int index) {
-    showDialog(
+  @override
+  void initState() {
+    super.initState();
+    _fetchReviews();
+  }
+
+  Future<void> _fetchReviews() async {
+    setState(() => _isLoading = true);
+
+    try {
+      final url = Uri.parse(
+        'http://192.168.88.4:5000/api/reviews?company_id=${widget.companyId}',
+      );
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        setState(() {
+          _reviews = data.map((item) => item as Map<String, dynamic>).toList();
+        });
+      } else {
+        throw Exception('Failed to load reviews');
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error fetching reviews: $e')),
+      );
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _deleteReview(int reviewId) async {
+    final confirm = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (ctx) => AlertDialog(
         title: const Text('Delete Review'),
         content: const Text('Are you sure you want to delete this review?'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () => Navigator.pop(ctx, false),
             child: const Text('Cancel'),
           ),
           TextButton(
-            onPressed: () {
-              setState(() {
-                reviews.removeAt(index);
-              });
-              Navigator.of(context).pop();
-            },
+            onPressed: () => Navigator.pop(ctx, true),
             child: const Text('Delete'),
           ),
         ],
       ),
     );
-  }
 
-  void _viewReviewDetails(Map<String, dynamic> review) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Review Details'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Name: ${review['Name']}'),
-            Text('Service: ${review['Service']}'),
-            Text('Rating: ${review['Rating']}'),
-            const SizedBox(height: 10),
-            Text('Review: ${review['Review']}'),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Close'),
-          ),
-        ],
-      ),
-    );
+    if (confirm == true) {
+      try {
+        final url = Uri.parse('http://192.168.88.4:5000/api/reviews/$reviewId');
+        final response = await http.delete(url);
+        if (response.statusCode == 200) {
+          setState(() {
+            _reviews.removeWhere((review) => review['id'] == reviewId);
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Review deleted successfully.')),
+          );
+        } else {
+          throw Exception('Failed to delete review');
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error deleting review: $e')),
+        );
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Client Reviews'),
+        title: const Text('Customer Reviews'),
+        centerTitle: true,
+        backgroundColor: const Color.fromARGB(255, 11, 42, 146),
+        elevation: 0,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: reviews.isEmpty
-            ? const Center(child: Text('No reviews yet!'))
-            : SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: DataTable(
-                  columns: const [
-                    DataColumn(label: Text('#')),
-                    DataColumn(label: Text('Name')),
-                    DataColumn(label: Text('Service')),
-                    DataColumn(label: Text('Rating')),
-                    DataColumn(label: Text('Review')),
-                    DataColumn(label: Text('Actions')),
-                  ],
-                  rows: reviews.asMap().entries.map(
-                    (entry) {
-                      final index = entry.key;
-                      final review = entry.value;
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : _reviews.isEmpty
+              ? const Center(
+                  child: Text(
+                    'No reviews found for this company.',
+                    style: TextStyle(fontSize: 16, color: Colors.grey),
+                  ),
+                )
+              : ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: _reviews.length,
+                  itemBuilder: (context, index) {
+                    final review = _reviews[index];
+                    final reviewId = review['id'] ?? 0;
+                    final rating = review['rating']?.toString() ?? 'No rating';
+                    final comment =
+                        review['comment']?.toString() ?? 'No comment';
+                    final customerName =
+                        review['customer_name']?.toString() ?? 'Anonymous';
+                    final date = review['date']?.toString() ?? 'Unknown date';
 
-                      return DataRow(
-                        cells: [
-                          DataCell(Text((index + 1).toString())),
-                          DataCell(Text(review['Name'] ?? '')),
-                          DataCell(Text(review['Service'] ?? '')),
-                          DataCell(Text(review['Rating'].toString())),
-                          DataCell(Text(
-                            review['Review'] ?? '',
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                          )),
-                          DataCell(
+                    return Card(
+                      elevation: 4,
+                      margin: const EdgeInsets.only(bottom: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
                             Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                IconButton(
-                                  icon: const Icon(Icons.info,
-                                      color: Colors.blue),
-                                  onPressed: () => _viewReviewDetails(review),
+                                Text(
+                                  customerName,
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                                 IconButton(
                                   icon: const Icon(Icons.delete,
                                       color: Colors.red),
-                                  onPressed: () => _deleteReview(index),
+                                  onPressed: () => _deleteReview(reviewId),
                                 ),
                               ],
                             ),
-                          ),
-                        ],
-                      );
-                    },
-                  ).toList(),
+                            const SizedBox(height: 8),
+                            Row(
+                              children: [
+                                const Icon(Icons.star, color: Colors.amber),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'Rating: $rating',
+                                  style: const TextStyle(fontSize: 16),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Comment: $comment',
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Date: $date',
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
                 ),
-              ),
-      ),
     );
   }
 }

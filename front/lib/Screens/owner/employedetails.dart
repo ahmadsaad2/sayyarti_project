@@ -145,7 +145,7 @@ class EmployeeDetailsPageState extends State<EmployeeDetailsPage> {
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Position: ${widget.employee.position}'),
+            Text('Position: ${widget.employee.role}'),
             Text('Contact: ${widget.employee.contact}'),
             Text('Email: ${widget.employee.email}'),
           ],

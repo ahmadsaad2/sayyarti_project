@@ -137,6 +137,7 @@ router.put('/assign/:employee_id/:day', async (req, res) => {
       });
     }
 
+    // 4. Update the existing assignment with the new data.
     if (typeof task !== 'undefined') {
       existingAssignment.task = task;
     }

@@ -1,346 +1,424 @@
-// import 'package:flutter/material.dart';
-// import '../class/employeclass.dart';
+// lib/pages/employee_page.dart
+import 'dart:convert';
+import 'dart:io';
+import 'package:flutter/material.dart';
+import '../class/employeclass.dart';
+import '../class/task.dart'; // Import the Task class
+import 'task_details_page.dart';
+import 'task_in_progress_page.dart';
 
-// import '../class/work_assignment.dart';
-// import 'task_details_page.dart';
-// import 'task_in_progress_page.dart';
-// import 'profileemployee.dart';
+import './profileemployee.dart'; // Import the EditEmployeePage widget
+import 'package:http/http.dart' as http;
+import './work_assignement_tabel.dart ';
 
-// class EmployeePage extends StatefulWidget {
-//   final Employee employee; // Accept Employee object
-//   const EmployeePage({super.key, required this.employee});
+class EmployeePage extends StatefulWidget {
+  final int userId; // Accept the userId as a parameter
+  const EmployeePage({super.key, required this.userId});
 
-//   @override
-//   EmployeePageState createState() => EmployeePageState();
-// }
+  @override
+  EmployeePageState createState() => EmployeePageState();
+}
 
-// class EmployeePageState extends State<EmployeePage> {
-//   final List<String> notifications = [
-//     "Task assigned: Car Wash at 10:00 AM",
-//     "Task completed: Polishing at 12:00 PM",
-//   ];
+class EmployeePageState extends State<EmployeePage> {
+  late Future<Employee> _employeeFuture;
+  final List<String> notifications = [
+    "Task assigned: Car Wash at 10:00 AM",
+    "Task completed: Polishing at 12:00 PM",
+  ];
 
-//   DateTime? selectedDate; // Store the selected date
+  DateTime? selectedDate;
+  final List<String> daysOfWeek = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday"
+  ];
 
-//   // Map DateTime.weekday to day names
-//   final List<String> daysOfWeek = [
-//     "Monday",
-//     "Tuesday",
-//     "Wednesday",
-//     "Thursday",
-//     "Friday",
-//     "Saturday",
-//     "Sunday"
-//   ];
+  @override
+  void initState() {
+    super.initState();
+    _employeeFuture = _fetchEmployeeData(widget.userId);
+  }
 
-//   @override
-//   Widget build(BuildContext context) {
-//     // Determine the day name from the selected date or today's date
-//     final String selectedDay = (selectedDate != null)
-//         ? daysOfWeek[(selectedDate!.weekday - 1) % 7]
-//         : daysOfWeek[(DateTime.now().weekday - 1) % 7];
+  Future<Employee> _fetchEmployeeData(int userId) async {
+    try {
+      final response = await http.get(
+        Uri.parse('http://192.168.88.4:5000/api/employee/$userId'),
+      );
 
-//     // Filter tasks for the selected day
-//     final filteredAssignments = widget.employee.workAssignments
-//         .where((assignment) => assignment.day == selectedDay)
-//         .toList();
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return Employee.fromJson(data);
+      } else if (response.statusCode == 404) {
+        throw Exception('Employee not found');
+      } else {
+        throw Exception('Failed to load employee data: ${response.statusCode}');
+      }
+    } on SocketException {
+      throw Exception('No Internet connection');
+    } on HttpException {
+      throw Exception('Could not reach the server');
+    } on FormatException {
+      throw Exception('Invalid response format');
+    } catch (e) {
+      throw Exception('An unexpected error occurred: $e');
+    }
+  }
 
-//     // Divide tasks into categories
-//     final incompleteTasks = filteredAssignments
-//         .where((assignment) => assignment.status == "waiting")
-//         .toList();
-//     final inProgressTasks = filteredAssignments
-//         .where((assignment) => assignment.status == "In Progress")
-//         .toList();
-//     final completedTasks = filteredAssignments
-//         .where((assignment) => assignment.status == "Complete")
-//         .toList();
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Employee Dashboard"),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.calendar_today),
+            onPressed: () async {
+              final DateTime? pickedDate = await showDatePicker(
+                context: context,
+                initialDate: selectedDate ?? DateTime.now(),
+                firstDate: DateTime(2000),
+                lastDate: DateTime(2100),
+              );
+              if (pickedDate != null && pickedDate != selectedDate) {
+                setState(() {
+                  selectedDate = pickedDate;
+                });
+              }
+            },
+          ),
+          Stack(
+            children: [
+              IconButton(
+                icon: const Icon(Icons.notifications),
+                onPressed: () {
+                  _showNotifications();
+                },
+              ),
+              if (notifications.isNotEmpty)
+                Positioned(
+                  right: 11,
+                  top: 11,
+                  child: Container(
+                    padding: const EdgeInsets.all(2),
+                    decoration: const BoxDecoration(
+                      color: Colors.red,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Text(
+                      '${notifications.length}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ],
+      ),
+      drawer: FutureBuilder<Employee>(
+        future: _employeeFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Drawer(
+              child: Center(child: CircularProgressIndicator()),
+            );
+          } else if (snapshot.hasError) {
+            return Drawer(
+              child: Center(
+                child: Text(
+                  snapshot.error.toString().contains('Employee not found')
+                      ? 'Employee not found'
+                      : 'Error: ${snapshot.error}',
+                ),
+              ),
+            );
+          } else if (!snapshot.hasData) {
+            return const Drawer(
+              child: Center(child: Text('No employee data found')),
+            );
+          } else {
+            final employee = snapshot.data!;
+            return _buildDrawer(employee);
+          }
+        },
+      ),
+      body: FutureBuilder<Employee>(
+        future: _employeeFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Text(
+                snapshot.error.toString().contains('Employee not found')
+                    ? 'Employee not found'
+                    : 'Error: ${snapshot.error}',
+              ),
+            );
+          } else if (!snapshot.hasData) {
+            return const Center(child: Text('No employee data found'));
+          } else {
+            final employee = snapshot.data!;
+            return _buildBody(employee);
+          }
+        },
+      ),
+    );
+  }
 
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text(widget.employee.name),
-//         actions: [
-//           IconButton(
-//             icon: const Icon(Icons.calendar_today),
-//             onPressed: () async {
-//               // Show calendar to pick a date
-//               final DateTime? pickedDate = await showDatePicker(
-//                 context: context,
-//                 initialDate: selectedDate ?? DateTime.now(),
-//                 firstDate: DateTime(2000),
-//                 lastDate: DateTime(2100),
-//               );
+  Widget _buildBody(Employee employee) {
+    final String selectedDay = (selectedDate != null)
+        ? daysOfWeek[(selectedDate!.weekday - 1) % 7]
+        : daysOfWeek[(DateTime.now().weekday - 1) % 7];
 
-//               if (pickedDate != null && pickedDate != selectedDate) {
-//                 setState(() {
-//                   selectedDate = pickedDate; // Update selected date
-//                 });
-//               }
-//             },
-//           ),
-//           Stack(
-//             children: [
-//               IconButton(
-//                 icon: const Icon(Icons.notifications),
-//                 onPressed: () {
-//                   _showNotifications();
-//                 },
-//               ),
-//               if (notifications.isNotEmpty)
-//                 Positioned(
-//                   right: 11,
-//                   top: 11,
-//                   child: Container(
-//                     padding: const EdgeInsets.all(2),
-//                     decoration: const BoxDecoration(
-//                       color: Colors.red,
-//                       shape: BoxShape.circle,
-//                     ),
-//                     child: Text(
-//                       '${notifications.length}',
-//                       style: const TextStyle(
-//                         color: Colors.white,
-//                         fontSize: 10,
-//                       ),
-//                     ),
-//                   ),
-//                 ),
-//             ],
-//           ),
-//         ],
-//       ),
-//       drawer: _buildDrawer(),
-//       body: Column(
-//         children: [
-//           const Padding(
-//             padding: EdgeInsets.all(16.0),
-//             child: Text(
-//               "Today's Assignments",
-//               style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-//             ),
-//           ),
-//           Padding(
-//             padding: const EdgeInsets.symmetric(vertical: 8.0),
-//             child: Text(
-//               "Selected Day: $selectedDay",
-//               style: const TextStyle(fontSize: 16, color: Colors.black54),
-//             ),
-//           ),
-//           Expanded(
-//             child: ListView(
-//               children: [
-//                 _buildTaskSection("waiting Tasks", incompleteTasks),
-//                 _buildTaskSection("In Progress Tasks", inProgressTasks),
-//                 _buildTaskSection("Completed Tasks", completedTasks),
-//               ],
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
+    final incompleteTasks = employee.tasks
+        .where((task) => task.status == "waiting" && task.day == selectedDay)
+        .toList();
+    final inProgressTasks = employee.tasks
+        .where(
+            (task) => task.status == "In Progress" && task.day == selectedDay)
+        .toList();
+    final completedTasks = employee.tasks
+        .where((task) => task.status == "Complete" && task.day == selectedDay)
+        .toList();
 
-//   Widget _buildIncompleteTaskCard(WorkAssignment task) {
-//     return MouseRegion(
-//       onEnter: (_) {
-//         // Add logic if needed when mouse enters
-//       },
-//       onExit: (_) {
-//         // Add logic if needed when mouse exits
-//       },
-//       child: Card(
-//         elevation: 5,
-//         margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-//         child: ListTile(
-//           title: Text(task.task),
-//           subtitle: Text("Day: ${task.day}"),
-//           trailing: Row(
-//             mainAxisSize: MainAxisSize.min,
-//             children: [
-//               GestureDetector(
-//                 onTap: () {
-//                   setState(() {
-//                     task.status = "In Progress";
-//                   });
-//                   ScaffoldMessenger.of(context).showSnackBar(
-//                     const SnackBar(content: Text("Task marked as In Progress")),
-//                   );
-//                 },
-//                 child: const CircleAvatar(
-//                   radius: 15,
-//                   backgroundColor: Colors.green,
-//                   child: Icon(Icons.check, size: 18, color: Colors.white),
-//                 ),
-//               ),
-//               const SizedBox(width: 10),
-//               GestureDetector(
-//                 onTap: () {
-//                   setState(() {
-//                     task.status = "Declined";
-//                   });
-//                   ScaffoldMessenger.of(context).showSnackBar(
-//                     const SnackBar(content: Text("Task marked as Declined")),
-//                   );
-//                 },
-//                 child: const CircleAvatar(
-//                   radius: 15,
-//                   backgroundColor: Colors.red,
-//                   child: Icon(Icons.close, size: 18, color: Colors.white),
-//                 ),
-//               ),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
+    return ListView(
+      children: [
+        const Padding(
+          padding: EdgeInsets.all(16.0),
+          child: Text(
+            "Today's Assignments",
+            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+          child: Text(
+            "Selected Day: $selectedDay",
+            style: const TextStyle(fontSize: 16, color: Colors.black54),
+          ),
+        ),
+        _buildTaskSection("Waiting Tasks", incompleteTasks),
+        _buildTaskSection("In Progress Tasks", inProgressTasks),
+        _buildTaskSection("Completed Tasks", completedTasks),
+        const Padding(
+          padding: EdgeInsets.all(16.0),
+          child: Text(
+            "Work Assignments",
+            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+          ),
+        ),
+        WorkAssignmentTable(workAssignments: employee.workAssignments),
+      ],
+    );
+  }
 
-//   Widget _buildDrawer() {
-//     return Drawer(
-//       child: ListView(
-//         padding: EdgeInsets.zero,
-//         children: [
-//           DrawerHeader(
-//             decoration: const BoxDecoration(
-//               color: Colors.blue,
-//             ),
-//             child: Column(
-//               crossAxisAlignment: CrossAxisAlignment.start,
-//               children: [
-//                 const CircleAvatar(
-//                   radius: 30,
-//                   backgroundImage: AssetImage('assets/images/5.jpg'),
-//                 ),
-//                 const SizedBox(height: 10),
-//                 Text(
-//                   widget.employee.name,
-//                   style: const TextStyle(color: Colors.white, fontSize: 18),
-//                 ),
-//                 Text(
-//                   widget.employee.position,
-//                   style: const TextStyle(color: Colors.white70),
-//                 ),
-//               ],
-//             ),
-//           ),
-//           ListTile(
-//             leading: const Icon(Icons.dashboard),
-//             title: const Text('Dashboard'),
-//             onTap: () {
-//               Navigator.pop(context);
-//             },
-//           ),
-//           ListTile(
-//             leading: const Icon(Icons.task),
-//             title: const Text('Tasks'),
-//             onTap: () {
-//               Navigator.pop(context);
-//             },
-//           ),
-//           ListTile(
-//             leading: const Icon(Icons.person),
-//             title: const Text('Profile'),
-//             onTap: () {
-//               Navigator.push(
-//                 context,
-//                 MaterialPageRoute(
-//                   builder: (context) => ProfilePage(employee: widget.employee),
-//                 ),
-//               );
-//             },
-//           ),
-//         ],
-//       ),
-//     );
-//   }
+  Widget _buildDrawer(Employee employee) {
+    return Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          DrawerHeader(
+            decoration: const BoxDecoration(
+              color: Colors.blue,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const CircleAvatar(
+                  radius: 30,
+                  backgroundImage: AssetImage('assets/images/5.jpg'),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  employee.name,
+                  style: const TextStyle(color: Colors.white, fontSize: 18),
+                ),
+                Text(
+                  employee.role,
+                  style: const TextStyle(color: Colors.white70),
+                ),
+              ],
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.dashboard),
+            title: const Text('Dashboard'),
+            onTap: () {
+              Navigator.pop(context);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.task),
+            title: const Text('Tasks'),
+            onTap: () {
+              Navigator.pop(context);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.person),
+            title: const Text('Profile'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => EditEmployeePage(employee: employee),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
 
-//   Widget _buildTaskSection(String title, List<WorkAssignment> tasks) {
-//     return Padding(
-//       padding: const EdgeInsets.symmetric(vertical: 8.0),
-//       child: Column(
-//         crossAxisAlignment: CrossAxisAlignment.start,
-//         children: [
-//           Padding(
-//             padding: const EdgeInsets.symmetric(horizontal: 16.0),
-//             child: Text(
-//               title,
-//               style: const TextStyle(
-//                 fontSize: 18,
-//                 fontWeight: FontWeight.bold,
-//                 color: Colors.blueAccent,
-//               ),
-//             ),
-//           ),
-//           const SizedBox(height: 8),
-//           ...tasks.map((task) => _buildTaskCard(task)),
-//         ],
-//       ),
-//     );
-//   }
+  Widget _buildTaskSection(String title, List<Task> tasks) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Text(
+              title,
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.blueAccent,
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          ...tasks.map((task) => _buildTaskCard(task)).toList(),
+        ],
+      ),
+    );
+  }
 
-//   Widget _buildTaskCard(WorkAssignment task) {
-//     if (task.status == "waiting") {
-//       return _buildIncompleteTaskCard(
-//           task); // Call the widget for waiting tasks
-//     }
+  Widget _buildTaskCard(Task task) {
+    if (task.status == "waiting") {
+      return _buildIncompleteTaskCard(task);
+    }
 
-//     return Card(
-//       elevation: 5,
-//       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-//       child: ListTile(
-//           title: Text(task.task),
-//           subtitle: Text("Day: ${task.day}"),
-//           onTap: () {
-//             // Navigate to different pages based on the task status
-//             if (task.status == "Complete") {
-//               Navigator.push(
-//                 context,
-//                 MaterialPageRoute(
-//                   builder: (context) => TaskDetailsPage(
-//                       assignment: task), // Page for completed tasks
-//                 ),
-//               );
-//             } else if (task.status == "In Progress") {
-//               Navigator.push(
-//                 context,
-//                 MaterialPageRoute(
-//                   builder: (context) => TaskInProgressPage(
-//                       assignment: task), // Page for in-progress tasks
-//                 ),
-//               );
-//             }
-//           }),
-//     );
-//   }
+    return Card(
+      elevation: 5,
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      child: ListTile(
+        title: Text(task.task),
+        subtitle: Text("Day: ${task.day}"),
+        onTap: () {
+          if (task.status == "Complete") {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => TaskDetailsPage(task: task),
+              ),
+            );
+          } else if (task.status == "In Progress") {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => TaskInProgressPage(task: task),
+              ),
+            );
+          }
+        },
+      ),
+    );
+  }
 
-//   void _showNotifications() {
-//     showDialog(
-//       context: context,
-//       builder: (context) {
-//         return AlertDialog(
-//           title: const Text("Notifications"),
-//           content: notifications.isEmpty
-//               ? const Text("No notifications available.")
-//               : SizedBox(
-//                   width: double.maxFinite,
-//                   child: ListView.builder(
-//                     shrinkWrap: true,
-//                     itemCount: notifications.length,
-//                     itemBuilder: (context, index) {
-//                       return ListTile(
-//                         title: Text(notifications[index]),
-//                       );
-//                     },
-//                   ),
-//                 ),
-//           actions: [
-//             TextButton(
-//               onPressed: () => Navigator.pop(context),
-//               child: const Text("Close"),
-//             ),
-//           ],
-//         );
-//       },
-//     );
-//   }
-// }
+  Widget _buildIncompleteTaskCard(Task task) {
+    return Card(
+      elevation: 5,
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      child: ListTile(
+        title: Text(task.task),
+        subtitle: Text("Day: ${task.day}"),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.check, color: Colors.green),
+              onPressed: () {
+                // Update task status to "In Progress"
+                _updateTaskStatus(task, "In Progress");
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.close, color: Colors.red),
+              onPressed: () {
+                // Update task status to "Declined"
+                _updateTaskStatus(task, "Declined");
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _updateTaskStatus(Task task, String newStatus) async {
+    try {
+      final response = await http.put(
+        Uri.parse('http://192.168.88.4:5000/api/employee/tasks/${task.id}'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({'status': newStatus}),
+      );
+
+      if (response.statusCode == 200) {
+        setState(() {
+          task.status = newStatus;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Task status updated to $newStatus')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to update task: ${response.body}')),
+        );
+      }
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error updating task: $error')),
+      );
+    }
+  }
+
+  void _showNotifications() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Notifications"),
+          content: notifications.isEmpty
+              ? const Text("No notifications available.")
+              : SizedBox(
+                  width: double.maxFinite,
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: notifications.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        title: Text(notifications[index]),
+                      );
+                    },
+                  ),
+                ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Close"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}

@@ -9,6 +9,7 @@ import '../../Signup/signup_screen.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../employee/employeepage.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({
@@ -93,7 +94,7 @@ class _LoginFormState extends State<LoginForm> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => const Text('service_provider'),
+              builder: (context) => EmployeePage(userId: data['id']),
             ),
           );
         }

@@ -75,3 +75,82 @@
 //     );
 //   }
 // }
+import 'package:flutter/material.dart';
+import '../class/task.dart'; // Import the Task class
+
+class TaskInProgressPage extends StatefulWidget {
+  final Task task;
+
+  const TaskInProgressPage({super.key, required this.task});
+
+  @override
+  TaskInProgressPageState createState() => TaskInProgressPageState();
+}
+
+class TaskInProgressPageState extends State<TaskInProgressPage> {
+  late TextEditingController _detailsController;
+
+  @override
+  void initState() {
+    super.initState();
+    _detailsController = TextEditingController(text: widget.task.task);
+  }
+
+  @override
+  void dispose() {
+    _detailsController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Task In Progress'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              widget.task.task,
+              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              'Day: ${widget.task.day}',
+              style: const TextStyle(fontSize: 18),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              'Status: ${widget.task.status}',
+              style: const TextStyle(fontSize: 18),
+            ),
+            const SizedBox(height: 10),
+            TextField(
+              controller: _detailsController,
+              decoration: const InputDecoration(
+                labelText: 'Task Details',
+                border: OutlineInputBorder(),
+              ),
+              maxLines: 5,
+            ),
+            const SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  widget.task.task = _detailsController.text;
+                  widget.task.updatedAt =
+                      DateTime.now(); // Update the timestamp
+                });
+                Navigator.pop(context);
+              },
+              child: const Text('Save'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

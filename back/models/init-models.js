@@ -13,6 +13,9 @@ import _users from "./users.js";
 import _passwordreset from "./password-reset.js";
 import _address from "./address.js";
 import _WorkAssignment from './workassignment.js';
+import _offers from './offers.js';
+import _reviews from './reviews.js';
+import _tasks from './task.js';
 
 export default function initModels(sequelize) {
   const cars = _cars(sequelize, DataTypes);
@@ -28,9 +31,10 @@ export default function initModels(sequelize) {
   const users = _users(sequelize, DataTypes);
   const passwordreset = _passwordreset(sequelize, DataTypes);
   const address = _address(sequelize, DataTypes);
-
+const tasks = _tasks(sequelize, DataTypes);
   const workassignment = _WorkAssignment(sequelize, DataTypes);
-
+  const offers = _offers(sequelize, DataTypes);
+  const reviews = _reviews(sequelize, DataTypes);
   employees.belongsTo(companies, { as: "company", foreignKey: "company_id" });
   companies.hasMany(employees, { as: "employees", foreignKey: "company_id" });
   parts.belongsTo(companies, { as: "company", foreignKey: "company_id" });
@@ -70,6 +74,41 @@ export default function initModels(sequelize) {
     as: 'employee',
   });
 
+  companies.hasMany(offers, {
+    as: 'offers',
+    foreignKey: 'company_id',
+  });
+
+  offers.belongsTo(companies, {
+    as: 'company',
+    foreignKey: 'company_id',
+  });
+
+
+  companies.hasMany(reviews, {
+    as: 'reviews',
+    foreignKey: 'company_id',
+  });
+  reviews.belongsTo(companies, {
+    as: 'company',
+    foreignKey: 'company_id',
+  });
+
+  users.hasMany(reviews, {
+    as: 'reviews',
+    foreignKey: 'user_id',
+  });
+  reviews.belongsTo(users, {
+    as: 'user',
+    foreignKey: 'user_id',
+  });
+
+  
+  employees.hasMany(tasks, { foreignKey: 'employee_id', as: 'tasks' });
+  tasks.belongsTo(employees, { foreignKey: 'employee_id', as: 'employee' });
+
+
+
   companies.belongsTo(users, { foreignKey: 'user_id' });
   users.hasMany(companies,{ foreignKey: 'user_id' });
   return {
@@ -87,6 +126,9 @@ export default function initModels(sequelize) {
     passwordreset,
     workassignment,
     address,
+    offers,
+    reviews,
+    tasks,
   };
 }
 

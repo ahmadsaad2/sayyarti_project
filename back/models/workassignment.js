@@ -1,3 +1,5 @@
+import Sequelize from 'sequelize';
+
 // workassignment.js
 export default function WorkAssignmentModel(sequelize, DataTypes) {
   return sequelize.define(

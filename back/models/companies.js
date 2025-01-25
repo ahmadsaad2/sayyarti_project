@@ -40,15 +40,22 @@ export default function (sequelize, DataTypes) {
       },
       user_id: {
         type: DataTypes.INTEGER,
-        allowNull: false, 
+        allowNull: false,
         field: 'user_id', // Tells Sequelize this JS property is mapped to the 'user_id' column
-        // Ensure user_id is always provided
         references: {
           model: 'users', // Foreign key pointing to the 'users' table
           key: 'id',
         },
         onDelete: 'CASCADE', // Automatically delete the company if the user is deleted
         onUpdate: 'CASCADE', // Update foreign key references on user ID changes
+      },
+      latitude: {
+        type: DataTypes.DECIMAL(10, 6), // Allows for latitude values with up to 6 decimal places
+        allowNull: true, // Optional latitude value
+      },
+      longitude: {
+        type: DataTypes.DECIMAL(10, 6), // Allows for longitude values with up to 6 decimal places
+        allowNull: true, // Optional longitude value
       },
     },
     {
@@ -66,7 +73,6 @@ export default function (sequelize, DataTypes) {
           using: 'BTREE',
           fields: [{ name: 'user_id' }],
         },
-       
       ],
     }
   );
