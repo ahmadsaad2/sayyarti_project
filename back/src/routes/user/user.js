@@ -130,7 +130,7 @@ router.post('/add-car/:id', verifyTokenAndAuthorization, async (req, res) => {
  * @method GET
  * @access public
  */
-router.get('/user/chat-conv', async (req, res) => {
+router.get('/chat-conv', async (req, res) => {
     try {
         const conv = await users.findAll({
             where: {

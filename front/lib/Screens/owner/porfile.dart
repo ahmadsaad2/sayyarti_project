@@ -1,76 +1,118 @@
-import 'dart:io'; // For File handling
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart'; // For picking images
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
-class GarageProfile {
-  String garageName;
-  String location;
-  String contact;
-  String details;
-  String ownerName;
-  String ownerContact;
-  String? imagePath;
+class CompanyProfile {
+  final int? id;
+  final String? name;
+  final String? address;
+  final String? contact;
+  final String? email;
+  final String? image;
+  final int? userId;
 
-  GarageProfile({
-    required this.garageName,
-    required this.location,
-    required this.contact,
-    required this.details,
-    required this.ownerName,
-    required this.ownerContact,
-    this.imagePath, // Optional for garage image
+  CompanyProfile({
+    this.id,
+    this.name,
+    this.address,
+    this.contact,
+    this.email,
+    this.image,
+    this.userId,
   });
+
+  factory CompanyProfile.fromJson(Map<String, dynamic> json) {
+    return CompanyProfile(
+      id: json['id'] as int?,
+      name: json['name'] as String?,
+      address: json['address'] as String?,
+      contact: json['contact'] as String?,
+      email: json['email'] as String?,
+      image: json['image'] as String?,
+      userId: json['user_id'] as int?,
+    );
+  }
 }
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({super.key});
+  final int userId;
+
+  const ProfilePage({super.key, required this.userId});
 
   @override
   _ProfilePageState createState() => _ProfilePageState();
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  late Future<CompanyProfile?> futureCompanyProfile;
+  final _formKey = GlobalKey<FormState>();
 
-  final GarageProfile profile = GarageProfile(
-    garageName: 'Auto Care Center',
-    location: 'Nablus',
-    contact: '123-456-7890',
-    details: 'Expert in car repairs and maintenance.',
-    ownerName: 'John Doe',
-    ownerContact: '098-765-4321',
-    imagePath: null, // No image initially
-  );
-
-  final TextEditingController _garageNameController = TextEditingController();
-  final TextEditingController _locationController = TextEditingController();
-  final TextEditingController _contactController = TextEditingController();
-  final TextEditingController _detailsController = TextEditingController();
-  final TextEditingController _ownerNameController = TextEditingController();
-  final TextEditingController _ownerContactController = TextEditingController();
+  late String _name = '';
+  late String _address = '';
+  late String _contact = '';
+  late String _email = '';
 
   @override
   void initState() {
     super.initState();
-
-    // Initialize controllers with profile data
-    _garageNameController.text = profile.garageName;
-    _locationController.text = profile.location;
-    _contactController.text = profile.contact;
-    _detailsController.text = profile.details;
-    _ownerNameController.text = profile.ownerName;
-    _ownerContactController.text = profile.ownerContact;
+    futureCompanyProfile = fetchCompanyProfile(widget.userId);
   }
 
-  Future<void> _changeImage() async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? pickedFile =
-        await picker.pickImage(source: ImageSource.gallery);
+  Future<CompanyProfile?> fetchCompanyProfile(int userId) async {
+    try {
+      final response = await http.get(
+        Uri.parse('http://192.168.88.4:5000/api/company/user/$userId'),
+      );
 
-    if (pickedFile != null) {
-      setState(() {
-        profile.imagePath = pickedFile.path;
-      });
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body)['company'];
+        return CompanyProfile.fromJson(data);
+      } else if (response.statusCode == 404) {
+        return null; // No company found
+      } else {
+        throw Exception(
+            'Failed to load company profile: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Failed to load company profile: $e');
+    }
+  }
+
+  Future<void> _saveChanges() async {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+    _formKey.currentState!.save();
+
+    final companyData = {
+      'name': _name,
+      'address': _address,
+      'contact': _contact,
+      'email': _email,
+      'user_id': widget.userId,
+    };
+
+    try {
+      final url = 'http://192.168.88.4:5000/api/company/user/${widget.userId}';
+      final response = await http.put(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(companyData),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Profile updated successfully')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to update profile')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
     }
   }
 
@@ -78,131 +120,94 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Edit Profile'),
+        title: const Text('Edit Company Profile'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              // Garage Image Section
-              Center(
-                child: GestureDetector(
-                  onTap: _changeImage,
-                  child: CircleAvatar(
-                    radius: 60,
-                    backgroundImage: profile.imagePath != null
-                        ? FileImage(File(profile.imagePath!)) as ImageProvider
-                        : const AssetImage(
-                            'assets/images/default_garage.png'), // Default image
-                    child: profile.imagePath == null
-                        ? const Icon(Icons.camera_alt,
-                            size: 30, color: Colors.white)
-                        : null,
+      body: FutureBuilder<CompanyProfile?>(
+        future: futureCompanyProfile,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          }
+
+          final company = snapshot.data;
+
+          return Padding(
+            padding: const EdgeInsets.all(16),
+            child: Form(
+              key: _formKey,
+              child: ListView(
+                children: [
+                  TextFormField(
+                    initialValue: company?.name ?? '',
+                    decoration:
+                        const InputDecoration(labelText: 'Company Name'),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter the company name';
+                      }
+                      return null;
+                    },
+                    onSaved: (value) {
+                      _name = value!;
+                    },
                   ),
-                ),
+                  const SizedBox(height: 10),
+                  TextFormField(
+                    initialValue: company?.address ?? '',
+                    decoration: const InputDecoration(labelText: 'Address'),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter the address';
+                      }
+                      return null;
+                    },
+                    onSaved: (value) {
+                      _address = value!;
+                    },
+                  ),
+                  const SizedBox(height: 10),
+                  TextFormField(
+                    initialValue: company?.contact ?? '',
+                    decoration: const InputDecoration(labelText: 'Contact'),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter the contact';
+                      }
+                      return null;
+                    },
+                    onSaved: (value) {
+                      _contact = value!;
+                    },
+                  ),
+                  const SizedBox(height: 10),
+                  TextFormField(
+                    initialValue: company?.email ?? '',
+                    decoration: const InputDecoration(labelText: 'Email'),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter the email';
+                      }
+                      if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                        return 'Please enter a valid email';
+                      }
+                      return null;
+                    },
+                    onSaved: (value) {
+                      _email = value!;
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: _saveChanges,
+                    child: const Text('Save Changes'),
+                  ),
+                ],
               ),
-              const SizedBox(height: 20),
-              TextFormField(
-                controller: _garageNameController,
-                decoration: const InputDecoration(
-                  labelText: 'Garage Name',
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter garage name';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 10),
-              TextFormField(
-                controller: _locationController,
-                decoration: const InputDecoration(
-                  labelText: 'Location',
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter location';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 10),
-              TextFormField(
-                controller: _contactController,
-                decoration: const InputDecoration(
-                  labelText: 'Contact Number',
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter contact number';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 10),
-              TextFormField(
-                controller: _detailsController,
-                decoration: const InputDecoration(
-                  labelText: 'Details',
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter details';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 10),
-              TextFormField(
-                controller: _ownerNameController,
-                decoration: const InputDecoration(
-                  labelText: 'Owner Name',
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter owner name';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 10),
-              TextFormField(
-                controller: _ownerContactController,
-                decoration: const InputDecoration(
-                  labelText: 'Owner Contact',
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter owner contact';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    setState(() {
-                      profile.garageName = _garageNameController.text;
-                      profile.location = _locationController.text;
-                      profile.contact = _contactController.text;
-                      profile.details = _detailsController.text;
-                      profile.ownerName = _ownerNameController.text;
-                      profile.ownerContact = _ownerContactController.text;
-                    });
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Saving profile changes')),
-                    );
-                  }
-                },
-                child: const Text('Save Changes'),
-              ),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       ),
     );
   }

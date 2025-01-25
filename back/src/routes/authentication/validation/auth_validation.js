@@ -1,30 +1,25 @@
 import Joi from 'joi';
 
-export function validateUser(obj) {
+export const validateUser = (data) => {
     const schema = Joi.object({
-        name: Joi.string().min(3).max(255),
         email: Joi.string().email().required(),
-        password: Joi.string().min(8).required()
+        password: Joi.string().min(6).required(),
     });
+    return schema.validate(data);
+};
 
-    return schema.validate(obj);
-}
-export function validateResetPassword(obj) {
+export const validateEmail = (data) => {
     const schema = Joi.object({
         email: Joi.string().email().required(),
-        password: Joi.string().min(8).required(),
-        otp: Joi.string().regex(/^\d{6}$/).required()
     });
-    return schema.validate(obj);
-}
-export function validateEmail(obj) {
+    return schema.validate(data);
+};
+
+export const validateResetPassword = (data) => {
     const schema = Joi.object({
-        email: Joi.string().email().required()
+        email: Joi.string().email().required(),
+        otp: Joi.string().length(6).required(),
+        password: Joi.string().min(6).required(),
     });
-    return schema.validate(obj);
-}
-// module.exports ={
-//     validateResetPassword,
-//     validateUser,
-//     validateEmail
-// }
+    return schema.validate(data);
+};

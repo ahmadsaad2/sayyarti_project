@@ -1,19 +1,22 @@
 import jwt from 'jsonwebtoken';
 
 export function verifyToken(req, res, next) {
-    const token = req.headers.token;
-    if (token) {
+    const authHeader = req.headers.authorization;
+
+    if (authHeader) {
+        const token = authHeader.split(' ')[1]; // Extract token from 'Bearer <token>'
         try {
             const decoded = jwt.verify(token, process.env.SECRET_KEY);
-            req.user = decoded;
+            req.user = decoded; // Attach the decoded payload to req.user
             next();
         } catch (error) {
-            res.status(401).json({ message: 'invalid token ' })
+            res.status(401).json({ message: 'Invalid token' });
         }
     } else {
-        res.status(401).json({ message: 'no token provided' })
+        res.status(401).json({ message: 'No token provided' });
     }
 }
+
 
 //verify token & authorize the user
 export function verifyTokenAndAuthorization(req, res, next) {
