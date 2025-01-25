@@ -1,4 +1,5 @@
 import { Sequelize, DataTypes } from 'sequelize';
+
 export default function(sequelize) {
   return sequelize.define('tasks', {
     id: {
@@ -12,6 +13,14 @@ export default function(sequelize) {
       allowNull: false,
       references: {
         model: 'employees',
+        key: 'id'
+      }
+    },
+    user_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'users', // Assuming the referenced table is named 'users'
         key: 'id'
       }
     },

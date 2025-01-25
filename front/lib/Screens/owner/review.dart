@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 class ReviewsPage extends StatefulWidget {
   final int companyId; // The company ID whose reviews we want to display
 
-  const ReviewsPage({Key? key, required this.companyId}) : super(key: key);
+  const ReviewsPage({super.key, required this.companyId});
 
   @override
   _ReviewsPageState createState() => _ReviewsPageState();

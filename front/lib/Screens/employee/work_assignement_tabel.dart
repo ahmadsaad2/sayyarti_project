@@ -82,8 +82,7 @@ import '../class/work_assignment.dart'; // Import your WorkAssignment class
 class WorkAssignmentTable extends StatelessWidget {
   final List<WorkAssignment> workAssignments; // Use the WorkAssignment class
 
-  const WorkAssignmentTable({Key? key, required this.workAssignments})
-      : super(key: key);
+  const WorkAssignmentTable({super.key, required this.workAssignments});
 
   @override
   Widget build(BuildContext context) {
@@ -99,9 +98,7 @@ class WorkAssignmentTable extends StatelessWidget {
         },
         children: [
           _buildHeaderRow(),
-          ...workAssignments
-              .map((assignment) => _buildDataRow(assignment))
-              .toList(),
+          ...workAssignments.map((assignment) => _buildDataRow(assignment)),
         ],
       ),
     );

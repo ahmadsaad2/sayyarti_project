@@ -2,6 +2,12 @@
   "configVersion": 2,
   "packages": [
     {
+      "name": "animated_text_kit",
+      "rootUri": "file:///C:/Users/ahmad/AppData/Local/Pub/Cache/hosted/pub.dev/animated_text_kit-4.2.3",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "archive",
       "rootUri": "file:///C:/Users/ahmad/AppData/Local/Pub/Cache/hosted/pub.dev/archive-4.0.2",
       "packageUri": "lib/",
@@ -296,10 +302,22 @@
       "languageVersion": "2.15"
     },
     {
+      "name": "get",
+      "rootUri": "file:///C:/Users/ahmad/AppData/Local/Pub/Cache/hosted/pub.dev/get-4.6.6",
+      "packageUri": "lib/",
+      "languageVersion": "2.15"
+    },
+    {
       "name": "google_fonts",
       "rootUri": "file:///C:/Users/ahmad/AppData/Local/Pub/Cache/hosted/pub.dev/google_fonts-6.2.1",
       "packageUri": "lib/",
       "languageVersion": "2.14"
+    },
+    {
+      "name": "google_generative_ai",
+      "rootUri": "file:///C:/Users/ahmad/AppData/Local/Pub/Cache/hosted/pub.dev/google_generative_ai-0.1.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.2"
     },
     {
       "name": "google_maps",
@@ -932,7 +950,7 @@
       "languageVersion": "3.5"
     }
   ],
-  "generated": "2025-01-24T04:59:39.188824Z",
+  "generated": "2025-01-25T19:53:32.552429Z",
   "generator": "pub",
   "generatorVersion": "3.6.1",
   "flutterRoot": "file:///C:/src/flutter",

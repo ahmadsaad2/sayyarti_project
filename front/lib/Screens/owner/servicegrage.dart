@@ -5,7 +5,7 @@ import './Servicedetailspageowner.dart';
 
 class ServicesPage extends StatefulWidget {
   final int companyId;
-  const ServicesPage({Key? key, required this.companyId}) : super(key: key);
+  const ServicesPage({super.key, required this.companyId});
 
   @override
   _ServicesPageState createState() => _ServicesPageState();

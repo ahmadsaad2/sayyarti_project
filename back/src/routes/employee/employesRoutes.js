@@ -3,25 +3,32 @@ import models from '../../../models/index.js';
 const router = express.Router();
 const { employees, tasks, users ,companies, workassignment} = models; 
 
-// Get employee data by userId
-// router.get('/:userId', async (req, res) => {
+
+// router.get('/:employeeId/tasks', async (req, res) => {
+//   const { employeeId } = req.params;
+//   const { day, status } = req.query;
+
 //   try {
-//     const employee = await employees.findOne({
-//       where: { user_id: req.params.userId },
-//       include: [{ model: tasks, as: 'tasks' }] // Assuming Task is related to Employee model
+//     const employeeTasks = await tasks.findAll({
+//       where: {
+//         employee_id: employeeId,
+//         ...(day && { day }),
+//         ...(status && { status }),
+//       },
 //     });
 
-//     if (!employee) {
-//       return res.status(404).json({ message: 'Employee not found' });
+//     if (!employeeTasks || employeeTasks.length === 0) {
+//       return res.status(404).json({ message: 'No tasks found' });
 //     }
 
-//     return res.json(employee);
+//     return res.json(employeeTasks);
 //   } catch (error) {
-//     console.error(error);
-//     return res.status(500).json({ message: 'Error fetching employee data' });
+//     console.error('Error fetching tasks:', error);
+//     return res.status(500).json({ message: 'Error fetching tasks' });
 //   }
 // });
-// Get employee data by userId
+
+
 router.get('/:userId', async (req, res) => {
   try {
     const employee = await employees.findOne({
@@ -59,6 +66,44 @@ router.get('/:userId', async (req, res) => {
   }
 });
 
+// Get employees by company ID with role filtering from the users table
+router.get('/by-company/:companyId', async (req, res) => {
+  const { companyId } = req.params;
+
+  try {
+    // Validate company existence
+    const company = await companies.findByPk(companyId);
+    if (!company) {
+      return res.status(404).json({ message: 'Company not found' });
+    }
+
+    // Fetch employees where associated users have role 'service_provider'
+    const serviceProviders = await employees.findAll({
+      where: {
+        company_id: companyId, // Match employees by company ID
+      },
+      include: [
+        {
+          model: users,
+          as: 'user',
+          where: { role: 'service_provider' }, // Filter by role in the users table
+          attributes: ['id', 'name', 'email', 'role'], // Include only necessary fields from users
+        },
+        { model: tasks, as: 'tasks' }, // Include associated tasks
+      ],
+    });
+
+    // Check if no employees found
+    if (!serviceProviders || serviceProviders.length === 0) {
+      return res.status(404).json({ message: 'No service providers found for this company' });
+    }
+
+    return res.json(serviceProviders);
+  } catch (error) {
+    console.error('Error fetching employees:', error);
+    return res.status(500).json({ message: 'Error fetching employees' });
+  }
+});
 router.put('/:employeeId', async (req, res) => {
   try {
     const { name, email, contact } = req.body;
@@ -184,4 +229,112 @@ router.get('/', async (req, res) => {
     return res.status(500).json({ message: 'Error fetching employees' });
   }
 });
+
+
+
+
+router.get('/:employeeId/tasks', async (req, res) => {
+  const { employeeId } = req.params; // Extract employeeId from the URL
+  const { day, status } = req.query; // Extract optional query parameters
+
+  try {
+    // Validate employee existence
+    const employee = await employees.findByPk(employeeId);
+    if (!employee) {
+      return res.status(404).json({ message: 'Employee not found' });
+    }
+
+    // Build the query conditions
+    const whereConditions = {
+      employee_id: employeeId, // Filter by employeeId
+    };
+
+    // Add optional filters for day and status
+    if (day) {
+      whereConditions.day = day;
+    }
+    if (status) {
+      whereConditions.status = status;
+    }
+
+    // Fetch tasks based on the conditions
+    const employeeTasks = await tasks.findAll({
+      where: whereConditions,
+    });
+
+    // Check if tasks were found
+    if (!employeeTasks || employeeTasks.length === 0) {
+      return res.status(404).json({ message: 'No tasks found for this employee' });
+    }
+
+    // Return the tasks
+    return res.json(employeeTasks);
+  } catch (error) {
+    console.error('Error fetching tasks:', error);
+    return res.status(500).json({ message: 'Error fetching tasks' });
+  }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Get tasks by user ID
+router.get('/user/:userId/tasks', async (req, res) => {
+  const { userId } = req.params; // Extract userId from the URL
+  const { day, status } = req.query; // Extract optional query parameters
+
+  try {
+    // Validate user existence
+    const user = await users.findByPk(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Build the query conditions
+    const whereConditions = {
+      user_id: userId, // Filter by user_id
+    };
+
+    // Add optional filters for day and status
+    if (day) {
+      whereConditions.day = day;
+    }
+    if (status) {
+      whereConditions.status = status;
+    }
+
+    // Fetch tasks based on the conditions
+    const userTasks = await tasks.findAll({
+      where: whereConditions,
+    });
+
+    // Check if tasks were found
+    if (!userTasks || userTasks.length === 0) {
+      return res.status(404).json({ message: 'No tasks found for this user' });
+    }
+
+    // Return the tasks
+    return res.json(userTasks);
+  } catch (error) {
+    console.error('Error fetching tasks:', error);
+    return res.status(500).json({ message: 'Error fetching tasks' });
+  }
+});
+
+
+
+
+
+
+
 export default router;

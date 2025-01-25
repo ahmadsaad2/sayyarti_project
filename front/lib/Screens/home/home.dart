@@ -23,6 +23,8 @@ import '../serviceemergency/towingpage.dart';
 import '../serviceemergency/tyrepage.dart';
 import '../serviceemergency/jumpstart.dart';
 
+import '../chat/chat.dart';
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -418,7 +420,7 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
 
-        //message icon
+        // Message Icon
         floatingActionButton: Align(
           alignment: Alignment.bottomLeft,
           child: Padding(
@@ -426,12 +428,23 @@ class _HomePageState extends State<HomePage> {
               left: 10.0,
               bottom: 80.0,
             ),
-            child: ClipOval(
-              child: Image.asset(
-                'assets/images/cha.png', // Path to your image
-                width: 50.0,
-                height: 50.0,
-                fit: BoxFit.cover,
+            child: GestureDetector(
+              onTap: () {
+                // Navigate to ChatBotFeature page
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ChatBotFeature(),
+                  ),
+                );
+              },
+              child: ClipOval(
+                child: Image.asset(
+                  'assets/images/cha.png', // Path to your image
+                  width: 50.0,
+                  height: 50.0,
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
           ),

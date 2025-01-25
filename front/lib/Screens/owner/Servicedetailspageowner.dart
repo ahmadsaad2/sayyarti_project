@@ -7,10 +7,10 @@ class ServiceDetailsPage extends StatefulWidget {
   final int companyId;
 
   const ServiceDetailsPage({
-    Key? key,
+    super.key,
     this.service,
     required this.companyId,
-  }) : super(key: key);
+  });
 
   @override
   _ServiceDetailsPageState createState() => _ServiceDetailsPageState();

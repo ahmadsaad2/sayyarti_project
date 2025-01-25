@@ -5,7 +5,7 @@ import 'offer_details.dart';
 
 class OffersPage extends StatefulWidget {
   final int companyId; // pass the company ID from the drawer or wherever
-  const OffersPage({Key? key, required this.companyId}) : super(key: key);
+  const OffersPage({super.key, required this.companyId});
 
   @override
   _OffersPageState createState() => _OffersPageState();

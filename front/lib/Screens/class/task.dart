@@ -2,6 +2,9 @@
 class Task {
   int id;
   int employeeId;
+  int? userId; // Optional field
+  String details; // Add this property
+
   String task;
   String day;
   String status;
@@ -16,6 +19,7 @@ class Task {
     required this.status,
     required this.createdAt,
     required this.updatedAt,
+    this.details = '', // Initialize with an empty string
   });
 
   factory Task.fromJson(Map<String, dynamic> json) {
@@ -25,6 +29,8 @@ class Task {
       task: json['task'] ?? '',
       day: json['day'] ?? 'Unknown',
       status: json['status'] ?? 'Unknown',
+      details: json['details'] ?? '', // Handle null details
+
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt: DateTime.parse(json['updatedAt']),
     );
@@ -37,6 +43,7 @@ class Task {
         'day': day,
         'status': status,
         'createdAt': createdAt.toIso8601String(),
+        'details': details,
         'updatedAt': updatedAt.toIso8601String(),
       };
 }

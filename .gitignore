@@ -7,3 +7,4 @@
 .pub-cache/
 .pub/
 /build/
+/node_modules
