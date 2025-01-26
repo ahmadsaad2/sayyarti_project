@@ -17,6 +17,7 @@ import _WorkAssignment from './workassignment.js';
 import _offers from './offers.js';
 import _reviews from './reviews.js';
 import _tasks from './task.js';
+import _bookings from './bookingservice.js';
 
 export default function initModels(sequelize) {
   const cars = _cars(sequelize, DataTypes);
@@ -37,6 +38,8 @@ const tasks = _tasks(sequelize, DataTypes);
   const workassignment = _WorkAssignment(sequelize, DataTypes);
   const offers = _offers(sequelize, DataTypes);
   const reviews = _reviews(sequelize, DataTypes);
+
+  const bookings = _bookings(sequelize, DataTypes);
   employees.belongsTo(companies, { as: "company", foreignKey: "company_id" });
   companies.hasMany(employees, { as: "employees", foreignKey: "company_id" });
   parts.belongsTo(companies, { as: "company", foreignKey: "company_id" });
@@ -105,12 +108,18 @@ const tasks = _tasks(sequelize, DataTypes);
     foreignKey: 'user_id',
   });
 
-  
+  companies.hasMany(bookings, { as: 'bookings', foreignKey: 'company_id' });
+  bookings.belongsTo(companies, { as: 'company', foreignKey: 'company_id' });
+
   employees.hasMany(tasks, { foreignKey: 'employee_id', as: 'tasks' });
   tasks.belongsTo(employees, { foreignKey: 'employee_id', as: 'employee' });
 
 
 
+    // Define association for tasks and users
+    tasks.belongsTo(users, { foreignKey: 'user_id', as: 'user' });
+    users.hasMany(tasks, { foreignKey: 'user_id', as: 'tasks' });
+    
   companies.belongsTo(users, { foreignKey: 'user_id' });
   users.hasMany(companies,{ foreignKey: 'user_id' });
   return {
@@ -132,6 +141,7 @@ const tasks = _tasks(sequelize, DataTypes);
     offers,
     reviews,
     tasks,
+    bookings
   };
 }
 

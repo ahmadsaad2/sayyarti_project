@@ -45,7 +45,7 @@ class CompanyProfile {
 // Fetch company profile from the backend
 Future<CompanyProfile> fetchCompanyProfile(int userId) async {
   final response = await http.get(
-    Uri.parse('http://192.168.88.4:5000/api/company/user/$userId'),
+    Uri.parse('http://192.168.88.5:5000/api/company/user/$userId'),
   );
   if (response.statusCode == 200) {
     final data = json.decode(response.body);
@@ -59,8 +59,7 @@ Future<CompanyProfile> fetchCompanyProfile(int userId) async {
 class ServiceCenterHomePage extends StatefulWidget {
   final int userId;
 
-  const ServiceCenterHomePage({Key? key, required this.userId})
-      : super(key: key);
+  const ServiceCenterHomePage({super.key, required this.userId});
 
   @override
   _ServiceCenterHomePageState createState() => _ServiceCenterHomePageState();
@@ -464,10 +463,10 @@ class CustomDrawer extends StatelessWidget {
   final int companyId;
 
   const CustomDrawer({
-    Key? key,
+    super.key,
     required this.userId,
     required this.companyId,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -533,7 +532,8 @@ class CustomDrawer extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const BookingsPage()),
+                MaterialPageRoute(
+                    builder: (context) => BookingsPage(companyId: companyId)),
               );
             },
           ),
@@ -595,11 +595,11 @@ class DrawerListTile extends StatelessWidget {
   final VoidCallback onTap;
 
   const DrawerListTile({
-    Key? key,
+    super.key,
     required this.title,
     required this.icon,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

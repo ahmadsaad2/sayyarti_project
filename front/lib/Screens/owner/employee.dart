@@ -128,7 +128,7 @@ class _EmployeePageState extends State<EmployeePage> {
                         child: const Icon(Icons.delete, color: Colors.white),
                       ),
                       onDismissed: (direction) {
-                        _deleteEmployee(employee.id!);
+                        _deleteEmployee(employee.id);
                       },
                       child: Card(
                         elevation: 4,

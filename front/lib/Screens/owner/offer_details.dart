@@ -8,10 +8,10 @@ class OfferDetailsPage extends StatefulWidget {
   final int companyId;
 
   const OfferDetailsPage({
-    Key? key,
+    super.key,
     this.offer,
     required this.companyId,
-  }) : super(key: key);
+  });
 
   @override
   _OfferDetailsPageState createState() => _OfferDetailsPageState();

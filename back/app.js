@@ -19,6 +19,8 @@ import servicesRoutes from './src/routes/COMPAN/servicesRoutes.js';
 import offersRoutes from './src/routes/COMPAN/offerRoutes.js';
 import reviewsRoutes from './src/routes/COMPAN/reviewsRoutes.js';
 import employesRoutes from './src/routes/employee/employesRoutes.js';
+import bookingroutes from './src/routes/COMPAN/bookingroutes.js';
+import taskroutes from './src/routes/COMPAN/taskroutes.js';
 dbConnect();
 
 
@@ -47,7 +49,8 @@ app.use('/api/services', servicesRoutes);
 app.use('/api/offers', offersRoutes);
 app.use('/api/reviews', reviewsRoutes);
 app.use('/api/employee', employesRoutes);
-
+app.use('/api/tasks', taskroutes);
+app.use('/api/bookings', bookingroutes);
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`server is running on port :${PORT}`);
