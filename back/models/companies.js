@@ -38,6 +38,18 @@ export default function (sequelize, DataTypes) {
         type: DataTypes.STRING(255),
         allowNull: true, // URL to the company's image
       },
+      carBrands: {
+        type: DataTypes.JSON, // Store as JSON
+        allowNull: true,
+      },
+      rating: {
+        type: DataTypes.DECIMAL(3, 2), // Allows for ratings like 4.5, 3.75, etc.
+        allowNull: true, // Optional field
+      },
+      type: {
+        type: DataTypes.STRING(255), // Stores the type of services (e.g., Mechanics, Car Wash)
+        allowNull: true, // Optional field
+      },
       user_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
