@@ -46,7 +46,7 @@ void initializeFCM() async {
         ),
       ),
     );
-  }
+  } else {}
 
   //Listener for the incoming msgs
   FirebaseMessaging.onMessage.listen((RemoteMessage msg) {

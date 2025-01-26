@@ -4,7 +4,6 @@ import 'package:sayyarti/firebasefunctions/fcm_setup.dart';
 import 'package:sayyarti/firebasefunctions/local_notifications.dart';
 import 'constants.dart';
 import 'Screens/Welcome/welcome_screen.dart';
-import 'constants.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
