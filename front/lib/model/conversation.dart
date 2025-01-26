@@ -6,7 +6,7 @@ class ChatConversation {
 
   factory ChatConversation.fromJson(Map<String, dynamic> json) {
     return ChatConversation(
-      id: json['id'],
+      id: json['id'].toString(),
       name: json['name'],
     );
   }

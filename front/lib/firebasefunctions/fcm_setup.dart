@@ -10,7 +10,7 @@ import 'package:http/http.dart' as http;
 final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 void initializeFCM() async {
-  NotificationSettings settings = await _firebaseMessaging.requestPermission(
+  await _firebaseMessaging.requestPermission(
     alert: true,
     badge: true,
     sound: true,
@@ -18,9 +18,10 @@ void initializeFCM() async {
 
   String? fireToken = await _firebaseMessaging.getToken();
   final prefs = await SharedPreferences.getInstance();
-  final userId = prefs.getString('id');
+  final userId = prefs.getInt('userId');
   final token = prefs.getString('token');
-
+  print('fcm_token :$fireToken');
+  print('userId : $userId');
   final url = Uri.http(backendUrl, '/user/info-update/$userId');
   final res = await http.put(
     url,
@@ -58,9 +59,6 @@ void initializeFCM() async {
 
   FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage msg) {
     msg.notification?.title;
-    //TODO navigate to the chat screen
-    //all chats screen
-
     navigatorKey.currentState?.push(
       MaterialPageRoute(builder: (context) => MainChatScreen()),
     );

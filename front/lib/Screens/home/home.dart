@@ -1,6 +1,7 @@
 // ignore_for_file: library_private_types_in_public_api
 
 import 'package:flutter/material.dart';
+import 'package:sayyarti/Screens/chat/screens/main_chat.dart';
 import 'package:sayyarti/Screens/home/accountverifiaction/screen/verify.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../home/adscroller.dart';
@@ -426,12 +427,18 @@ class _HomePageState extends State<HomePage> {
               left: 10.0,
               bottom: 80.0,
             ),
-            child: ClipOval(
-              child: Image.asset(
-                'assets/images/cha.png', // Path to your image
-                width: 50.0,
-                height: 50.0,
-                fit: BoxFit.cover,
+            child: GestureDetector(
+              onTap: () {
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => MainChatScreen()));
+              },
+              child: ClipOval(
+                child: Image.asset(
+                  'assets/images/cha.png', // Path to your image
+                  width: 50.0,
+                  height: 50.0,
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
           ),

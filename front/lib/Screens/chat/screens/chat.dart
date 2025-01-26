@@ -3,20 +3,24 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:sayyarti/Screens/chat/widgets/chat_msg.dart';
 import 'package:sayyarti/Screens/chat/widgets/new_msg.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
 
 class ChatScreen extends StatefulWidget {
-  ChatScreen({super.key, required this.personName, required this.personId});
+  ChatScreen(
+      {super.key,
+      required this.personName,
+      required this.personId,
+      required this.senderId});
 
-  String? personName;
-  String? personId;
+  final String? personName;
+  final String? personId;
+  final String? senderId;
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  late String _senderId;
   void setupNotifications() async {
     final fcm = FirebaseMessaging.instance;
     await fcm.requestPermission();
@@ -24,16 +28,10 @@ class _ChatScreenState extends State<ChatScreen> {
     print(notificationToken);
   }
 
-  void _getSenderId() async {
-    final prefs = await SharedPreferences.getInstance();
-    _senderId = prefs.getString('id')!;
-  }
-
   @override
   void initState() {
     super.initState();
     setupNotifications();
-    _getSenderId();
   }
 
   @override
@@ -46,13 +44,14 @@ class _ChatScreenState extends State<ChatScreen> {
         children: [
           Expanded(
             child: ChatMsgs(
+              userName: widget.personName,
               recieverId: widget.personId,
-              currentId: _senderId,
+              currentId: widget.senderId,
             ),
           ),
           NewMsg(
             recieverId: widget.personId,
-            currentId: _senderId,
+            currentId: widget.senderId,
           ),
         ],
       ),

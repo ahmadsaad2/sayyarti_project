@@ -64,6 +64,7 @@ class _LoginFormState extends State<LoginForm> {
         prefs.setString('token', data['token']);
         prefs.setString('role', data['role']);
         prefs.setString('name', data['username']);
+        prefs.setString('id', data['id'].toString());
         prefs.setInt('userId', data['id']); // Save userId as an integer
         prefs.setBool('trusted', data['istrusted']);
 

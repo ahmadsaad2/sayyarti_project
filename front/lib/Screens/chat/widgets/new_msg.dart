@@ -3,9 +3,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class NewMsg extends StatefulWidget {
-  NewMsg({super.key, required this.recieverId, required this.currentId});
-  String? recieverId;
-  String? currentId;
+  const NewMsg({super.key, required this.recieverId, required this.currentId});
+  final String? recieverId;
+  final String? currentId;
   @override
   State<NewMsg> createState() {
     return _NewMsgState();
@@ -14,7 +14,11 @@ class NewMsg extends StatefulWidget {
 
 class _NewMsgState extends State<NewMsg> {
   final _msgController = TextEditingController();
-  late String _senderId;
+  String generateChatRoomId(String user1, String user2) {
+    List<String> ids = [user1, user2];
+    ids.sort();
+    return ids.join('_');
+  }
 
   @override
   void dispose() {
@@ -24,6 +28,8 @@ class _NewMsgState extends State<NewMsg> {
 
   void _sendMsg() async {
     final enteredMsg = _msgController.text;
+    final chatRoomId =
+        generateChatRoomId(widget.currentId!, widget.recieverId!);
     if (enteredMsg.trim().isEmpty) {
       return;
     }
@@ -33,7 +39,8 @@ class _NewMsgState extends State<NewMsg> {
       'senderId': widget.currentId,
       'receiverId': widget.recieverId,
       'message': enteredMsg,
-      'timestamp': DateTime.now().toUtc().toString(),
+      'chatRoomId': chatRoomId,
+      'createdAt': Timestamp.now(),
     });
     _msgController.clear();
   }

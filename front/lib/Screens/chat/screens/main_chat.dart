@@ -4,6 +4,7 @@ import 'package:sayyarti/constants.dart';
 import 'package:sayyarti/model/conversation.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MainChatScreen extends StatefulWidget {
   const MainChatScreen({super.key});
@@ -16,9 +17,12 @@ class MainChatScreen extends StatefulWidget {
 
 class _MainChatScreenState extends State<MainChatScreen> {
   late Future<List<ChatConversation>> futureChats;
-
+  String? userId;
   Future<List<ChatConversation>> fetchChatConversations(
       BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+    userId = prefs.getString('id');
+    print('current user id: ${userId}');
     final url = Uri.http(backendUrl, '/user/chat-conv/');
     final response = await http.get(
       url,
@@ -28,7 +32,8 @@ class _MainChatScreenState extends State<MainChatScreen> {
     );
 
     if (response.statusCode == 200) {
-      List<dynamic> data = json.decode(response.body);
+      Map<String, dynamic> jsonResponse = json.decode(response.body);
+      List<dynamic> data = jsonResponse['conv'];
       return data.map((json) => ChatConversation.fromJson(json)).toList();
     } else {
       // Show a popup dialog asking the user to try again
@@ -99,6 +104,7 @@ class _MainChatScreenState extends State<MainChatScreen> {
                           builder: (context) => ChatScreen(
                             personId: chat.id,
                             personName: chat.name,
+                            senderId: userId,
                           ),
                         ),
                       );
