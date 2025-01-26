@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sayyarti/Screens/admin/widgets/admin_drawer.dart';
 import 'package:sayyarti/Screens/admin/widgets/stat.dart';
+import 'package:sayyarti/Screens/admin/widgets/table.dart';
 import 'package:sayyarti/model/statistics.dart';
 
 class AdminHome extends StatefulWidget {
@@ -12,6 +13,7 @@ class AdminHome extends StatefulWidget {
 
 class _AdminHomeState extends State<AdminHome> {
   late Future<Statistics> futureStatistics;
+  var _isCharts = true;
 
   @override
   void initState() {
@@ -39,6 +41,26 @@ class _AdminHomeState extends State<AdminHome> {
         body: SingleChildScrollView(
           child: Column(
             children: [
+              Row(
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      setState(() {
+                        _isCharts = false;
+                      });
+                    },
+                    icon: Icon(Icons.table_chart_outlined),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      setState(() {
+                        _isCharts = true;
+                      });
+                    },
+                    icon: Icon(Icons.pie_chart_outline),
+                  ),
+                ],
+              ),
               const SizedBox(height: 16),
               FutureBuilder<Statistics>(
                 future: futureStatistics,
@@ -50,7 +72,9 @@ class _AdminHomeState extends State<AdminHome> {
                   } else if (!snapshot.hasData) {
                     return Center(child: Text('No data found'));
                   } else {
-                    return Statistic(stats: snapshot.data!);
+                    return _isCharts
+                        ? Statistic(stats: snapshot.data!)
+                        : AllDataTable(stats: snapshot.data!);
                   }
                 },
               ),
