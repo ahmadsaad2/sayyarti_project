@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sayyarti/Screens/admin/screens/admin_home.dart';
 import 'package:sayyarti/Screens/owner/owner.dart';
+import 'package:sayyarti/firebasefunctions/fcm_setup.dart';
 import '../../home/home.dart';
 import '../../../components/already_have_an_account_acheck.dart';
 import '../../../components/forgot_passwod.dart';
@@ -63,6 +64,7 @@ class _LoginFormState extends State<LoginForm> {
         prefs.setString('token', data['token']);
         prefs.setString('role', data['role']);
         prefs.setString('name', data['username']);
+        prefs.setString('id', data['id'].toString());
         prefs.setInt('userId', data['id']); // Save userId as an integer
         prefs.setBool('trusted', data['istrusted']);
 
@@ -72,7 +74,7 @@ class _LoginFormState extends State<LoginForm> {
         } else {
           prefs.remove('phone');
         }
-
+        initializeFCM();
         if (data['role'] == 'user') {
           Navigator.push(
             context,

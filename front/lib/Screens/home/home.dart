@@ -1,6 +1,7 @@
 // ignore_for_file: library_private_types_in_public_api
 
 import 'package:flutter/material.dart';
+import 'package:sayyarti/Screens/chat/screens/main_chat.dart';
 import 'package:sayyarti/Screens/home/accountverifiaction/screen/verify.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../home/adscroller.dart';
@@ -430,13 +431,8 @@ class _HomePageState extends State<HomePage> {
             ),
             child: GestureDetector(
               onTap: () {
-                // Navigate to ChatBotFeature page
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ChatBotFeature(),
-                  ),
-                );
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => MainChatScreen()));
               },
               child: ClipOval(
                 child: Image.asset(

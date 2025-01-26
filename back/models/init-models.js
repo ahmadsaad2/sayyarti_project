@@ -12,6 +12,7 @@ import _services from "./services.js";
 import _users from "./users.js";
 import _passwordreset from "./password-reset.js";
 import _address from "./address.js";
+import _brands from "./brands.js";
 import _WorkAssignment from './workassignment.js';
 import _offers from './offers.js';
 import _reviews from './reviews.js';
@@ -32,6 +33,7 @@ export default function initModels(sequelize) {
   const users = _users(sequelize, DataTypes);
   const passwordreset = _passwordreset(sequelize, DataTypes);
   const address = _address(sequelize, DataTypes);
+  const brands = _brands(sequelize, DataTypes);
 const tasks = _tasks(sequelize, DataTypes);
   const workassignment = _WorkAssignment(sequelize, DataTypes);
   const offers = _offers(sequelize, DataTypes);
@@ -135,6 +137,7 @@ const tasks = _tasks(sequelize, DataTypes);
     passwordreset,
     workassignment,
     address,
+    brands,
     offers,
     reviews,
     tasks,

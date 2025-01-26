@@ -7,7 +7,7 @@ import nodemailer from 'nodemailer';
 import { verifyTokenAndAdmin } from '../../middleware/userVerification.js';
 
 dotenv.config();
-const { companies, users, employees } = models;
+const { companies, users, employees, brands } = models;
 const router = Router();
 
 //nodemailer set up
@@ -133,7 +133,7 @@ router.get('/unverified-users', async (req, res) => {
     try {
         const unverifiedUsers = await users.findAll({
             where: { verify_stat: 'pending' },
-            attributes: ['id','name', 'img_uri', 'role']
+            attributes: ['id', 'name', 'img_uri', 'role']
         });
         if (unverifiedUsers.length === 0) {
             return res.status(207).json({ message: 'No  users found' });
@@ -144,5 +144,32 @@ router.get('/unverified-users', async (req, res) => {
         return res.status(500).json({ message: 'Server error' });
     }
 });
+
+/**
+ * @desc Add a new car brand
+ * @route /api/admin/verify-user/:id
+ * @method POST
+ * @access private
+ */
+router.post('/new-brand', verifyTokenAndAdmin, async (req, res) => {
+    try {
+        const brand = await brands.findOne({
+            where: { brand: req.body.brand }
+        })
+        if (brand) {
+            return res.status(400).json({ message: 'Brand already exists, try adding a new model' });
+        }
+        const newBrand = await brands.create({
+            brand: req.body.brand,
+            models: req.body.models
+        });
+        res.status(201).json({ message: 'Brand added successfully', newBrand });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: 'Server error' });
+    }
+
+});
+
 
 export default router;
