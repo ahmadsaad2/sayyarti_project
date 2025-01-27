@@ -3,6 +3,7 @@ import 'package:sayyarti/Screens/Login/login_screen.dart';
 import 'package:sayyarti/Screens/admin/screens/add_company.dart';
 import 'package:sayyarti/Screens/admin/screens/add_product.dart';
 import 'package:sayyarti/Screens/admin/screens/create_company_admin.dart';
+import 'package:sayyarti/Screens/admin/screens/verification_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AdminDrawer extends StatelessWidget {
@@ -124,6 +125,34 @@ class AdminDrawer extends StatelessWidget {
                 Navigator.of(context).pop();
                 Navigator.of(context).push(MaterialPageRoute(
                     builder: (ctx) => const AddProductScreen()));
+              },
+            ),
+            ListTile(
+              title: const Row(
+                children: [
+                  Icon(
+                    Icons.verified,
+                    color: Colors.black,
+                  ),
+                  SizedBox(
+                    width: 16,
+                  ),
+                  Text(
+                    'Verification claims',
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20),
+                  ),
+                ],
+              ),
+              onTap: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (ctx) => const VerificationScreen(),
+                  ),
+                );
               },
             ),
             ListTile(

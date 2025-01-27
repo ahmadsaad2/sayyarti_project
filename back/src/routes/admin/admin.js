@@ -125,8 +125,8 @@ router.post('/company-admin/create', verifyTokenAndAdmin, async (req, res) => {
 });
 
 /**
- * @desc Get all unverified users
- * @route /api/admin/company-admin/create
+ * @desc Get allpending verification users
+ * @route /api/admin/unverified-users
  * @method GET
  * @access private
  */
@@ -134,7 +134,7 @@ router.get('/unverified-users', async (req, res) => {
     try {
         const unverifiedUsers = await users.findAll({
             where: { verify_stat: 'pending' },
-            attributes: ['id', 'name', 'img_uri', 'role']
+            attributes: ['id', 'name', 'phone', 'img_uri']
         });
         if (unverifiedUsers.length === 0) {
             return res.status(207).json({ message: 'No  users found' });
@@ -148,7 +148,7 @@ router.get('/unverified-users', async (req, res) => {
 
 /**
  * @desc Add a new car brand
- * @route /api/admin/verify-user/:id
+ * @route /api/admin/new-brand
  * @method POST
  * @access private
  */
@@ -247,23 +247,25 @@ router.get('/stat', verifyTokenAndAdmin, async (req, res) => {
  * @access private
  */
 router.post('/part', verifyTokenAndAdmin, async (req, res) => {
-    
+
 
     try {
         const newPart = await parts.create({
-            company_id:0,
+            company_id: 0,
             part_name: req.body.part_name,
-            compatible_cars:req.body.compatible_cars,
-            description:req.body.description,
-            price:req.body.price,
-            image_url:req.body.image_url,
-            byAdmin:true,
+            compatible_cars: req.body.compatible_cars,
+            description: req.body.description,
+            price: req.body.price,
+            image_url: req.body.image_url,
+            byAdmin: true,
         });
-        res.status(201).json({'Part added to the shop success fuly':newPart});
+        res.status(201).json({ 'Part added to the shop success fuly': newPart });
     } catch (error) {
-        res.status(500).json({Error:'Server Error:'});
+        res.status(500).json({ Error: 'Server Error:' });
 
     }
 });
+
+
 
 export default router;
