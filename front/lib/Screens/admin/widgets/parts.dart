@@ -144,6 +144,17 @@ class _AddProductState extends State<AddProduct> {
           'image_url': _imageUrl,
         }),
       );
+      if (res.statusCode != 201) {
+        setState(() {
+          _saving = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('field to add a product please try again later'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
     setState(() {
       _saving = false;
