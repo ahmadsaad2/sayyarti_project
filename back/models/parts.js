@@ -1,5 +1,5 @@
 import Sequelize from 'sequelize';
-export default function(sequelize, DataTypes) {
+export default function (sequelize, DataTypes) {
   return sequelize.define('parts', {
     id: {
       autoIncrement: true,
@@ -20,7 +20,7 @@ export default function(sequelize, DataTypes) {
       allowNull: false
     },
     compatible_cars: {
-      type: DataTypes.TEXT,
+      type: DataTypes.JSON,
       allowNull: true
     },
     description: {
@@ -28,12 +28,17 @@ export default function(sequelize, DataTypes) {
       allowNull: true
     },
     price: {
-      type: DataTypes.DECIMAL(10,2),
+      type: DataTypes.DECIMAL(10, 2),
       allowNull: false
     },
     image_url: {
-      type: DataTypes.STRING(255),
+      type: DataTypes.TEXT,
       allowNull: true
+    },
+    byAdmin: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      default: false,
     }
   }, {
     sequelize,

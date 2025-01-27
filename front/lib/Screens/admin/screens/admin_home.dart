@@ -35,6 +35,18 @@ class _AdminHomeState extends State<AdminHome> {
               color: Colors.black,
             ),
           ),
+          actions: [
+            IconButton(
+                onPressed: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AdminHome(),
+                    ),
+                  );
+                },
+                icon: Icon(Icons.refresh))
+          ],
           centerTitle: true,
         ),
         drawer: const AdminDrawer(),

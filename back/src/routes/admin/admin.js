@@ -5,7 +5,7 @@ import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
 import nodemailer from 'nodemailer';
 import { verifyTokenAndAdmin } from '../../middleware/userVerification.js';
-import { Sequelize  } from 'sequelize';
+import { Sequelize } from 'sequelize';
 
 dotenv.config();
 const { companies, users, employees, brands, partorders, serviceorders, parts, services, reviews } = models;
@@ -206,29 +206,29 @@ router.get('/stat', verifyTokenAndAdmin, async (req, res) => {
         });
 
         res.status(200).json({
-            userStatistics:{
+            userStatistics: {
                 totalUsers,
                 verifiedUsers,
                 unverifiedUsers,
                 pendingUsers,
             },
-            companyStatistics:{
+            companyStatistics: {
                 totalComp,
                 yearlySub,
             },
-            employeeStatistics:{
+            employeeStatistics: {
                 totalEmp,
                 drivers,
                 mechanics,
                 admins,
             },
-            orderStatistics:{
+            orderStatistics: {
                 totalPart,
-                totalPartRev: totalPartRev||0,
+                totalPartRev: totalPartRev || 0,
                 totalService,
-                totalServiceRev: totalServiceRev||0,
+                totalServiceRev: totalServiceRev || 0,
             },
-            reviewStatistics:{
+            reviewStatistics: {
                 totalReviews,
                 averageRat: averageRat[0].avgRating || 0,
             }
@@ -239,5 +239,31 @@ router.get('/stat', verifyTokenAndAdmin, async (req, res) => {
     }
 });
 
+
+/**
+ * @desc Add apart to the parts store
+ * @route /api/admin/part
+ * @method POST
+ * @access private
+ */
+router.post('/part', verifyTokenAndAdmin, async (req, res) => {
+    
+
+    try {
+        const newPart = await parts.create({
+            company_id:0,
+            part_name: req.body.part_name,
+            compatible_cars:req.body.compatible_cars,
+            description:req.body.description,
+            price:req.body.price,
+            image_url:req.body.image_url,
+            byAdmin:true,
+        });
+        res.status(201).json({'Part added to the shop success fuly':newPart});
+    } catch (error) {
+        res.status(500).json({Error:'Server Error:'});
+
+    }
+});
 
 export default router;
