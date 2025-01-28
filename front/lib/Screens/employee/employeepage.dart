@@ -1,16 +1,13 @@
-// lib/pages/employee_page.dart
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:sayyarti/constants.dart';
 import '../class/employeclass.dart';
-import '../class/task.dart'; // Import the Task class
-import 'task_details_page.dart';
-import 'task_in_progress_page.dart';
-
-import './profileemployee.dart'; // Import the EditEmployeePage widget
+import '../class/task.dart';
+import 'task_details_page.dart'; // Import the TaskDetailsPage
+import './profileemployee.dart';
 import 'package:http/http.dart' as http;
-import './work_assignement_tabel.dart ';
+import './work_assignement_tabel.dart';
 
 class EmployeePage extends StatefulWidget {
   final int userId; // Accept the userId as a parameter
@@ -22,12 +19,10 @@ class EmployeePage extends StatefulWidget {
 
 class EmployeePageState extends State<EmployeePage> {
   late Future<Employee> _employeeFuture;
-  final List<String> notifications = [
-    "Task assigned: Car Wash at 10:00 AM",
-    "Task completed: Polishing at 12:00 PM",
-  ];
+  List<Task> tasks = [];
+  String? selectedDay;
+  String? selectedStatus;
 
-  DateTime? selectedDate;
   final List<String> daysOfWeek = [
     "Monday",
     "Tuesday",
@@ -37,11 +32,13 @@ class EmployeePageState extends State<EmployeePage> {
     "Saturday",
     "Sunday"
   ];
+  final List<String> statuses = ["All", "waiting", "In Progress", "Complete"];
 
   @override
   void initState() {
     super.initState();
     _employeeFuture = _fetchEmployeeData(widget.userId);
+    _fetchTasks(); // Fetch tasks when the page loads
   }
 
   Future<Employee> _fetchEmployeeData(int userId) async {
@@ -73,6 +70,110 @@ class EmployeePageState extends State<EmployeePage> {
     }
   }
 
+  Future<void> _fetchTasks() async {
+    try {
+      final uri = Uri.http(
+        backendUrl,
+        '/api/tasks/by-user/${widget.userId}',
+      ).replace(queryParameters: {
+        if (selectedDay != null) 'day': selectedDay,
+        if (selectedStatus != null && selectedStatus != "All")
+          'status': selectedStatus,
+      });
+
+      final response = await http.get(uri);
+
+      if (response.statusCode == 200) {
+        setState(() {
+          tasks = (json.decode(response.body) as List)
+              .map((data) => Task.fromJson(data))
+              .toList();
+        });
+      } else if (response.statusCode == 404) {
+        setState(() {
+          tasks = [];
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No tasks found')),
+        );
+      } else {
+        throw Exception('Failed to load tasks: ${response.statusCode}');
+      }
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error fetching tasks: $error')),
+      );
+    }
+  }
+
+  void _showFilterDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Filter Tasks"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              DropdownButtonFormField<String>(
+                value: selectedDay,
+                onChanged: (value) {
+                  setState(() {
+                    selectedDay = value;
+                  });
+                },
+                items: daysOfWeek
+                    .map((day) => DropdownMenuItem(
+                          value: day,
+                          child: Text(day),
+                        ))
+                    .toList(),
+                decoration: const InputDecoration(
+                  labelText: 'Select Day',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 16),
+              DropdownButtonFormField<String>(
+                value: selectedStatus,
+                onChanged: (value) {
+                  setState(() {
+                    selectedStatus = value;
+                  });
+                },
+                items: statuses
+                    .map((status) => DropdownMenuItem(
+                          value: status,
+                          child: Text(status),
+                        ))
+                    .toList(),
+                decoration: const InputDecoration(
+                  labelText: 'Select Status',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () {
+                _fetchTasks(); // Fetch tasks with the new filter
+                Navigator.pop(context);
+              },
+              child: const Text("Apply"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -80,49 +181,8 @@ class EmployeePageState extends State<EmployeePage> {
         title: const Text("Employee Dashboard"),
         actions: [
           IconButton(
-            icon: const Icon(Icons.calendar_today),
-            onPressed: () async {
-              final DateTime? pickedDate = await showDatePicker(
-                context: context,
-                initialDate: selectedDate ?? DateTime.now(),
-                firstDate: DateTime(2000),
-                lastDate: DateTime(2100),
-              );
-              if (pickedDate != null && pickedDate != selectedDate) {
-                setState(() {
-                  selectedDate = pickedDate;
-                });
-              }
-            },
-          ),
-          Stack(
-            children: [
-              IconButton(
-                icon: const Icon(Icons.notifications),
-                onPressed: () {
-                  _showNotifications();
-                },
-              ),
-              if (notifications.isNotEmpty)
-                Positioned(
-                  right: 11,
-                  top: 11,
-                  child: Container(
-                    padding: const EdgeInsets.all(2),
-                    decoration: const BoxDecoration(
-                      color: Colors.red,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Text(
-                      '${notifications.length}',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 10,
-                      ),
-                    ),
-                  ),
-                ),
-            ],
+            icon: const Icon(Icons.filter_list),
+            onPressed: _showFilterDialog,
           ),
         ],
       ),
@@ -178,48 +238,28 @@ class EmployeePageState extends State<EmployeePage> {
   }
 
   Widget _buildBody(Employee employee) {
-    final String selectedDay = (selectedDate != null)
-        ? daysOfWeek[(selectedDate!.weekday - 1) % 7]
-        : daysOfWeek[(DateTime.now().weekday - 1) % 7];
-
-    final incompleteTasks = employee.tasks
-        .where((task) => task.status == "waiting" && task.day == selectedDay)
-        .toList();
-    final inProgressTasks = employee.tasks
-        .where(
-            (task) => task.status == "In Progress" && task.day == selectedDay)
-        .toList();
-    final completedTasks = employee.tasks
-        .where((task) => task.status == "Complete" && task.day == selectedDay)
-        .toList();
-
-    return ListView(
+    return Column(
       children: [
-        const Padding(
-          padding: EdgeInsets.all(16.0),
-          child: Text(
-            "Today's Assignments",
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+        Expanded(
+          child: ListView(
+            children: [
+              _buildTaskSection("Waiting Tasks",
+                  tasks.where((task) => task.status == "waiting").toList()),
+              _buildTaskSection("In Progress Tasks",
+                  tasks.where((task) => task.status == "In Progress").toList()),
+              _buildTaskSection("Completed Tasks",
+                  tasks.where((task) => task.status == "Complete").toList()),
+              const Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Text(
+                  "Work Assignments",
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                ),
+              ),
+              WorkAssignmentTable(workAssignments: employee.workAssignments),
+            ],
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-          child: Text(
-            "Selected Day: $selectedDay",
-            style: const TextStyle(fontSize: 16, color: Colors.black54),
-          ),
-        ),
-        _buildTaskSection("Waiting Tasks", incompleteTasks),
-        _buildTaskSection("In Progress Tasks", inProgressTasks),
-        _buildTaskSection("Completed Tasks", completedTasks),
-        const Padding(
-          padding: EdgeInsets.all(16.0),
-          child: Text(
-            "Work Assignments",
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-          ),
-        ),
-        WorkAssignmentTable(workAssignments: employee.workAssignments),
       ],
     );
   }
@@ -301,130 +341,53 @@ class EmployeePageState extends State<EmployeePage> {
             ),
           ),
           const SizedBox(height: 8),
-          ...tasks.map((task) => _buildTaskCard(task)).toList(),
+          ...tasks.map((task) => _buildTaskCard(task)),
         ],
       ),
     );
   }
 
   Widget _buildTaskCard(Task task) {
-    if (task.status == "waiting") {
-      return _buildIncompleteTaskCard(task);
-    }
-
     return Card(
       elevation: 5,
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       child: ListTile(
-        title: Text(task.task),
-        subtitle: Text("Day: ${task.day}"),
-        onTap: () {
-          if (task.status == "Complete") {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => TaskDetailsPage(task: task),
-              ),
-            );
-          } else if (task.status == "In Progress") {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => TaskInProgressPage(task: task),
-              ),
-            );
-          }
-        },
-      ),
-    );
-  }
-
-  Widget _buildIncompleteTaskCard(Task task) {
-    return Card(
-      elevation: 5,
-      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-      child: ListTile(
-        title: Text(task.task),
-        subtitle: Text("Day: ${task.day}"),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
+        title: Text(
+          task.task,
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            IconButton(
-              icon: const Icon(Icons.check, color: Colors.green),
-              onPressed: () {
-                // Update task status to "In Progress"
-                _updateTaskStatus(task, "In Progress");
-              },
-            ),
-            IconButton(
-              icon: const Icon(Icons.close, color: Colors.red),
-              onPressed: () {
-                // Update task status to "Declined"
-                _updateTaskStatus(task, "Declined");
-              },
-            ),
+            Text("Day: ${task.day}"),
+            Text("Status: ${task.status}"),
           ],
         ),
-      ),
-    );
-  }
-
-  Future<void> _updateTaskStatus(Task task, String newStatus) async {
-    try {
-      // final url = Uri.http(backendUrl, '/auth/signin');
-      final response = await http.put(
-        Uri.http(backendUrl, '/api/employee/tasks/${task.id}'),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode({'status': newStatus}),
-      );
-
-      if (response.statusCode == 200) {
-        setState(() {
-          task.status = newStatus;
-        });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Task status updated to $newStatus')),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to update task: ${response.body}')),
-        );
-      }
-    } catch (error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error updating task: $error')),
-      );
-    }
-  }
-
-  void _showNotifications() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text("Notifications"),
-          content: notifications.isEmpty
-              ? const Text("No notifications available.")
-              : SizedBox(
-                  width: double.maxFinite,
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: notifications.length,
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                        title: Text(notifications[index]),
-                      );
-                    },
-                  ),
-                ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text("Close"),
+        trailing: Icon(
+          task.status == "Complete"
+              ? Icons.check_circle
+              : task.status == "In Progress"
+                  ? Icons.access_time
+                  : Icons.pending,
+          color: task.status == "Complete"
+              ? Colors.green
+              : task.status == "In Progress"
+                  ? Colors.orange
+                  : Colors.red,
+        ),
+        onTap: () {
+          // Navigate to TaskDetailsPage when the task card is tapped
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => TaskDetailsPage(task: task),
             ),
-          ],
-        );
-      },
+          ).then((_) {
+            // Refresh the task list after returning from TaskDetailsPage
+            _fetchTasks();
+          });
+        },
+      ),
     );
   }
 }

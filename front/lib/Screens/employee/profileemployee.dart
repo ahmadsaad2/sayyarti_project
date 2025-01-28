@@ -8,7 +8,7 @@ import '../class/employeclass.dart';
 class EditEmployeePage extends StatefulWidget {
   final Employee employee;
 
-  const EditEmployeePage({Key? key, required this.employee}) : super(key: key);
+  const EditEmployeePage({super.key, required this.employee});
 
   @override
   _EditEmployeePageState createState() => _EditEmployeePageState();

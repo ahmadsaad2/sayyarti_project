@@ -1,16 +1,17 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:sayyarti/constants.dart';
 
 class ServiceDetailsPage extends StatefulWidget {
   final Map<String, dynamic>? service;
   final int companyId;
 
   const ServiceDetailsPage({
-    Key? key,
+    super.key,
     this.service,
     required this.companyId,
-  }) : super(key: key);
+  });
 
   @override
   _ServiceDetailsPageState createState() => _ServiceDetailsPageState();
@@ -59,7 +60,7 @@ class _ServiceDetailsPageState extends State<ServiceDetailsPage> {
     try {
       if (widget.service == null) {
         // POST /api/services
-        final url = Uri.parse('http://192.168.88.4:5000/api/services');
+        final url = Uri.http(backendUrl, '/api/services');
         final response = await http.post(
           url,
           headers: {"Content-Type": "application/json"},
@@ -80,8 +81,7 @@ class _ServiceDetailsPageState extends State<ServiceDetailsPage> {
       } else {
         // PUT /api/services/:id
         final serviceId = widget.service!['id'];
-        final url =
-            Uri.parse('http://192.168.88.4:5000/api/services/$serviceId');
+        final url = Uri.http(backendUrl, '/api/services/$serviceId');
         final response = await http.put(
           url,
           headers: {"Content-Type": "application/json"},

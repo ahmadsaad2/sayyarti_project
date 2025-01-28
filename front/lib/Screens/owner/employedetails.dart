@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../class/employeclass.dart';
 import '../class/work_assignment.dart';
+import 'package:sayyarti/constants.dart';
 
 class EmployeeDetailsPage extends StatefulWidget {
   final Employee employee;
@@ -49,8 +50,9 @@ class EmployeeDetailsPageState extends State<EmployeeDetailsPage> {
       // If 'task' is empty, you might skip or handle differently
       // We'll update for all, even if task is blank
       try {
-        final url = Uri.parse(
-          'http://192.168.88.4:5000/api/workassignments/assign/'
+        final url = Uri.http(
+          backendUrl,
+          '/api/workassignments/assign/'
           '${widget.employee.id}/${assignment.day}',
         );
 

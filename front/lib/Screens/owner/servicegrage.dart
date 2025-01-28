@@ -1,11 +1,12 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:sayyarti/constants.dart';
 import './Servicedetailspageowner.dart';
 
 class ServicesPage extends StatefulWidget {
   final int companyId;
-  const ServicesPage({Key? key, required this.companyId}) : super(key: key);
+  const ServicesPage({super.key, required this.companyId});
 
   @override
   _ServicesPageState createState() => _ServicesPageState();
@@ -26,8 +27,9 @@ class _ServicesPageState extends State<ServicesPage> {
 
     try {
       // Example: GET /api/services?company_id=widget.companyId
-      final url = Uri.parse(
-        'http://192.168.88.4:5000/api/services?company_id=${widget.companyId}',
+      final url = Uri.http(
+        backendUrl,
+        '/api/services?company_id=${widget.companyId}',
       );
 
       final response = await http.get(url);
@@ -107,8 +109,7 @@ class _ServicesPageState extends State<ServicesPage> {
 
     if (confirm == true) {
       try {
-        final url =
-            Uri.parse('http://192.168.88.4:5000/api/services/$serviceId');
+        final url = Uri.http(backendUrl, '/api/services/$serviceId');
         final response = await http.delete(url);
 
         if (response.statusCode == 200) {
