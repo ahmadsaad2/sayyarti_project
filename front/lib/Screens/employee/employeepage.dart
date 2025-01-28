@@ -2,6 +2,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:sayyarti/constants.dart';
 import '../class/employeclass.dart';
 import '../class/task.dart'; // Import the Task class
 import 'task_details_page.dart';
@@ -45,8 +46,12 @@ class EmployeePageState extends State<EmployeePage> {
 
   Future<Employee> _fetchEmployeeData(int userId) async {
     try {
+      final url = Uri.http(backendUrl, '/api/employee/$userId');
       final response = await http.get(
-        Uri.parse('http://192.168.88.4:5000/api/employee/$userId'),
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+        },
       );
 
       if (response.statusCode == 200) {
@@ -366,8 +371,9 @@ class EmployeePageState extends State<EmployeePage> {
 
   Future<void> _updateTaskStatus(Task task, String newStatus) async {
     try {
+      // final url = Uri.http(backendUrl, '/auth/signin');
       final response = await http.put(
-        Uri.parse('http://192.168.88.4:5000/api/employee/tasks/${task.id}'),
+        Uri.http(backendUrl, '/api/employee/tasks/${task.id}'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({'status': newStatus}),
       );
