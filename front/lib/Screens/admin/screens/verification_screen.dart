@@ -49,13 +49,6 @@ class _VerificationScreenState extends State<VerificationScreen> {
         usernames.add(user['name']);
         phoneNumbers.add(user['phone']);
       }
-      // setState(() {
-      //   imageUrls = data.map((user) => user['img_uri'].toString()).toList();
-      //   usersId = data.map((user) => user['id'] as int).toList();
-      //   usernames = data.map((user) => user['name'].toString()).toList();
-      //   phoneNumbers = data.map((user) => user['phone'].toString()).toList();
-      //   _isLoading = false;
-      // });
     }
     setState(() {
       _isLoading = false;
@@ -96,40 +89,45 @@ class _VerificationScreenState extends State<VerificationScreen> {
       ),
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
-          : Flexible(
-              child: GridView.builder(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 4.0,
-                  mainAxisSpacing: 4.0,
-                ),
-                itemCount: imageUrls.length,
-                itemBuilder: (context, index) {
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => VerifyUsers(
-                            userID: usersId[index],
-                            userName: usernames[index],
+          : Column(
+              children: [
+                Expanded(
+                  child: GridView.builder(
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 4.0,
+                      mainAxisSpacing: 4.0,
+                    ),
+                    itemCount: imageUrls.length,
+                    itemBuilder: (context, index) {
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => VerifyUsers(
+                                userID: usersId[index],
+                                userName: usernames[index],
+                                imageUrl: imageUrls[index],
+                                userPhone: phoneNumbers[index],
+                              ),
+                            ),
+                          );
+                        },
+                        child: Card(
+                          child: CachedNetworkImage(
                             imageUrl: imageUrls[index],
-                            userPhone: phoneNumbers[index],
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) =>
+                                CircularProgressIndicator(),
+                            errorWidget: (context, url, error) =>
+                                Icon(Icons.error),
                           ),
                         ),
                       );
                     },
-                    child: Card(
-                      child: CachedNetworkImage(
-                        imageUrl: imageUrls[index],
-                        fit: BoxFit.cover,
-                        placeholder: (context, url) =>
-                            CircularProgressIndicator(),
-                        errorWidget: (context, url, error) => Icon(Icons.error),
-                      ),
-                    ),
-                  );
-                },
-              ),
+                  ),
+                ),
+              ],
             ),
     );
   }

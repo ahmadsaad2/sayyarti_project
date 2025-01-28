@@ -86,9 +86,9 @@ class _AddProductState extends State<AddProduct> {
     );
     Map<String, dynamic> data = jsonDecode(res.body);
     List<dynamic> brands = data['brand'];
-    List<String> _brandNames = [];
+    List<String> brandNames = [];
     for (var brand in brands) {
-      _brandNames.add(brand['brand']);
+      brandNames.add(brand['brand']);
     }
   }
 
