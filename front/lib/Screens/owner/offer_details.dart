@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:intl/intl.dart'; // For date formatting
+import 'package:intl/intl.dart';
+import 'package:sayyarti/constants.dart'; // For date formatting
 
 class OfferDetailsPage extends StatefulWidget {
   final Map<String, dynamic>? offer;
@@ -72,7 +73,7 @@ class _OfferDetailsPageState extends State<OfferDetailsPage> {
     try {
       if (widget.offer == null) {
         // POST
-        final url = Uri.parse('http://192.168.88.4:5000/api/offers');
+        final url = Uri.http(backendUrl, '/api/offers');
         final response = await http.post(
           url,
           headers: {'Content-Type': 'application/json'},
@@ -95,7 +96,7 @@ class _OfferDetailsPageState extends State<OfferDetailsPage> {
       } else {
         // PUT
         final offerId = widget.offer!['id'];
-        final url = Uri.parse('http://192.168.88.4:5000/api/offers/$offerId');
+        final url = Uri.http(backendUrl, '/api/offers/$offerId');
         final response = await http.put(
           url,
           headers: {'Content-Type': 'application/json'},

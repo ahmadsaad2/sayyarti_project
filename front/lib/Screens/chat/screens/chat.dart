@@ -1,12 +1,10 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:sayyarti/Screens/chat/widgets/chat_msg.dart';
 import 'package:sayyarti/Screens/chat/widgets/new_msg.dart';
-// import 'package:shared_preferences/shared_preferences.dart';
 
 class ChatScreen extends StatefulWidget {
-  ChatScreen(
+  const ChatScreen(
       {super.key,
       required this.personName,
       required this.personId,

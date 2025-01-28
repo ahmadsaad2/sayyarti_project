@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:sayyarti/constants.dart';
 
 class CompanyProfile {
   final int? id;
@@ -61,7 +62,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Future<CompanyProfile?> fetchCompanyProfile(int userId) async {
     try {
       final response = await http.get(
-        Uri.parse('http://192.168.88.4:5000/api/company/user/$userId'),
+        Uri.http(backendUrl, '/api/company/user/$userId'),
       );
 
       if (response.statusCode == 200) {
@@ -93,9 +94,9 @@ class _ProfilePageState extends State<ProfilePage> {
     };
 
     try {
-      final url = 'http://192.168.88.4:5000/api/company/user/${widget.userId}';
+      final url = Uri.http(backendUrl, '/api/company/user/${widget.userId}');
       final response = await http.put(
-        Uri.parse(url),
+        url,
         headers: {'Content-Type': 'application/json'},
         body: json.encode(companyData),
       );

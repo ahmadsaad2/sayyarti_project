@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:sayyarti/constants.dart';
 
 class EmployeeForm extends StatefulWidget {
   final int companyId; // ID of the company
@@ -45,8 +46,7 @@ class _EmployeeFormState extends State<EmployeeForm> {
 
     try {
       final response = await http.post(
-        Uri.parse(
-            'http://192.168.88.4:5000/api/employees'), // Backend API endpoint
+        Uri.http(backendUrl, '/api/employees'), // Backend API endpoint
         headers: {'Content-Type': 'application/json'},
         body: json.encode(employeeData),
       );

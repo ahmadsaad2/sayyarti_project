@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:sayyarti/constants.dart';
 import 'employeform.dart';
 import '../class/employeclass.dart';
 import './employedetails.dart';
@@ -29,8 +30,7 @@ class _EmployeePageState extends State<EmployeePage> {
     setState(() => _isLoading = true);
     try {
       final response = await http.get(
-        Uri.parse(
-            'http://192.168.88.4:5000/api/employees/company/${widget.companyId}'),
+        Uri.http(backendUrl, '/api/employees/company/${widget.companyId}'),
       );
       if (response.statusCode == 200) {
         final data = json.decode(response.body)['employees'] as List;
@@ -78,7 +78,7 @@ class _EmployeePageState extends State<EmployeePage> {
   Future<void> _deleteEmployee(int employeeId) async {
     try {
       final response = await http.delete(
-        Uri.parse('http://192.168.88.4:5000/api/employees/$employeeId'),
+        Uri.http(backendUrl, '/api/employees/$employeeId'),
       );
 
       if (response.statusCode == 200) {
@@ -137,7 +137,7 @@ class _EmployeePageState extends State<EmployeePage> {
                           horizontal: 10,
                         ),
                         child: ListTile(
-                          title: Text(employee.name ?? 'Unknown Name'),
+                          title: Text(employee.name),
                           onTap: () => _viewEmployeeDetails(employee),
                         ),
                       ),

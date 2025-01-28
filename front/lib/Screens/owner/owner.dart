@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sayyarti/constants.dart';
 import 'porfile.dart';
 import 'employee.dart';
 import 'servicegrage.dart';
@@ -45,7 +46,7 @@ class CompanyProfile {
 // Fetch company profile from the backend
 Future<CompanyProfile> fetchCompanyProfile(int userId) async {
   final response = await http.get(
-    Uri.parse('http://192.168.88.5:5000/api/company/user/$userId'),
+    Uri.http(backendUrl, 'api/company/user/$userId'),
   );
   if (response.statusCode == 200) {
     final data = json.decode(response.body);

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:sayyarti/constants.dart';
 import '../class/employeclass.dart';
 import '../class/task.dart';
 import 'task_details_page.dart'; // Import the TaskDetailsPage
@@ -42,8 +43,12 @@ class EmployeePageState extends State<EmployeePage> {
 
   Future<Employee> _fetchEmployeeData(int userId) async {
     try {
+      final url = Uri.http(backendUrl, '/api/employee/$userId');
       final response = await http.get(
-        Uri.parse('http://192.168.88.4:5000/api/employee/$userId'),
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+        },
       );
 
       if (response.statusCode == 200) {
@@ -67,8 +72,9 @@ class EmployeePageState extends State<EmployeePage> {
 
   Future<void> _fetchTasks() async {
     try {
-      final uri = Uri.parse(
-        'http://192.168.88.4:5000/api/tasks/by-user/${widget.userId}',
+      final uri = Uri.http(
+        backendUrl,
+        '/api/tasks/by-user/${widget.userId}',
       ).replace(queryParameters: {
         if (selectedDay != null) 'day': selectedDay,
         if (selectedStatus != null && selectedStatus != "All")

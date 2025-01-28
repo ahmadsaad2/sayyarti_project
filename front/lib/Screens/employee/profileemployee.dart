@@ -1,6 +1,7 @@
 // lib/pages/edit_employee_page.dart
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:sayyarti/constants.dart';
 import 'dart:convert';
 import '../class/employeclass.dart';
 
@@ -37,8 +38,7 @@ class _EditEmployeePageState extends State<EditEmployeePage> {
 
       try {
         final response = await http.put(
-          Uri.parse(
-              'http://192.168.88.4:5000/api/employee/${widget.employee.id}'),
+          Uri.http(backendUrl, '/api/employee/${widget.employee.id}'),
           headers: {'Content-Type': 'application/json'},
           body: json.encode({
             'name': _nameController.text,

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:sayyarti/constants.dart';
 
 class ReviewsPage extends StatefulWidget {
   final int companyId; // The company ID whose reviews we want to display
@@ -25,8 +26,9 @@ class _ReviewsPageState extends State<ReviewsPage> {
     setState(() => _isLoading = true);
 
     try {
-      final url = Uri.parse(
-        'http://192.168.88.4:5000/api/reviews?company_id=${widget.companyId}',
+      final url = Uri.http(
+        backendUrl,
+        '/api/reviews?company_id=${widget.companyId}',
       );
       final response = await http.get(url);
 
@@ -68,7 +70,7 @@ class _ReviewsPageState extends State<ReviewsPage> {
 
     if (confirm == true) {
       try {
-        final url = Uri.parse('http://192.168.88.4:5000/api/reviews/$reviewId');
+        final url = Uri.http(backendUrl, '/api/reviews/$reviewId');
         final response = await http.delete(url);
         if (response.statusCode == 200) {
           setState(() {
