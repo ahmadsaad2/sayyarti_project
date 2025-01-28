@@ -35,6 +35,11 @@ export default function (sequelize, DataTypes) {
       type: DataTypes.TEXT,
       allowNull: true
     },
+    category: {
+      type: DataTypes.ENUM('Spare Parts', 'Battery', 'Wheels', 'Accessories', 'Maintenance'),
+      allowNull: false,
+      default: 'Spare Parts',
+    },
     byAdmin: {
       type: DataTypes.BOOLEAN,
       allowNull: false,

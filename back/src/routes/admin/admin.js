@@ -257,6 +257,7 @@ router.post('/part', verifyTokenAndAdmin, async (req, res) => {
             description: req.body.description,
             price: req.body.price,
             image_url: req.body.image_url,
+            category: req.body.category,
             byAdmin: true,
         });
         res.status(201).json({ 'Part added to the shop success fuly': newPart });
