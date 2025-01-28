@@ -4,11 +4,11 @@ import models from '../../../models/index.js';
 import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
 import nodemailer from 'nodemailer';
-import { verifyTokenAndAuthorization } from '../../middleware/userVerification.js';
+import { verifyTokenAndAuthorization, verifyToken } from '../../middleware/userVerification.js';
 import { where } from 'sequelize';
 
 dotenv.config();
-const { users, address, brands, cars } = models;
+const { users, address, brands, cars, parts } = models;
 const router = Router();
 
 
@@ -125,7 +125,7 @@ router.post('/add-car/:id', verifyTokenAndAuthorization, async (req, res) => {
 });
 
 /**
- * @desc add a new car
+ * @desc get all chat conversations
  * @router /api/user/chat-conv/
  * @method GET
  * @access public
@@ -137,10 +137,28 @@ router.get('/chat-conv', async (req, res) => {
                 role: ['company_admin', 'service_provider'],
             },
         });
-        return res.status(200).json({conv});
+        return res.status(200).json({ conv });
     } catch (error) {
-        return res.status(500).json({message:'Server error'});
+        return res.status(500).json({ message: 'Server error' });
     }
 });
+
+/**
+ * @desc get all products
+ * @router /api/user/products/
+ * @method GET
+ * @access private
+ */
+
+router.get('/products', verifyToken, async (req, res) => {
+    try {
+        const products = await parts.findAll();
+        return res.status(200).json({products});
+    } catch (error) {
+        return res.status(500).json({message: 'server error'})
+
+    }
+});
+
 
 export default router;

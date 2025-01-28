@@ -241,7 +241,7 @@ router.get('/stat', verifyTokenAndAdmin, async (req, res) => {
 
 
 /**
- * @desc Add apart to the parts store
+ * @desc Add product to the parts store
  * @route /api/admin/part
  * @method POST
  * @access private

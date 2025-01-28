@@ -24,7 +24,7 @@ import taskroutes from './src/routes/COMPAN/taskroutes.js';
 dbConnect();
 
 
-sequelize.sync({ alter: true }) // Use { force: true } if you want to recreate tables
+sequelize.sync({ alter: false, }) // Use { force: true } if you want to recreate tables
     .then(() => {
         console.log('All tables have been synchronized successfully.');
     })
