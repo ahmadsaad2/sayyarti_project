@@ -29,7 +29,7 @@ class _ServicesPageState extends State<ServicesPage> {
       // Example: GET /api/services?company_id=widget.companyId
       final url = Uri.http(
         backendUrl,
-        '/api/services?company_id=${widget.companyId}',
+        '/api/services/all/${widget.companyId}',
       );
 
       final response = await http.get(url);

@@ -432,4 +432,31 @@ router.get('/user/:userId', async (req, res) => {
     return res.status(500).json({ message: 'Internal server error' });
   }
 });
+
+
+router.get('/:companyId', async (req, res) => {
+  const { companyId } = req.params;
+
+  try {
+    // Validate company
+    const company = await companies.findByPk(companyId);
+    if (!company) {
+      return res.status(404).json({ message: 'Company not found' });
+    }
+
+    // Fetch bookings for the specified company
+    const companyBookings = await bookings.findAll({
+      where: { company_id: companyId },
+      include: [
+        { model: companies, as: 'company' }, // Include company details
+      ],
+    });
+
+    return res.json(companyBookings);
+  } catch (error) {
+    console.error('Error fetching company bookings:', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 export default router;

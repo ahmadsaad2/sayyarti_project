@@ -27,8 +27,9 @@ class _ReviewsPageState extends State<ReviewsPage> {
 
     try {
       final url = Uri.http(
+        //
         backendUrl,
-        '/api/reviews?company_id=${widget.companyId}',
+        '/api/reviews/${widget.companyId}',
       );
       final response = await http.get(url);
 

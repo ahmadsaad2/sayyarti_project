@@ -144,6 +144,25 @@ router.get('/chat-conv', async (req, res) => {
 });
 
 /**
+ * @desc get all chat conversations for company admin
+ * @router /api/user/chat-conv/
+ * @method GET
+ * @access public
+ */
+router.get('/chat-conv/company', async (req, res) => {
+    try {
+        const conv = await users.findAll({
+            where: {
+                role: ['user'],
+            },
+        });
+        return res.status(200).json({ conv });
+    } catch (error) {
+        return res.status(500).json({ message: 'Server error' });
+    }
+});
+
+/**
  * @desc get all products
  * @router /api/user/products/
  * @method GET
