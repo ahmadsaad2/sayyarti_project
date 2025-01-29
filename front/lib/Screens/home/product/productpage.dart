@@ -124,6 +124,7 @@ class _ProductPageState extends State<ProductPage> {
           groupedProducts[category] = [];
         }
         groupedProducts[category]!.add({
+          'id': product['id'],
           'name': product['part_name'],
           'description': product['description'] ?? '',
           'price': double.parse(product['price']), // Convert price to double
@@ -432,7 +433,7 @@ class _ProductPageState extends State<ProductPage> {
                                 ),
                               ),
                               Text(
-                                "${product['price']} SR",
+                                "${product['price']} \$",
                                 style: const TextStyle(
                                     color: Color.fromARGB(255, 36, 128, 151),
                                     fontWeight: FontWeight.bold),

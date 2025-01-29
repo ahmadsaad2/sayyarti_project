@@ -1,5 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:sayyarti/constants.dart';
 import 'package:sayyarti/screens/home/cart/CartPage.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProductDetailsPage extends StatefulWidget {
   final Map<String, dynamic> product;
@@ -12,8 +17,6 @@ class ProductDetailsPage extends StatefulWidget {
 
 class _ProductDetailsPageState extends State<ProductDetailsPage> {
   int quantity = 1;
-
-  /// List to store the cart data
   List<Map<String, dynamic>> cart = [];
   List<Map<String, dynamic>> savedCart =
       []; // Variable to save cart data for database
@@ -23,39 +26,40 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
     return unitPrice * quantity;
   }
 
-  /// Adds a product to the cart, saves the data, and logs it
+  // Adds a product to the cart, saves the data, and logs it
   void addToCart(
-      Map<String, dynamic> product, int quantity, double totalPrice) {
-    setState(() {
-      // Check if the product already exists in the cart
-      int existingIndex =
-          cart.indexWhere((item) => item['name'] == product['name']);
-      if (existingIndex != -1) {
-        // Product exists, update its quantity and total price
-        cart[existingIndex]['quantity'] += quantity;
-        cart[existingIndex]['totalPrice'] += totalPrice;
-      } else {
-        // Add new product to the cart
-        cart.add({
-          'name': product['name'],
-          'price': product['price'],
-          'quantity': quantity,
-          'totalPrice': totalPrice,
-          'image': product['image'], // Save the product image
-          'description': product['description'], // Save the product description
-        });
-      }
+      Map<String, dynamic> product, int quantity, double totalPrice) async {
+    final prefs = await SharedPreferences.getInstance();
+    final url =
+        Uri.http(backendUrl, '/user/add-cart/${prefs.getInt('userId')}');
+    final res = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'token': prefs.getString('token')!,
+      },
+      body: json.encode({
+        'part_id': product['id'],
+        'quantity': quantity,
+      }),
+    );
 
-      // Save the updated cart for database operations
-      savedCart = List<Map<String, dynamic>>.from(cart);
-
-      // Log the saved data to the terminal
-      print('Saved Cart Data:');
-      for (var item in savedCart) {
-        print(
-            'Product: ${item['name']}, Quantity: ${item['quantity']}, Total Price: \$${item['totalPrice'].toStringAsFixed(2)}, Image: ${item['image']}, Description: ${item['description']}');
-      }
-    });
+    if (res.statusCode == 200) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(
+            '${product['name']} x$quantity added to cart for \$${totalPrice.toStringAsFixed(2)}'),
+        duration: const Duration(seconds: 2),
+      ));
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(
+          '${product['name']} x$quantity added to cart for \$${totalPrice.toStringAsFixed(2)}',
+          style: TextStyle(color: Colors.white),
+        ),
+        duration: const Duration(seconds: 2),
+        backgroundColor: Colors.red,
+      ));
+    }
   }
 
   @override
@@ -92,11 +96,14 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
             Center(
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(16.0),
-                child: Image.asset(
-                  product['image'] ?? 'assets/images/placeholder.png',
-                  fit: BoxFit.cover,
-                  height: 250,
+                child: Image.network(
+                  product['image'],
                   width: 250,
+                  height: 250,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Icon(Icons.error);
+                  },
                 ),
               ),
             ),
@@ -190,7 +197,6 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
               onPressed: () {
                 double totalPrice = calculateTotalPrice(price, quantity);
                 addToCart(product, quantity, totalPrice);
-
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   content: Text(
                       '${product['name']} x$quantity added to cart for \$${totalPrice.toStringAsFixed(2)}'),
