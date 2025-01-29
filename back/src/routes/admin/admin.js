@@ -241,7 +241,7 @@ router.get('/stat', verifyTokenAndAdmin, async (req, res) => {
 
 
 /**
- * @desc Add apart to the parts store
+ * @desc Add product to the parts store
  * @route /api/admin/part
  * @method POST
  * @access private
@@ -257,6 +257,7 @@ router.post('/part', verifyTokenAndAdmin, async (req, res) => {
             description: req.body.description,
             price: req.body.price,
             image_url: req.body.image_url,
+            category: req.body.category,
             byAdmin: true,
         });
         res.status(201).json({ 'Part added to the shop success fuly': newPart });

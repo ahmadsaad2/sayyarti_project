@@ -17,6 +17,10 @@ class MainChatScreen extends StatefulWidget {
 
 class _MainChatScreenState extends State<MainChatScreen> {
   late Future<List<ChatConversation>> futureChats;
+  TextEditingController _searchController = TextEditingController();
+  List<ChatConversation> allChats = []; // All the chat conversations
+  List<ChatConversation> filteredChats = []; // Filtered chats based on search
+
   String? userId;
   Future<List<ChatConversation>> fetchChatConversations(
       BuildContext context) async {
@@ -67,10 +71,27 @@ class _MainChatScreenState extends State<MainChatScreen> {
     }
   }
 
+  void _onSearchChanged() {
+    setState(() {
+      filteredChats = allChats
+          .where((chat) => chat.name
+              .toLowerCase()
+              .contains(_searchController.text.toLowerCase()))
+          .toList();
+    });
+  }
+
   @override
   void initState() {
     super.initState();
     futureChats = fetchChatConversations(context);
+    _searchController.addListener(_onSearchChanged);
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   @override
@@ -78,6 +99,17 @@ class _MainChatScreenState extends State<MainChatScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Chat Conversations'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.search),
+            onPressed: () {
+              showSearch(
+                context: context,
+                delegate: ChatSearchDelegate(allChats, userId),
+              );
+            },
+          ),
+        ],
       ),
       body: FutureBuilder<List<ChatConversation>>(
         future: futureChats,
@@ -89,10 +121,12 @@ class _MainChatScreenState extends State<MainChatScreen> {
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return Center(child: Text('No chat conversations found.'));
           } else {
+            allChats = snapshot.data!;
+            filteredChats = allChats;
             return ListView.builder(
               itemCount: snapshot.data!.length,
               itemBuilder: (context, index) {
-                ChatConversation chat = snapshot.data![index];
+                ChatConversation chat = filteredChats[index];
                 return Card(
                   margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                   child: ListTile(
@@ -116,6 +150,82 @@ class _MainChatScreenState extends State<MainChatScreen> {
           }
         },
       ),
+    );
+  }
+}
+
+class ChatSearchDelegate extends SearchDelegate {
+  final List<ChatConversation> allChats;
+
+  ChatSearchDelegate(this.allChats, this.userId);
+  String? userId;
+  @override
+  List<Widget> buildActions(BuildContext context) {
+    return [
+      IconButton(
+        icon: Icon(Icons.clear),
+        onPressed: () {
+          query = '';
+        },
+      ),
+    ];
+  }
+
+  @override
+  Widget buildLeading(BuildContext context) {
+    return IconButton(
+      icon: Icon(Icons.arrow_back),
+      onPressed: () {
+        close(context, null);
+      },
+    );
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
+    final results = allChats
+        .where((chat) => chat.name.toLowerCase().contains(query.toLowerCase()))
+        .toList();
+    return ListView.builder(
+      itemCount: results.length,
+      itemBuilder: (context, index) {
+        ChatConversation chat = results[index];
+        return ListTile(
+          title: Text(chat.name),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ChatScreen(
+                  personId: chat.id,
+                  personName: chat.name,
+                  senderId: userId,
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    final suggestions = allChats
+        .where((chat) => chat.name.toLowerCase().contains(query.toLowerCase()))
+        .toList();
+    return ListView.builder(
+      itemCount: suggestions.length,
+      itemBuilder: (context, index) {
+        ChatConversation chat = suggestions[index];
+        return ListTile(
+          title: Text(chat.name),
+          onTap: () {
+            query = chat.name;
+            showResults(context);
+          },
+        );
+      },
     );
   }
 }

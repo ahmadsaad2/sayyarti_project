@@ -30,6 +30,15 @@ class _AddProductState extends State<AddProduct> {
   String? _description;
   double? _price;
   String? _imageUrl;
+  final List<String> _categories = <String>[
+    'Spare Parts',
+    'Battery',
+    'Wheels',
+    'Accessories',
+    'Maintenance',
+  ];
+  String? _selectedCategory;
+
   var _saving = false;
 
   void _pickImage() async {
@@ -142,6 +151,7 @@ class _AddProductState extends State<AddProduct> {
           'description': _description,
           'price': _price,
           'image_url': _imageUrl,
+          'category': _selectedCategory,
         }),
       );
       if (res.statusCode != 201) {
@@ -273,6 +283,7 @@ class _AddProductState extends State<AddProduct> {
                 ),
                 const SizedBox(height: 20),
                 DropdownSearch<String>.multiSelection(
+                  //
                   items: (filter, loadProps) async {
                     final url = Uri.http(backendUrl, '/user/get-brands/');
                     final res = await http.get(
@@ -335,6 +346,32 @@ class _AddProductState extends State<AddProduct> {
                       ),
                       labelStyle: TextStyle(color: Colors.black),
                     ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                InputDecorator(
+                  decoration: InputDecoration(
+                    labelText: 'Catrgory',
+                    prefixIcon: Padding(
+                      padding: EdgeInsets.all(defaultPadding),
+                      child: Icon(Icons.list),
+                    ),
+                    labelStyle: TextStyle(color: Colors.black),
+                  ),
+                  child: DropdownButton<String>(
+                    value: _selectedCategory,
+                    onChanged: (val) {
+                      setState(() {
+                        _selectedCategory = val;
+                      });
+                    },
+                    items: _categories
+                        .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
                   ),
                 ),
                 const SizedBox(height: 20),
