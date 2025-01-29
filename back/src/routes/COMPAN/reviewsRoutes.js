@@ -8,9 +8,9 @@ const { reviews, companies, users } = models;
  * GET /api/reviews?company_id=XYZ
  * Returns all reviews for a given company (optional).
  */
-router.get('/', async (req, res) => {
+router.get('/:id', async (req, res) => {
   try {
-    const { company_id } = req.query;
+    const { company_id } = req.params.id;
     const whereClause = {};
 
     if (company_id) {

@@ -7,10 +7,10 @@ const { companies, services } = models;
  * GET /api/services
  * Fetch all services or optionally filter by company_id if desired
  */
-router.get('/', async (req, res) => {
+router.get('/all/:id', async (req, res) => {
   try {
     // e.g., GET /api/services?company_id=1
-    const { company_id } = req.query;
+    const { company_id } = req.params.id;
     const whereClause = {};
 
     if (company_id) whereClause.company_id = company_id;

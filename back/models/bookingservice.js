@@ -39,7 +39,11 @@ export default function (sequelize, DataTypes) {
       },
       booking_date: {
         type: DataTypes.DATE,
-        allowNull: false,
+        allowNull: true,
+      },
+      user_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
       },
     },
     {

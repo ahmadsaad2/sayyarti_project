@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:sayyarti/Screens/chat/screens/main_chat.dart';
@@ -22,6 +23,9 @@ void initializeFCM() async {
   final token = prefs.getString('token');
   print('fcm_token :$fireToken');
   print('userId : $userId');
+  FirebaseFirestore.instance
+      .collection('users')
+      .add({'receiverId': prefs.getInt('userid'), 'token': fireToken});
   final url = Uri.http(backendUrl, '/user/info-update/$userId');
   final res = await http.put(
     url,
@@ -30,7 +34,7 @@ void initializeFCM() async {
       'token': token!,
     },
     body: json.encode({
-      'fcm_token': fireToken,
+      'fcmToken': fireToken,
     }),
   );
   if (res.statusCode != 200) {
@@ -46,6 +50,7 @@ void initializeFCM() async {
         ),
       ),
     );
+    _firebaseMessaging.subscribeToTopic('offers');
   } else {}
 
   //Listener for the incoming msgs
