@@ -10,13 +10,15 @@ const { companies, services } = models;
 router.get('/all/:id', async (req, res) => {
   try {
     // e.g., GET /api/services?company_id=1
-    const { company_id } = req.params.id;
-    const whereClause = {};
+    // const { company_id } = req.params.id;
+    // const whereClause = {};
 
-    if (company_id) whereClause.company_id = company_id;
+    // if (company_id) whereClause.company_id = company_id;
 
     const allServices = await services.findAll({
-      where: whereClause,
+      where: {
+        company_id: req.params.id,
+      },
     });
 
     return res.status(200).json(allServices);

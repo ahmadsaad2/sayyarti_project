@@ -8,7 +8,7 @@ import { verifyTokenAndAuthorization, verifyToken } from '../../middleware/userV
 import { where } from 'sequelize';
 
 dotenv.config();
-const { users, address, brands, cars, parts, cart,partorders } = models;
+const { users, address, brands, cars, parts, cart, partorders } = models;
 const router = Router();
 
 
@@ -125,6 +125,30 @@ router.post('/add-car/:id', verifyTokenAndAuthorization, async (req, res) => {
 });
 
 /**
+ * @desc get my  car
+ * @router /api/user/mycars/:id
+ * @method GET
+ * @access private
+ */
+router.get('/mycars/:id', verifyTokenAndAuthorization, async (req, res) => {
+    try {
+        const mycars = await cars.findAll({
+            where: {
+                user_id: req.params.id,
+            }
+        });
+        if (mycars.length === 0) {
+            return res.status(404).json();
+        }
+        else {
+            return res.status(200).json(mycars);
+        }
+    } catch (error) {
+        return res.status(500).json({ message: 'server error' });
+    }
+})
+
+/**
  * @desc get all chat conversations
  * @router /api/user/chat-conv/
  * @method GET
@@ -201,12 +225,12 @@ router.post('/add-cart/:id', verifyTokenAndAuthorization, async (req, res) => {
                 part_id: req.body.part_id,
                 quantity: req.body.quantity
             });
-            
+
             console.log('create');
             return res.status(200);
         } else {
             console.log('increment');
-            
+
             await exist.update({ quantity: exist.quantity + req.body.quantity });
             return res.status(200);
         }
@@ -222,30 +246,30 @@ router.post('/add-cart/:id', verifyTokenAndAuthorization, async (req, res) => {
  * @access private
  */
 router.get('/get-cart/:id', verifyTokenAndAuthorization, async (req, res) => {
-    
-    
+
+
     try {
-        
+
         const cartItems = await cart.findAll({
             where: { user_id: req.params.id },
             include: [
                 {
                     model: parts,
-                    as:'part',
+                    as: 'part',
                     attributes: ['part_name', 'description', 'price', 'image_url']
                 }
             ]
         });
-        
-        
+
+
         if (!cartItems || cartItems.length === 0) {
             return res.status(404).json({ message: 'No items founded in cart' });
         }
 
         const formatedItems = cartItems.map(item => {
-            const part = item.part ? item.part.get({ plain: true }) : {}; 
+            const part = item.part ? item.part.get({ plain: true }) : {};
             return {
-                id:item.id,
+                id: item.id,
                 part_id: item.part_id,
                 name: part.part_name,
                 quantity: item.quantity,
@@ -266,7 +290,7 @@ router.get('/get-cart/:id', verifyTokenAndAuthorization, async (req, res) => {
         // }));
         return res.status(200).json(formatedItems);
     } catch (error) {
-        return res.status(500).json({message:'server error'});
+        return res.status(500).json({ message: 'server error' });
 
     }
 });
@@ -276,22 +300,22 @@ router.get('/get-cart/:id', verifyTokenAndAuthorization, async (req, res) => {
  * @method DELETE
  * @access private
  */
-router.delete('/delete-cart/:id',verifyToken, async (req,res)=>{
+router.delete('/delete-cart/:id', verifyToken, async (req, res) => {
     try {
         const result = await cart.destroy({
-            where:{
-                id:req.params.id,
+            where: {
+                id: req.params.id,
             }
         });
-        if(result === 0){
-            return res.status(404).json({message:'no item founded'});
-        } 
-        else{
-            return res.status(200).json({message:'Item removed from cart successfuly'});
+        if (result === 0) {
+            return res.status(404).json({ message: 'no item founded' });
         }
-    
+        else {
+            return res.status(200).json({ message: 'Item removed from cart successfuly' });
+        }
+
     } catch (error) {
-        return res.status(500).json({message:'server error'})
+        return res.status(500).json({ message: 'server error' })
     }
 });
 
@@ -301,25 +325,25 @@ router.delete('/delete-cart/:id',verifyToken, async (req,res)=>{
  * @method POST
  * @access private
  */
-router.post('/check-out/:id',verifyTokenAndAuthorization, async (req,res)=>{
+router.post('/check-out/:id', verifyTokenAndAuthorization, async (req, res) => {
     try {
         const result = await cart.destroy({
-            where:{
-                user_id:req.params.id,
+            where: {
+                user_id: req.params.id,
             }
         });
         console.log('1');
-        
+
         await partorders.create({
             user_id: req.params.id,
             total_price: req.body.totalPrice,
         });
         console.log('2');
-        
+
         return res.status(200);
-        
+
     } catch (error) {
-        return res.status(500).json({message:'server error'});
+        return res.status(500).json({ message: 'server error' });
     }
 })
 

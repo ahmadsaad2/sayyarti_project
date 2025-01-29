@@ -1263,12 +1263,12 @@ void _showSparePartSelectionDialog(
                     context,
                     MaterialPageRoute(
                       builder: (context) =>
-                          const WorkshopPage(workshopType: 'New Spare Parts'),
+                          const WorkshopPage(workshopType: 'Used Spare Parts'),
                     ),
                   );
                 },
                 child: _buildServiceOption(
-                    'New Spare Parts', 'assets/images/5.jpg'),
+                    'Used Spare Parts', 'assets/images/5.jpg'),
               ),
               GestureDetector(
                 onTap: () {
@@ -1276,7 +1276,7 @@ void _showSparePartSelectionDialog(
                     context,
                     MaterialPageRoute(
                       builder: (context) =>
-                          const WorkshopPage(workshopType: 'Used Spare Parts'),
+                          const WorkshopPage(workshopType: 'New Spare Parts'),
                     ),
                   );
                 },
