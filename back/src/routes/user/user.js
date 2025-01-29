@@ -8,7 +8,7 @@ import { verifyTokenAndAuthorization, verifyToken } from '../../middleware/userV
 import { where } from 'sequelize';
 
 dotenv.config();
-const { users, address, brands, cars, parts, cart } = models;
+const { users, address, brands, cars, parts, cart,partorders } = models;
 const router = Router();
 
 
@@ -275,6 +275,34 @@ router.delete('/delete-cart/:id',verifyToken, async (req,res)=>{
         return res.status(500).json({message:'server error'})
     }
 });
+
+/**
+ * @desc place order
+ * @router /api/user/check-out/:id
+ * @method POST
+ * @access private
+ */
+router.post('/check-out/:id',verifyTokenAndAuthorization, async (req,res)=>{
+    try {
+        const result = await cart.destroy({
+            where:{
+                user_id:req.params.id,
+            }
+        });
+        console.log('1');
+        
+        await partorders.create({
+            user_id: req.params.id,
+            total_price: req.body.totalPrice,
+        });
+        console.log('2');
+        
+        return res.status(200);
+        
+    } catch (error) {
+        return res.status(500).json({message:'server error'});
+    }
+})
 
 
 export default router;
