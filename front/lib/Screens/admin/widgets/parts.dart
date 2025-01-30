@@ -104,6 +104,8 @@ class _AddProductState extends State<AddProduct> {
   void _save() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
+    } else {
+      return;
     }
     if (_image == null) {
       showDialog(
@@ -158,6 +160,7 @@ class _AddProductState extends State<AddProduct> {
         setState(() {
           _saving = false;
         });
+        print(res.body);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('field to add a product please try again later'),
@@ -278,7 +281,7 @@ class _AddProductState extends State<AddProduct> {
                     return null;
                   },
                   onSaved: (newValue) {
-                    _partName = newValue!;
+                    _partName = newValue ?? '';
                   },
                 ),
                 const SizedBox(height: 20),
@@ -389,15 +392,13 @@ class _AddProductState extends State<AddProduct> {
                     labelStyle: TextStyle(color: Colors.black),
                   ),
                   validator: (value) {
-                    if (value == null ||
-                        value.isEmpty ||
-                        value.trim().length <= 6) {
-                      return '';
+                    if (value == null || value.isEmpty) {
+                      return 'enter the price';
                     }
                     return null;
                   },
                   onSaved: (newValue) {
-                    _price = double.tryParse(newValue!);
+                    _price = double.tryParse(newValue!) ?? 50.0;
                   },
                 ),
                 const SizedBox(height: 20),
