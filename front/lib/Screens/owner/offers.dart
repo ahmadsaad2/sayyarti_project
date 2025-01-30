@@ -26,10 +26,14 @@ class _OffersPageState extends State<OffersPage> {
     setState(() => _isLoading = true);
 
     try {
-      final url = Uri.parse(
-        'http://192.168.88.4:5000/api/offers?company_id=${widget.companyId}',
+      final url = Uri.http(backendUrl, '/api/offers/offer/${widget.companyId}');
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+        },
       );
-      final response = await http.get(url);
+
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
         setState(() {
@@ -102,7 +106,7 @@ class _OffersPageState extends State<OffersPage> {
 
     if (confirm == true) {
       try {
-        final url = Uri.http(backendUrl, '/api/api/offers/$offerId');
+        final url = Uri.http(backendUrl, '/api/offers/$offerId');
         final response = await http.delete(url);
         if (response.statusCode == 200) {
           setState(() {

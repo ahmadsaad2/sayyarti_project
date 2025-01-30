@@ -22,12 +22,17 @@ class _MainChatScreenState extends State<MainChatScreen> {
   List<ChatConversation> filteredChats = []; // Filtered chats based on search
 
   String? userId;
+  var url;
   Future<List<ChatConversation>> fetchChatConversations(
       BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
     userId = prefs.getString('id');
     print('current user id: ${userId}');
-    final url = Uri.http(backendUrl, '/user/chat-conv/');
+    if (prefs.getString('role') == 'user') {
+      url = Uri.http(backendUrl, '/user/chat-conv/');
+    } else {
+      url = Uri.http(backendUrl, '/user/chat-conv/company');
+    }
     final response = await http.get(
       url,
       headers: {

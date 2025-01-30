@@ -86,4 +86,31 @@ router.put('/user/:user_id', async (req, res) => {
       return res.status(500).json({ message: 'Server error' });
     }
   });
+
+
+
+
+  // Route to retrieve companies by type
+router.get('/type/:type', async (req, res) => {
+  const { type } = req.params;
+
+  try {
+    // Find companies with the given type
+    const companiesByType = await companies.findAll({
+      where: { type },
+    });
+
+    // If no companies are found, return a 404
+    if (companiesByType.length === 0) {
+      return res.status(404).json({ message: 'No companies found for this type' });
+    }
+
+    // Return the companies found by type
+    return res.status(200).json({ companies: companiesByType });
+  } catch (error) {
+    console.error('Error retrieving companies by type:', error);
+    return res.status(500).json({ message: 'Server error' });
+  }
+});
+
 export default router;

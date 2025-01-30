@@ -5,7 +5,7 @@ import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
 import nodemailer from 'nodemailer';
 import { verifyTokenAndAdmin } from '../../middleware/userVerification.js';
-import { Sequelize } from 'sequelize';
+import { Sequelize, where } from 'sequelize';
 
 dotenv.config();
 const { companies, users, employees, brands, partorders, serviceorders, parts, services, reviews } = models;
@@ -114,7 +114,14 @@ router.post('/company-admin/create', verifyTokenAndAdmin, async (req, res) => {
             company_id: companyId,
             user_id: userId,
             role: 'admin',
-        })
+        });
+
+        const updatedCompany = await companies.update({ user_id: userId }, {
+            where:
+            {
+                id: companyId,
+            }
+        });
         console.log('stage 4 done');
 
         return res.status(201).json({ message: 'company admin created successfully', newUser, newEmployee });
@@ -260,9 +267,9 @@ router.post('/part', verifyTokenAndAdmin, async (req, res) => {
             category: req.body.category,
             byAdmin: true,
         });
-        res.status(201).json({ 'Part added to the shop success fuly': newPart });
+        return res.status(201).json({ 'Part added to the shop success fuly': newPart });
     } catch (error) {
-        res.status(500).json({ Error: 'Server Error:' });
+        return res.status(500).json({ Error: error.message });
 
     }
 });

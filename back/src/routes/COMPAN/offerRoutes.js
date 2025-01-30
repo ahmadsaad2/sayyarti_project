@@ -7,9 +7,9 @@ const { offers, companies } = models;
  * GET /api/offers?company_id=XYZ
  * Fetch offers for a specific company (or all if no company_id).
  */
-router.get('/', async (req, res) => {
+router.get('/offer/:id', async (req, res) => {
   try {
-    const { company_id } = req.query;
+    const  company_id  = req.params.id;
     const whereClause = {};
 
     if (company_id) whereClause.company_id = company_id;

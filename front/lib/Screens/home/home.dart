@@ -100,22 +100,29 @@ class _HomePageState extends State<HomePage> {
                     "Sayyarti",
                     style: TextStyle(
                       color: Colors.black,
-                      fontSize: 20,
+                      fontSize: 22,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                 ],
               ),
               IconButton(
-                padding:
-                    const EdgeInsets.only(left: 16.0, top: 20.0, right: 20),
-                icon: Image.asset(
-                  'assets/images/cs.png', // Path to your image
-                  width: 30.0, // Set the width of the image
-                  height: 30.0, // Set the height of the image
-                  fit: BoxFit.cover,
-                ),
-                onPressed: () {},
+                iconSize: 50,
+                padding: const EdgeInsets.only(top: 10.0, right: 20),
+                icon: Icon(Icons.psychology),
+                // Image.asset(
+                //   'assets/images/cs.png', // Path to your image
+                //   width: 30.0, // Set the width of the image
+                //   height: 30.0, // Set the height of the image
+                //   fit: BoxFit.cover,
+                // ),
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (ctx) => ChatBotFeature(),
+                    ),
+                  );
+                },
               ),
             ],
           ),
@@ -211,7 +218,7 @@ class _HomePageState extends State<HomePage> {
                     context,
                     "Car Wash",
                     "assets/images/wash.png",
-                    const WorkshopPage(workshopType: 'Car Wash'),
+                    const WorkshopPage(workshopType: 'car wash'),
                   ),
                   _buildServiceBox(
                     context,
@@ -321,13 +328,7 @@ class _HomePageState extends State<HomePage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const AdDetailsPage(
-                          imagePath: 'assets/images/sa.JPG',
-                          adTitle: 'Fuel Delivery',
-                          adDescription:
-                              'Fuel delivered 24/7; same price as the petrol station.',
-                        ),
-                      ),
+                          builder: (context) => FuelDeliveryPage()),
                     );
                   },
                   child: Container(
@@ -1262,12 +1263,12 @@ void _showSparePartSelectionDialog(
                     context,
                     MaterialPageRoute(
                       builder: (context) =>
-                          const WorkshopPage(workshopType: 'New Spare Parts'),
+                          const WorkshopPage(workshopType: 'Used Spare Parts'),
                     ),
                   );
                 },
                 child: _buildServiceOption(
-                    'New Spare Parts', 'assets/images/5.jpg'),
+                    'Used Spare Parts', 'assets/images/5.jpg'),
               ),
               GestureDetector(
                 onTap: () {
@@ -1275,7 +1276,7 @@ void _showSparePartSelectionDialog(
                     context,
                     MaterialPageRoute(
                       builder: (context) =>
-                          const WorkshopPage(workshopType: 'Used Spare Parts'),
+                          const WorkshopPage(workshopType: 'New Spare Parts'),
                     ),
                   );
                 },

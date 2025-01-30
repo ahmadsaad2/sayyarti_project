@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:sayyarti/Screens/Welcome/welcome_screen.dart';
 import 'package:sayyarti/constants.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../class/employeclass.dart';
 import '../class/task.dart';
 import 'task_details_page.dart'; // Import the TaskDetailsPage
@@ -315,6 +317,18 @@ class EmployeePageState extends State<EmployeePage> {
                 MaterialPageRoute(
                   builder: (context) => EditEmployeePage(employee: employee),
                 ),
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.person),
+            title: const Text('log out'),
+            onTap: () async {
+              final prefs = await SharedPreferences.getInstance();
+              await prefs.clear();
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const WelcomeScreen()),
               );
             },
           ),

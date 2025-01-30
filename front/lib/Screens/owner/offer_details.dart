@@ -280,6 +280,7 @@ class _OfferDetailsPageState extends State<OfferDetailsPage> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
+                      //TODO fire base add to send notification
                       child: Text(
                         isEditing ? 'Update Offer' : 'Add Offer',
                         style:

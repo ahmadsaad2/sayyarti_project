@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sayyarti/constants.dart';
 import 'BookingDetailsPage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -25,10 +26,18 @@ class _BookingsPageState extends State<BookingsPage> {
 
   Future<void> _fetchBookings() async {
     try {
+      final url = Uri.http(backendUrl, '/api/bookings/${widget.companyId}');
       final response = await http.get(
-        Uri.parse(
-            'http://192.168.88.4:5000/api/bookings?companyId=${widget.companyId}'),
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+        },
       );
+
+      // final response = await http.get(
+      //   Uri.parse(
+      //       'http://192.168.88.4:5000/api/bookings?companyId=${widget.companyId}'),
+      // );
 
       if (response.statusCode == 200) {
         setState(() {
@@ -47,10 +56,29 @@ class _BookingsPageState extends State<BookingsPage> {
 
   Future<void> _fetchEmployees() async {
     try {
+      final url =
+          Uri.http(backendUrl, '/api/employee/by-company/${widget.companyId}');
       final response = await http.get(
-        Uri.parse(
-            'http://192.168.88.4:5000/api/employee/by-company/${widget.companyId}'),
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+        },
       );
+
+      // try {
+      //   final url =
+      //       Uri.http(backendUrl, '/api/employee/by-company/${widget.companyId}');
+      //   final response = await http.get(
+      //     url,
+      //     headers: {
+      //       'Content-Type': 'application/json',
+      //     },
+      //   );
+
+      // final response = await http.get(
+      //   Uri.parse(
+      //       '/api/employee/by-company/${widget.companyId}'),
+      // );
 
       if (response.statusCode == 200) {
         setState(() {
@@ -267,16 +295,30 @@ class _BookingsPageState extends State<BookingsPage> {
                       'user_id']; // Get user_id from the employee
 
                   try {
+                    final url = Uri.http(backendUrl,
+                        '/api/bookings/assign-to-task/${booking['id']}');
                     final response = await http.post(
-                      Uri.parse(
-                          'http://192.168.88.4:5000/api/bookings/assign-to-task/${booking['id']}'),
-                      headers: {'Content-Type': 'application/json'},
+                      url,
+                      headers: {
+                        'Content-Type': 'application/json',
+                      },
                       body: json.encode({
                         'employeeId': selectedEmployeeId,
                         'day': selectedDay,
                         'userId': userId, // Include user_id in the request body
                       }),
                     );
+
+                    // final response = await http.post(
+                    //   Uri.parse(
+                    //       'http://192.168.88.4:5000/api/bookings/assign-to-task/${booking['id']}'),
+                    //   headers: {'Content-Type': 'application/json'},
+                    //   body: json.encode({
+                    //     'employeeId': selectedEmployeeId,
+                    //     'day': selectedDay,
+                    //     'userId': userId, // Include user_id in the request body
+                    //   }),
+                    // );
 
                     if (response.statusCode == 201) {
                       Navigator.pop(context);

@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:sayyarti/Screens/Welcome/welcome_screen.dart';
+import 'package:sayyarti/Screens/chat/screens/main_chat.dart';
+import 'package:sayyarti/Screens/home/home.dart';
 import 'package:sayyarti/constants.dart';
 import 'porfile.dart';
 import 'employee.dart';
@@ -9,6 +13,7 @@ import 'review.dart';
 import 'faqpage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import '../Login/login_screen.dart';
 
 // Model for company profile
 class CompanyProfile {
@@ -135,12 +140,35 @@ class _ServiceCenterHomePageState extends State<ServiceCenterHomePage> {
                 const SizedBox(height: 20),
                 _buildEmployeeSection(context, company.id!),
                 const SizedBox(height: 20),
-                _buildBookingsSection(context),
-                const SizedBox(height: 20),
+                // _buildBookingsSection(context),
+                // const SizedBox(height: 20),
                 _buildServicesSection(context, company.id!),
                 const SizedBox(height: 20),
                 _buildOffersSection(context, company.id!),
-              ],
+              ], //
+            ),
+          ),
+          floatingActionButton: Align(
+            alignment: Alignment.bottomLeft,
+            child: Padding(
+              padding: const EdgeInsets.only(
+                left: 365.0,
+                bottom: 50.0,
+              ),
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => MainChatScreen()));
+                },
+                child: ClipOval(
+                  child: Image.asset(
+                    'assets/images/cha.png', // Path to your image
+                    width: 50.0,
+                    height: 50.0,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
             ),
           ),
         );
@@ -249,88 +277,88 @@ class _ServiceCenterHomePageState extends State<ServiceCenterHomePage> {
     );
   }
 
-  Widget _buildBookingsSection(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          "Today's Bookings",
-          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 10),
-        const Text(
-          'View and manage all bookings scheduled for today. Confirm, reschedule, or cancel appointments as needed.',
-          style: TextStyle(fontSize: 14, color: Colors.grey),
-        ),
-        const SizedBox(height: 20),
-        bookings.isEmpty
-            ? Card(
-                elevation: 5,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                color: Colors.orange[100],
-                child: const Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Center(
-                    child: Text(
-                      'No Bookings Today',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.orange,
-                      ),
-                    ),
-                  ),
-                ),
-              )
-            : Card(
-                elevation: 5,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: DataTable(
-                    columns: const [
-                      DataColumn(label: Text('#')),
-                      DataColumn(label: Text('Customer')),
-                      DataColumn(label: Text('Mobile')),
-                      DataColumn(label: Text('Service')),
-                      DataColumn(label: Text('Time')),
-                      DataColumn(label: Text('Payment')),
-                      DataColumn(label: Text('Status')),
-                      DataColumn(label: Text('Actions')),
-                    ],
-                    rows: bookings.asMap().entries.map((entry) {
-                      final index = entry.key;
-                      final booking = entry.value;
-                      return DataRow(
-                        cells: [
-                          DataCell(Text((index + 1).toString())),
-                          DataCell(Text(booking['Customer'] ?? '')),
-                          DataCell(Text(booking['Mobile'] ?? '')),
-                          DataCell(Text(booking['Service'] ?? '')),
-                          DataCell(Text(booking['Time'] ?? '')),
-                          DataCell(Text(booking['Payment'] ?? '')),
-                          DataCell(Text(booking['Status'] ?? '')),
-                          DataCell(
-                            IconButton(
-                              icon: const Icon(Icons.edit),
-                              onPressed: () {
-                                // Handle edit action
-                              },
-                            ),
-                          ),
-                        ],
-                      );
-                    }).toList(),
-                  ),
-                ),
-              ),
-      ],
-    );
-  }
+  // Widget _buildBookingsSection(BuildContext context) {
+  //   return Column(
+  //     crossAxisAlignment: CrossAxisAlignment.start,
+  //     children: [
+  //       const Text(
+  //         "Today's Bookings",
+  //         style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+  //       ),
+  //       const SizedBox(height: 10),
+  //       const Text(
+  //         'View and manage all bookings scheduled for today. Confirm, reschedule, or cancel appointments as needed.',
+  //         style: TextStyle(fontSize: 14, color: Colors.grey),
+  //       ),
+  //       const SizedBox(height: 20),
+  //       bookings.isEmpty
+  //           ? Card(
+  //               elevation: 5,
+  //               shape: RoundedRectangleBorder(
+  //                 borderRadius: BorderRadius.circular(15),
+  //               ),
+  //               color: Colors.orange[100],
+  //               child: const Padding(
+  //                 padding: EdgeInsets.all(16.0),
+  //                 child: Center(
+  //                   child: Text(
+  //                     'No Bookings Today',
+  //                     style: TextStyle(
+  //                       fontSize: 18,
+  //                       fontWeight: FontWeight.bold,
+  //                       color: Colors.orange,
+  //                     ),
+  //                   ),
+  //                 ),
+  //               ),
+  //             )
+  //           : Card(
+  //               elevation: 5,
+  //               shape: RoundedRectangleBorder(
+  //                 borderRadius: BorderRadius.circular(15),
+  //               ),
+  //               child: SingleChildScrollView(
+  //                 scrollDirection: Axis.horizontal,
+  //                 child: DataTable(
+  //                   columns: const [
+  //                     DataColumn(label: Text('#')),
+  //                     DataColumn(label: Text('Customer')),
+  //                     DataColumn(label: Text('Mobile')),
+  //                     DataColumn(label: Text('Service')),
+  //                     DataColumn(label: Text('Time')),
+  //                     DataColumn(label: Text('Payment')),
+  //                     DataColumn(label: Text('Status')),
+  //                     DataColumn(label: Text('Actions')),
+  //                   ],
+  //                   rows: bookings.asMap().entries.map((entry) {
+  //                     final index = entry.key;
+  //                     final booking = entry.value;
+  //                     return DataRow(
+  //                       cells: [
+  //                         DataCell(Text((index + 1).toString())),
+  //                         DataCell(Text(booking['Customer'] ?? '')),
+  //                         DataCell(Text(booking['Mobile'] ?? '')),
+  //                         DataCell(Text(booking['Service'] ?? '')),
+  //                         DataCell(Text(booking['Time'] ?? '')),
+  //                         DataCell(Text(booking['Payment'] ?? '')),
+  //                         DataCell(Text(booking['Status'] ?? '')),
+  //                         DataCell(
+  //                           IconButton(
+  //                             icon: const Icon(Icons.edit),
+  //                             onPressed: () {
+  //                               // Handle edit action
+  //                             },
+  //                           ),
+  //                         ),
+  //                       ],
+  //                     );
+  //                   }).toList(),
+  //                 ),
+  //               ),
+  //             ),
+  //     ],
+  //   );
+  // }
 
   Widget _buildServicesSection(BuildContext context, int companyId) {
     return Column(
@@ -486,15 +514,13 @@ class CustomDrawer extends StatelessWidget {
                   backgroundImage: AssetImage('assets/images/5.jpg'),
                   radius: 30,
                 ),
-                SizedBox(height: 10),
-                Text('Auto Care Center',
+                SizedBox(height: 20),
+                Text('Menu',
                     style: TextStyle(
                         color: Colors.white,
-                        fontSize: 18,
+                        fontSize: 25,
                         fontWeight: FontWeight.bold)),
                 SizedBox(height: 5),
-                Text('Nablus, Palestine',
-                    style: TextStyle(color: Colors.white)),
               ],
             ),
           ),
@@ -581,6 +607,14 @@ class CustomDrawer extends StatelessWidget {
                 context,
                 MaterialPageRoute(builder: (context) => const FAQsPage()),
               );
+            },
+          ),
+          DrawerListTile(
+            title: 'Log out',
+            icon: Icons.logout,
+            onTap: () {
+              Navigator.pushReplacement(
+                  context, MaterialPageRoute(builder: (ctx) => LoginScreen()));
             },
           ),
         ],

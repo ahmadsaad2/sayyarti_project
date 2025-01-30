@@ -1,5 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:sayyarti/constants.dart';
 import 'sucessorder.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CheckoutPage extends StatefulWidget {
   final double total;
@@ -29,6 +34,25 @@ class _CheckoutPageState extends State<CheckoutPage> {
   final TextEditingController _cvvController = TextEditingController();
 
   String _selectedPaymentMethod = 'Cash'; // Default payment method
+
+  void _checkout() async {
+    final prefs = await SharedPreferences.getInstance();
+    final url =
+        Uri.http(backendUrl, '/user/check-out/${prefs.getInt('userId')}');
+    final res = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'token': prefs.getString('token')!,
+      },
+      body: json.encode({
+        'totalPrice': widget.total,
+      }),
+    );
+    if (res.statusCode == 200) {
+      print('done');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -257,6 +281,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
               ElevatedButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
+                    _checkout();
                     // Navigate to the Success Page
                     Navigator.push(
                       context,

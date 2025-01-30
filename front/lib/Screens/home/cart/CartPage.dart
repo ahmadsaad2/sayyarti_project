@@ -39,6 +39,7 @@ class _CartPageState extends State<CartPage> {
         List<Map<String, dynamic>> updatedCartItems = resData.map((item) {
           return {
             'id': int.tryParse(item['id'].toString()),
+            'part_id': item['part_id'],
             'name': item['name'],
             'price': double.tryParse(item['price'].toString()) ?? 0.0,
             'quantity': item['quantity'],

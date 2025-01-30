@@ -52,7 +52,7 @@ export default function (sequelize, DataTypes) {
       },
       user_id: {
         type: DataTypes.INTEGER,
-        allowNull: false,
+        allowNull: true,
         field: 'user_id', // Tells Sequelize this JS property is mapped to the 'user_id' column
         references: {
           model: 'users', // Foreign key pointing to the 'users' table
